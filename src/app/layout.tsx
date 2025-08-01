@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { AuthProvider } from "@/components/auth-provider";
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://grock.dev'), // Replace with your actual domain
@@ -59,14 +60,21 @@ export default function RootLayout({
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased")}>
-        <AuthProvider>
-          <div className="relative flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <div className="relative flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

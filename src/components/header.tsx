@@ -7,7 +7,7 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Gem, Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import React from 'react';
 
 const Header = () => {
@@ -21,7 +21,7 @@ const Header = () => {
   };
   
   const navLinks = [
-      { href: '/#services', label: 'Services' },
+      { href: '/pricing', label: 'Pricing' },
       { href: '/status', label: 'Status' },
       { href: '/documentation', label: 'Documentation' },
       { href: '/contact', label: 'Contact' },
@@ -65,7 +65,6 @@ const Header = () => {
             <SheetContent side="left">
                 <SheetHeader>
                     <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
-                    <SheetDescription className="sr-only">Navigation links for mobile</SheetDescription>
                 </SheetHeader>
                 <div className="flex flex-col space-y-4">
                     <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setIsOpen(false)}>

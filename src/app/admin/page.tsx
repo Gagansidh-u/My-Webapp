@@ -23,6 +23,7 @@ type Order = {
     userEmail: string;
     plan: string;
     price: number;
+    duration: number;
     status: OrderStatus;
     createdAt: Timestamp;
     websiteDetails: {
@@ -105,6 +106,13 @@ export default function AdminPage() {
         fetchData();
     }, [router, toast]);
     
+    const getDurationText = (duration: number) => {
+        if (!duration) return 'N/A';
+        if (duration < 12) return `${duration} Months`;
+        const years = duration / 12;
+        return `${years} Year${years > 1 ? 's' : ''}`;
+    }
+
     const handleOrderStatusChange = async (orderId: string, newStatus: OrderStatus) => {
         try {
             const orderRef = doc(db, "orders", orderId);
@@ -259,6 +267,7 @@ export default function AdminPage() {
                                             <TableRow>
                                                 <TableHead>Customer</TableHead>
                                                 <TableHead>Plan</TableHead>
+                                                <TableHead>Duration</TableHead>
                                                 <TableHead>Status</TableHead>
                                                 <TableHead>Price</TableHead>
                                                 <TableHead>Date</TableHead>
@@ -274,6 +283,7 @@ export default function AdminPage() {
                                                         <div className="text-xs text-muted-foreground">{order.userId}</div>
                                                     </TableCell>
                                                     <TableCell>{order.plan}</TableCell>
+                                                    <TableCell>{getDurationText(order.duration)}</TableCell>
                                                     <TableCell><Badge variant='outline' className={orderStatusColors[order.status] || ''}>{order.status}</Badge></TableCell>
                                                     <TableCell>₹{order.price.toFixed(2)}</TableCell>
                                                     <TableCell>{order.createdAt.toDate().toLocaleDateString()}</TableCell>
@@ -289,7 +299,7 @@ export default function AdminPage() {
                                                                 <DialogHeader>
                                                                     <DialogTitle>Website Details for {order.userEmail}</DialogTitle>
                                                                     <DialogDescription>
-                                                                        Plan: {order.plan}
+                                                                        Plan: {order.plan} ({getDurationText(order.duration)})
                                                                     </DialogDescription>
                                                                 </DialogHeader>
                                                                 <div className="space-y-4 py-4">

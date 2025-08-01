@@ -29,6 +29,7 @@ function CheckoutPage() {
     const { toast } = useToast();
     const [plan, setPlan] = useState("");
     const [price, setPrice] = useState(0);
+    const [duration, setDuration] = useState(0);
     const [loading, setLoading] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
@@ -41,17 +42,27 @@ function CheckoutPage() {
     useEffect(() => {
         const planId = searchParams.get('plan');
         const priceStr = searchParams.get('price');
+        const durationStr = searchParams.get('duration');
         if (planId) {
             setPlan(planId.charAt(0).toUpperCase() + planId.slice(1));
         }
         if (priceStr) {
             setPrice(parseFloat(priceStr));
         }
+        if (durationStr) {
+            setDuration(parseInt(durationStr));
+        }
     }, [searchParams]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         setWebsiteDetails(prev => ({ ...prev, [id]: value }));
+    }
+    
+    const getDurationText = () => {
+        if (duration < 12) return `${duration} Months`;
+        const years = duration / 12;
+        return `${years} Year${years > 1 ? 's' : ''}`;
     }
 
     const handlePayment = async () => {
@@ -94,7 +105,7 @@ function CheckoutPage() {
             amount: order.amount,
             currency: order.currency,
             name: "Grock Technologies",
-            description: `Payment for ${plan} Plan`,
+            description: `Payment for ${plan} Plan (${getDurationText()})`,
             order_id: order.id,
             handler: async function (response: any) {
                 try {
@@ -104,6 +115,7 @@ function CheckoutPage() {
                         userEmail: user.email,
                         plan: plan,
                         price: price,
+                        duration: duration,
                         websiteDetails: websiteDetails,
                         razorpayPaymentId: response.razorpay_payment_id,
                         orderId: order.id,
@@ -128,6 +140,7 @@ function CheckoutPage() {
             notes: {
                 plan: plan,
                 userId: user.uid,
+                duration: `${duration} months`,
                 description: websiteDetails.description.substring(0, 50),
             },
             theme: {
@@ -169,8 +182,8 @@ function CheckoutPage() {
                                     <span className="font-semibold">{plan}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Price:</span>
-                                    <span className="font-semibold">₹{price.toFixed(2)}/mo</span>
+                                    <span className="text-muted-foreground">Billing Cycle:</span>
+                                    <span className="font-semibold">{getDurationText()}</span>
                                 </div>
                                 <div className="flex justify-between items-center border-t pt-4 mt-4">
                                     <span className="text-lg font-bold">Total:</span>

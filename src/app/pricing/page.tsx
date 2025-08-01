@@ -1,15 +1,17 @@
 "use client"
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const services = [
+const plans = [
   {
     title: 'Single Website',
-    price: '149.00',
+    monthlyPrice: 149.00,
     description: 'Ideal for beginners',
     features: [
       '1 Website',
@@ -25,7 +27,7 @@ const services = [
   },
   {
     title: 'Web Starter',
-    price: '249.00',
+    monthlyPrice: 249.00,
     description: 'Perfect for personal websites',
     features: [
       '100 Websites',
@@ -42,7 +44,7 @@ const services = [
   },
   {
     title: 'Business Website',
-    price: '399.00',
+    monthlyPrice: 399.00,
     description: 'Optimized for small businesses',
     features: [
       '100 Websites',
@@ -59,7 +61,16 @@ const services = [
   }
 ];
 
+const durationOptions = [
+    { value: "6", label: "6 Months", months: 6 },
+    { value: "12", label: "1 Year", months: 12 },
+    { value: "24", label: "2 Years", months: 24 },
+    { value: "36", label: "3 Years", months: 36 },
+]
+
 export default function PricingPage() {
+  const [duration, setDuration] = useState(durationOptions[1]); // Default to 1 Year
+
   return (
     <div 
       className="container mx-auto py-16 md:py-24"
@@ -68,47 +79,64 @@ export default function PricingPage() {
         <h1 className="text-4xl md:text-5xl font-headline font-bold">Our Pricing Plans</h1>
         <p className="text-lg text-muted-foreground mt-2">Choose the perfect plan for your needs. Simple, transparent, and powerful.</p>
       </div>
+
+      <div className="flex justify-center mb-12">
+        <Tabs defaultValue={duration.value} onValueChange={(value) => setDuration(durationOptions.find(d => d.value === value)!)}>
+            <TabsList className="grid w-full grid-cols-4">
+                {durationOptions.map(option => (
+                    <TabsTrigger key={option.value} value={option.value}>{option.label}</TabsTrigger>
+                ))}
+            </TabsList>
+        </Tabs>
+      </div>
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
-        {services.map((service, index) => (
-          <div
-            key={index}
-          >
-            <Card className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${service.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg' : 'shadow-lg'} relative`}>
-              {service.popular && <Badge variant="default" className="absolute top-0 right-4 -mt-4 px-4 py-1 text-sm font-bold">Most Popular</Badge>}
-               {service.discount && (
-                  <Badge 
-                    variant="destructive" 
-                    className="absolute top-4 left-4 -rotate-12 text-base font-bold"
-                  >
-                    {service.discount}
-                  </Badge>
-                )}
-              <CardHeader className="text-center pt-16">
-                <CardTitle className="text-2xl font-headline">{service.title}</CardTitle>
-                <CardDescription>{service.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <div className="text-center mb-6">
-                  <span className="text-4xl font-bold font-headline">₹{service.price}</span>
-                  <span className="text-muted-foreground">/mo</span>
-                </div>
-                <ul className="space-y-3">
-                  {service.features.map((feature, fIndex) => (
-                    <li key={fIndex} className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button asChild className="w-full font-bold" size="lg" variant={service.popular ? 'default' : 'secondary'}>
-                  <Link href={`/checkout?plan=${service.planId}&price=${service.price}`}>Get Started</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        ))}
+        {plans.map((plan, index) => {
+          const totalPrice = plan.monthlyPrice * duration.months;
+          return (
+            <div key={index}>
+              <Card className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg' : 'shadow-lg'} relative`}>
+                {plan.popular && <Badge variant="default" className="absolute top-0 right-4 -mt-3 px-4 py-1 text-sm font-bold">Most Popular</Badge>}
+                 {plan.discount && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute top-4 left-4 -rotate-12 text-base font-bold"
+                    >
+                      {plan.discount}
+                    </Badge>
+                  )}
+                <CardHeader className="text-center pt-16">
+                  <CardTitle className="text-2xl font-headline">{plan.title}</CardTitle>
+                  <CardDescription>{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="text-center mb-6">
+                    <div className="flex items-baseline justify-center">
+                        <span className="text-4xl font-bold font-headline">₹{plan.monthlyPrice.toFixed(2)}</span>
+                        <span className="text-muted-foreground">/mo</span>
+                    </div>
+                     <p className="text-sm text-muted-foreground">
+                        Billed as ₹{totalPrice.toFixed(2)} for {duration.label}
+                     </p>
+                  </div>
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, fIndex) => (
+                      <li key={fIndex} className="flex items-center gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full font-bold" size="lg" variant={plan.popular ? 'default' : 'secondary'}>
+                    <Link href={`/checkout?plan=${plan.planId}&price=${totalPrice}&duration=${duration.months}`}>Get Started</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          )
+        })}
       </div>
     </div>
   );

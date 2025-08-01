@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
-import { Loader2, LogOut, FileText, Users, ShoppingCart } from "lucide-react";
+import { collection, getDocs, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
+import { Loader2, LogOut, FileText, ShoppingCart, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,7 +17,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useToast } from "@/hooks/use-toast";
 
+
+type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
 
 type Order = {
     id: string;
@@ -25,7 +35,7 @@ type Order = {
     userEmail: string;
     plan: string;
     price: number;
-    status: string;
+    status: OrderStatus;
     createdAt: Timestamp;
     websiteDetails: {
         description: string;
@@ -34,11 +44,19 @@ type Order = {
     };
 };
 
+const statusColors: Record<OrderStatus, string> = {
+    "Paid": "bg-blue-500/20 text-blue-700 border-blue-500/30",
+    "Pending": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30",
+    "In-Progress": "bg-orange-500/20 text-orange-700 border-orange-500/30",
+    "Delivered": "bg-green-500/20 text-green-700 border-green-500/30"
+}
+
+
 export default function AdminPage() {
     const router = useRouter();
+    const { toast } = useToast();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    const [totalUsers, setTotalUsers] = useState(0);
     const [totalOrders, setTotalOrders] = useState(0);
 
 
@@ -49,7 +67,7 @@ export default function AdminPage() {
             return;
         }
 
-        const fetchData = async () => {
+        const fetchOrders = async () => {
             try {
                 // Fetch orders
                 const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
@@ -57,20 +75,41 @@ export default function AdminPage() {
                 const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
                 setOrders(ordersData);
                 setTotalOrders(ordersData.length);
-
-                // Fetch users (approximated by unique userIds in orders)
-                const userIds = new Set(ordersData.map(order => order.userId));
-                setTotalUsers(userIds.size);
-
             } catch (error) {
                 console.error("Failed to fetch admin data:", error);
+                 toast({
+                    title: "Error",
+                    description: "Failed to fetch orders.",
+                    variant: "destructive",
+                });
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
-    }, [router]);
+        fetchOrders();
+    }, [router, toast]);
+    
+    const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
+        try {
+            const orderRef = doc(db, "orders", orderId);
+            await updateDoc(orderRef, { status: newStatus });
+            setOrders(prevOrders => prevOrders.map(order => 
+                order.id === orderId ? { ...order, status: newStatus } : order
+            ));
+            toast({
+                title: "Success",
+                description: `Order status updated to ${newStatus}.`
+            });
+        } catch (error) {
+            console.error("Failed to update order status:", error);
+            toast({
+                title: "Error",
+                description: "Failed to update order status.",
+                variant: "destructive",
+            });
+        }
+    };
 
     const handleLogout = () => {
         sessionStorage.removeItem("isAdminAuthenticated");
@@ -98,17 +137,7 @@ export default function AdminPage() {
                      </div>
                 </header>
                 <main className="flex-1 p-4 sm:px-6 sm:py-0">
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 mb-6">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total Registered Users</CardTitle>
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{totalUsers}</div>
-                                <p className="text-xs text-muted-foreground">Count of unique users who have ordered</p>
-                            </CardContent>
-                        </Card>
+                    <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1 mb-6">
                         <Card>
                              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
@@ -136,6 +165,7 @@ export default function AdminPage() {
                                         <TableHead>Price</TableHead>
                                         <TableHead>Date</TableHead>
                                         <TableHead>Details</TableHead>
+                                        <TableHead>Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -146,7 +176,7 @@ export default function AdminPage() {
                                                 <div className="text-xs text-muted-foreground">{order.userId}</div>
                                             </TableCell>
                                             <TableCell>{order.plan}</TableCell>
-                                            <TableCell><Badge variant={order.status === 'Paid' ? 'default' : 'secondary'} className={`${order.status === 'Paid' ? 'bg-green-500/20 text-green-700 border-green-500/30' : ''}`}>{order.status}</Badge></TableCell>
+                                            <TableCell><Badge variant='outline' className={statusColors[order.status] || ''}>{order.status}</Badge></TableCell>
                                             <TableCell>₹{order.price.toFixed(2)}</TableCell>
                                             <TableCell>{order.createdAt.toDate().toLocaleDateString()}</TableCell>
                                             <TableCell>
@@ -180,6 +210,22 @@ export default function AdminPage() {
                                                         </div>
                                                     </DialogContent>
                                                 </Dialog>
+                                            </TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                            <span className="sr-only">Open menu</span>
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Pending')}>Pending</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'In-Progress')}>In-Progress</DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleStatusChange(order.id, 'Delivered')}>Delivered</DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </TableCell>
                                         </TableRow>
                                     ))}

@@ -1,16 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useAuth } from "@/components/auth-provider";
 import { useRouter } from "next/navigation";
-import { db, auth } from "@/lib/firebase";
-import { collection, doc, getDoc, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
-import { Loader2, LogOut, FileText } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, orderBy, query, Timestamp } from "firebase/firestore";
+import { Loader2, LogOut, FileText, Users, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { signOut } from "firebase/auth";
 import {
   Dialog,
   DialogContent,
@@ -37,43 +35,49 @@ type Order = {
 };
 
 export default function AdminPage() {
-    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [totalOrders, setTotalOrders] = useState(0);
+
 
     useEffect(() => {
-        if (!authLoading) {
-            if (!user) {
-                router.replace("/admin/login");
-                return;
-            }
-
-            const checkAdminAndFetch = async () => {
-                const adminDoc = await getDoc(doc(db, "admins", user.uid));
-                if (!adminDoc.exists()) {
-                    await auth.signOut();
-                    router.replace("/admin/login");
-                    return;
-                }
-
-                const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-                setOrders(ordersData);
-                setLoading(false);
-            };
-
-            checkAdminAndFetch();
+        const isAdminAuthenticated = sessionStorage.getItem("isAdminAuthenticated") === "true";
+        if (!isAdminAuthenticated) {
+            router.replace("/admin/login");
+            return;
         }
-    }, [user, authLoading, router]);
 
-    const handleLogout = async () => {
-        await signOut(auth);
+        const fetchData = async () => {
+            try {
+                // Fetch orders
+                const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+                const ordersSnapshot = await getDocs(ordersQuery);
+                const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+                setOrders(ordersData);
+                setTotalOrders(ordersData.length);
+
+                // Fetch users (approximated by unique userIds in orders)
+                const userIds = new Set(ordersData.map(order => order.userId));
+                setTotalUsers(userIds.size);
+
+            } catch (error) {
+                console.error("Failed to fetch admin data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [router]);
+
+    const handleLogout = () => {
+        sessionStorage.removeItem("isAdminAuthenticated");
         router.push('/admin/login');
     };
 
-    if (authLoading || loading) {
+    if (loading) {
         return (
             <div className="flex h-screen items-center justify-center bg-background">
                 <Loader2 className="animate-spin text-primary" size={48} />
@@ -94,6 +98,29 @@ export default function AdminPage() {
                      </div>
                 </header>
                 <main className="flex-1 p-4 sm:px-6 sm:py-0">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 mb-6">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Total Registered Users</CardTitle>
+                                <Users className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalUsers}</div>
+                                <p className="text-xs text-muted-foreground">Count of unique users who have ordered</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalOrders}</div>
+                                <p className="text-xs text-muted-foreground">All-time order count</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
                     <Card>
                         <CardHeader>
                             <CardTitle>User Orders</CardTitle>

@@ -8,23 +8,29 @@ import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { auth, db } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import React from "react";
-import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string().min(1, { message: "Password is required." }),
 });
+
+const ADMIN_EMAIL = "helpdesk.grock@outlook.com";
+const ADMIN_PASSWORD = "Gagan@123";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    // Check if the user is already "logged in" via session storage
+    if (sessionStorage.getItem("isAdminAuthenticated") === "true") {
+      router.push("/admin");
+    }
+  }, [router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,18 +43,17 @@ export default function AdminLoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
-
-      // Check if the user is an admin
-      const adminDoc = await getDoc(doc(db, "admins", user.uid));
-      if (!adminDoc.exists()) {
-        await auth.signOut();
-        throw new Error("You are not authorized to access this panel.");
+      if (values.email !== ADMIN_EMAIL || values.password !== ADMIN_PASSWORD) {
+        throw new Error("Invalid email or password.");
       }
+      
+      // Using session storage for simplicity as requested.
+      // Note: This is not a secure way to handle authentication.
+      sessionStorage.setItem("isAdminAuthenticated", "true");
 
       toast({ title: "Success", description: "Logged in successfully." });
       router.push("/admin");
+
     } catch (error: any) {
       toast({
         title: "Error",
@@ -102,12 +107,6 @@ export default function AdminLoginPage() {
               </Button>
             </form>
           </Form>
-           <div className="mt-4 text-center text-sm">
-            No admin account?{' '}
-            <Link href="/admin/signup" className="underline">
-              Create one
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>

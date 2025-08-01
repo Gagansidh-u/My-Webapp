@@ -1,13 +1,65 @@
 "use client"
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function ContactPage() {
+    const { toast } = useToast();
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+    });
+    const [loading, setLoading] = useState(false);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { id, value } = e.target;
+        setFormData(prev => ({...prev, [id]: value}));
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if(!formData.name || !formData.email || !formData.subject || !formData.message) {
+            toast({
+                title: "Error",
+                description: "Please fill out all fields.",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await addDoc(collection(db, "contacts"), {
+                ...formData,
+                createdAt: serverTimestamp()
+            });
+            toast({
+                title: "Success",
+                description: "Your message has been sent successfully."
+            });
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch (error) {
+             toast({
+                title: "Error",
+                description: "Failed to send message. Please try again later.",
+                variant: "destructive"
+            });
+            console.error("Error adding document: ", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="container mx-auto py-16 md:py-24">
             <div className="text-center mb-12">
@@ -50,26 +102,29 @@ export default function ContactPage() {
                         <CardTitle className="font-headline text-2xl">Send us a Message</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Name</Label>
-                                    <Input id="name" placeholder="Your Name" />
+                                    <Input id="name" placeholder="Your Name" value={formData.name} onChange={handleInputChange} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="Your Email" />
+                                    <Input id="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleInputChange} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="subject">Subject</Label>
-                                <Input id="subject" placeholder="Message Subject" />
+                                <Input id="subject" placeholder="Message Subject" value={formData.subject} onChange={handleInputChange} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="message">Message</Label>
-                                <Textarea id="message" placeholder="Your message..." rows={6} />
+                                <Textarea id="message" placeholder="Your message..." rows={6} value={formData.message} onChange={handleInputChange} />
                             </div>
-                            <Button type="submit" className="w-full font-bold" size="lg">Send Message</Button>
+                            <Button type="submit" className="w-full font-bold" size="lg" disabled={loading}>
+                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Send Message
+                            </Button>
                         </form>
                     </CardContent>
                 </Card>

@@ -11,22 +11,22 @@ const features = [
     {
         icon: <Zap className="w-8 h-8 text-primary" />,
         title: "Blazing Fast Speed",
-        description: "Experience unparalleled website performance with our NVMe storage and LiteSpeed web servers."
+        description: "Experience unparalleled website performance with our enterprise-grade NVMe storage and LiteSpeed web servers, delivering content to your users at lightning speed."
     },
     {
         icon: <ShieldCheck className="w-8 h-8 text-primary" />,
         title: "Top-Tier Security",
-        description: "Protect your website with unlimited SSL, automatic backups, and advanced security features."
+        description: "Protect your website and visitor data with our robust security suite, including unlimited free SSL, automatic backups, and proactive threat detection."
     },
     {
         icon: <Cloud className="w-8 h-8 text-primary" />,
         title: "99.9% Uptime Guarantee",
-        description: "Rely on our robust infrastructure to keep your website online and available for your visitors."
+        description: "Rely on our resilient and redundant infrastructure to keep your website online and consistently available for your visitors, backed by our uptime promise."
     },
     {
         icon: <Database className="w-8 h-8 text-primary" />,
         title: "Managed WordPress",
-        description: "Automated updates, vulnerability scanning, and expert support for your WordPress sites."
+        description: "Focus on your content while we handle the technical details. Enjoy automated updates, performance optimization, and expert support for your WordPress sites."
     }
 ]
 
@@ -35,19 +35,19 @@ const testimonials = [
     name: "Jane Doe",
     title: "CEO, Startup Inc.",
     avatar: "https://placehold.co/100x100.png",
-    text: "Grock Technologies made it incredibly simple to get our website up and running. The speed and support are second to none. Highly recommended!"
+    text: "Grock Technologies made it incredibly simple to get our website up and running. The speed and support are second to none. Our site loads instantly, and we've seen a noticeable boost in user engagement. Highly recommended!"
   },
   {
     name: "John Smith",
     title: "Freelance Developer",
     avatar: "https://placehold.co/100x100.png",
-    text: "As a developer, I appreciate the power and flexibility Grock provides. Their infrastructure is solid, and the developer tools are a huge plus."
+    text: "As a developer, I appreciate the power and flexibility Grock provides. Their infrastructure is solid, the developer tools are a huge plus, and their managed WordPress hosting saves me hours of work every month."
   },
     {
     name: "Emily White",
     title: "E-commerce Store Owner",
     avatar: "https://placehold.co/100x100.png",
-    text: "Our online store has never been faster or more secure. The peace of mind we get from their managed hosting is invaluable for our business."
+    text: "Our online store has never been faster or more secure since moving to Grock. The peace of mind we get from their managed hosting and daily backups is invaluable for our business. Sales have even increased!"
   }
 ]
 
@@ -68,7 +68,7 @@ export default function Home() {
             className="space-y-6 text-center w-full"
           >
             <h1 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter">
-              Build Your Digital Presence with <span className="text-primary">Grock</span>
+              Build Your High-Speed Digital Presence with <span className="text-primary">Grock</span>
             </h1>
             <p className="text-lg text-muted-foreground md:w-4/5 mx-auto">
               Launch your professional website in minutes. We provide fast, secure, and reliable hosting solutions with competitive pricing, tailored for your success.
@@ -85,10 +85,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-16 md:py-24 bg-card">
+      <section id="features" className="w-full py-16 md:py-24 bg-card">
         <div className="container mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">Why Choose Grock Technologies?</h2>
-            <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">We provide the best tools and infrastructure to help you succeed online, whether you're a beginner or a pro.</p>
+            <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">We provide the best tools and infrastructure to help you succeed online, whether you're a beginner launching your first site or a pro managing multiple projects.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {features.map((feature, index) => (
                     <motion.div
@@ -100,7 +100,7 @@ export default function Home() {
                         transition={{ duration: 0.5, delay: index * 0.1 }}
                         className="p-6 rounded-lg text-left space-y-3 bg-background/50 hover:bg-background transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-2"
                     >
-                        {feature.icon}
+                        <div className="mb-4">{feature.icon}</div>
                         <h3 className="text-xl font-headline font-semibold">{feature.title}</h3>
                         <p className="text-muted-foreground">{feature.description}</p>
                     </motion.div>
@@ -109,10 +109,10 @@ export default function Home() {
         </div>
       </section>
 
-       <section className="w-full py-16 md:py-24 bg-background">
+       <section id="testimonials" className="w-full py-16 md:py-24 bg-background">
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-headline font-bold text-center mb-12">
-            What Our Customers Say
+            Trusted by Businesses and Developers
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
@@ -129,7 +129,7 @@ export default function Home() {
                     <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>
                     <div className="flex items-center gap-4">
                       <Avatar>
-                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint="people avatar" />
+                        <AvatarImage src={testimonial.avatar} alt={`${testimonial.name} - ${testimonial.title}`} data-ai-hint="business person" />
                         <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
@@ -148,10 +148,10 @@ export default function Home() {
       <section className="w-full py-20 md:py-32 bg-card">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-headline font-bold">
-            Ready to Start Your Journey?
+            Ready to Launch Your Dream Website?
           </h2>
           <p className="text-lg text-muted-foreground my-4 max-w-2xl mx-auto">
-            Join thousands of satisfied customers and launch your dream website today.
+            Join thousands of satisfied customers and build your online presence on a hosting platform designed for speed, security, and growth.
           </p>
           <div>
             <Button asChild size="lg" className="font-bold mt-4">

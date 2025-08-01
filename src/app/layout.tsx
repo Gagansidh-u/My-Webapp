@@ -10,11 +10,11 @@ import { ThemeProvider } from '@/components/theme-provider';
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.grock.fun'),
   title: {
-    default: 'Grock Technologies: Premium Web Services & Hosting',
+    default: 'Grock Technologies: Blazing-Fast NVMe Hosting & Web Services',
     template: `%s | Grock Technologies`,
   },
-  description: 'Grock Technologies offers blazing-fast, secure, and reliable web hosting and development services. Get your professional website online in minutes with our competitive pricing and expert support.',
-  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server', 'Grock Fun'],
+  description: 'Elevate your online presence with Grock Technologies. We offer blazing-fast, secure, and reliable web hosting with NVMe storage and LiteSpeed servers. Get your professional website online in minutes.',
+  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server', 'managed WordPress', 'e-commerce hosting', '99.9% uptime', 'free SSL'],
   authors: [{ name: 'Grock Technologies', url: 'https://www.grock.fun' }],
   creator: 'Grock Technologies',
   publisher: 'Grock Technologies',
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: 'Grock Technologies: Professional Web Services',
-    description: 'Fast, secure, and reliable web solutions to build your digital presence.',
+    title: 'Grock Technologies: Fast, Secure & Reliable Web Solutions',
+    description: 'Launch your professional website in minutes with our high-performance NVMe hosting, LiteSpeed servers, and 99.9% uptime guarantee. Expert support included.',
     url: 'https://www.grock.fun',
     siteName: 'Grock Technologies',
     images: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
         url: 'https://placehold.co/1200x630.png',
         width: 1200,
         height: 630,
-        alt: 'Grock Technologies Hero Image',
+        alt: 'Grock Technologies - High Performance Web Hosting',
       },
     ],
     locale: 'en_US',
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Grock Technologies: Professional Web Services',
-    description: 'Launch your professional website in minutes with Grock Technologies. Fast, secure, and reliable hosting solutions.',
+    title: 'Grock Technologies: Premium Web Services & Hosting',
+    description: 'Launch your professional website in minutes with Grock Technologies. Fast, secure, and reliable hosting solutions powered by NVMe and LiteSpeed.',
     images: ['https://placehold.co/1200x630.png'], 
   },
 };

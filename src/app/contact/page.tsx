@@ -25,14 +25,14 @@ export default function ContactPage() {
                                 <Mail className="w-6 h-6 text-primary" />
                                 <div>
                                     <h3 className="font-semibold">Email</h3>
-                                    <a href="mailto:support@grock.dev" className="text-muted-foreground hover:text-primary">support@grock.dev</a>
+                                    <a href="mailto:helpdesk.grock@outlook.com" className="text-muted-foreground hover:text-primary">helpdesk.grock@outlook.com</a>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
                                 <Phone className="w-6 h-6 text-primary" />
                                 <div>
                                     <h3 className="font-semibold">Phone</h3>
-                                    <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                                    <p className="text-muted-foreground">+917719457081</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">

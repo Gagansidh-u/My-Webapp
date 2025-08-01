@@ -26,6 +26,7 @@ declare global {
 }
 
 const durationOptions = [
+    { value: "1", label: "1 Month" },
     { value: "6", label: "6 Months" },
     { value: "12", label: "1 Year" },
     { value: "24", label: "2 Years" },
@@ -38,7 +39,7 @@ function CheckoutPage() {
     const { toast } = useToast();
     const [plan, setPlan] = useState("");
     const [monthlyPrice, setMonthlyPrice] = useState(0);
-    const [selectedDuration, setSelectedDuration] = useState(durationOptions[1]); // Default to 1 Year
+    const [selectedDuration, setSelectedDuration] = useState(durationOptions[2]); // Default to 1 Year
     
     const [loading, setLoading] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
@@ -74,7 +75,11 @@ function CheckoutPage() {
     }
     
     const getTotalPrice = () => {
-        return monthlyPrice * parseInt(selectedDuration.value);
+        const durationValue = parseInt(selectedDuration.value);
+        if (durationValue === 1) {
+            return monthlyPrice * 2;
+        }
+        return monthlyPrice * durationValue;
     }
 
     const handlePayment = async () => {
@@ -266,5 +271,3 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
-
-    

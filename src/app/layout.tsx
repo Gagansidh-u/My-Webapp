@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: 'Grock Technologies',
     images: [
       {
-        url: 'https://placehold.co/1200x630.png', // Replace with your OG image URL
+        url: 'https://placehold.co/1200x630.png',
         width: 1200,
         height: 630,
         alt: 'Grock Technologies Hero Image',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Grock Technologies: Professional Web Services',
     description: 'Launch your professional website in minutes with Grock Technologies. Fast, secure, and reliable hosting solutions.',
-    images: ['https://placehold.co/1200x630.png'], // Replace with your Twitter image URL
+    images: ['https://placehold.co/1200x630.png'], 
   },
 };
 

@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  env: {
+    RAZORPAY_KEY_ID: 'rzp_live_ejYiKvpbjCVgtj',
+    RAZORPAY_KEY_SECRET: 'KRLOvNB1jK0L9pCWEW9vi349',
+    NEXT_PUBLIC_RAZORPAY_KEY_ID: 'rzp_live_ejYiKvpbjCVgtj',
+  },
 };
 
 export default nextConfig;

@@ -73,17 +73,17 @@ export default function PricingPage() {
           <div
             key={index}
           >
-            <Card className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${service.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg relative' : 'shadow-lg'}`}>
-              {service.popular && <div className="absolute top-0 right-4 -mt-4 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">Most Popular</div>}
+            <Card className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${service.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg' : 'shadow-lg'} relative`}>
+              {service.popular && <Badge variant="default" className="absolute top-0 right-4 -mt-4 px-4 py-1 text-sm font-bold">Most Popular</Badge>}
                {service.discount && (
                   <Badge 
                     variant="destructive" 
-                    className="absolute top-4 left-4 -rotate-12 text-base"
+                    className="absolute top-4 left-4 -rotate-12 text-base font-bold"
                   >
                     {service.discount}
                   </Badge>
                 )}
-              <CardHeader className="text-center pt-12">
+              <CardHeader className="text-center pt-16">
                 <CardTitle className="text-2xl font-headline">{service.title}</CardTitle>
                 <CardDescription>{service.description}</CardDescription>
               </CardHeader>

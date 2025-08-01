@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 const services = [
   {
@@ -19,7 +20,8 @@ const services = [
       'Free Email',
       'Free Domain (₹799.00 value)'
     ],
-    planId: 'single'
+    planId: 'single',
+    discount: '25% off'
   },
   {
     title: 'Web Starter',
@@ -35,7 +37,8 @@ const services = [
       'Free Domain (₹799.00 value)'
     ],
     popular: true,
-    planId: 'starter'
+    planId: 'starter',
+    discount: '40% off'
   },
   {
     title: 'Business Website',
@@ -51,7 +54,8 @@ const services = [
       'Free Domain (₹799.00 value)',
       'Free CDN'
     ],
-    planId: 'business'
+    planId: 'business',
+    discount: '55% off'
   }
 ];
 
@@ -71,7 +75,15 @@ export default function PricingPage() {
           >
             <Card className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${service.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg relative' : 'shadow-lg'}`}>
               {service.popular && <div className="absolute top-0 right-4 -mt-4 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">Most Popular</div>}
-              <CardHeader className="text-center">
+               {service.discount && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute top-4 left-4 -rotate-12 text-base"
+                  >
+                    {service.discount}
+                  </Badge>
+                )}
+              <CardHeader className="text-center pt-12">
                 <CardTitle className="text-2xl font-headline">{service.title}</CardTitle>
                 <CardDescription>{service.description}</CardDescription>
               </CardHeader>

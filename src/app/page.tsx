@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { Cloud, Database, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -27,6 +28,27 @@ const features = [
         title: "Managed WordPress",
         description: "Automated updates, vulnerability scanning, and expert support for your WordPress sites."
     }
+]
+
+const testimonials = [
+  {
+    name: "Jane Doe",
+    title: "CEO, Startup Inc.",
+    avatar: "https://placehold.co/100x100.png",
+    text: "Grock Technologies made it incredibly simple to get our website up and running. The speed and support are second to none. Highly recommended!"
+  },
+  {
+    name: "John Smith",
+    title: "Freelance Developer",
+    avatar: "https://placehold.co/100x100.png",
+    text: "As a developer, I appreciate the power and flexibility Grock provides. Their infrastructure is solid, and the developer tools are a huge plus."
+  },
+    {
+    name: "Emily White",
+    title: "E-commerce Store Owner",
+    avatar: "https://placehold.co/100x100.png",
+    text: "Our online store has never been faster or more secure. The peace of mind we get from their managed hosting is invaluable for our business."
+  }
 ]
 
 const fadeIn = {
@@ -75,7 +97,8 @@ export default function Home() {
       <motion.section 
         className="w-full py-16 md:py-24 bg-card"
         initial="initial"
-        animate="animate"
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
         transition={{ staggerChildren: 0.2 }}
       >
         <div className="container mx-auto text-center">
@@ -101,6 +124,63 @@ export default function Home() {
             </div>
         </div>
       </motion.section>
+
+       <motion.section
+        className="w-full py-16 md:py-24 bg-background"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+        transition={{ staggerChildren: 0.3 }}
+      >
+        <div className="container mx-auto">
+          <motion.h2 className="text-3xl md:text-4xl font-headline font-bold text-center mb-12" variants={fadeIn}>
+            What Our Customers Say
+          </motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div key={index} variants={fadeIn}>
+                <Card className="h-full flex flex-col justify-between p-6 bg-card shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                  <CardContent className="p-0">
+                    <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint="people avatar" />
+                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-bold font-headline">{testimonial.name}</p>
+                        <p className="text-sm text-muted-foreground">{testimonial.title}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      <motion.section
+        className="w-full py-20 md:py-32 bg-card"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto text-center">
+          <motion.h2 className="text-3xl md:text-4xl font-headline font-bold" variants={fadeIn}>
+            Ready to Start Your Journey?
+          </motion.h2>
+          <motion.p className="text-lg text-muted-foreground my-4 max-w-2xl mx-auto" variants={fadeIn}>
+            Join thousands of satisfied customers and launch your dream website today.
+          </motion.p>
+          <motion.div variants={fadeIn}>
+            <Button asChild size="lg" className="font-bold btn mt-4">
+              <Link href="/pricing">View Plans & Get Started</Link>
+            </Button>
+          </motion.div>
+        </div>
+      </motion.section>
+
     </div>
   );
 }

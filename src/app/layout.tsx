@@ -8,14 +8,14 @@ import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://grock.dev'), // Replace with your actual domain
+  metadataBase: new URL('https://www.grock.fun'),
   title: {
-    default: 'Grock Technologies: Web Services',
+    default: 'Grock Technologies: Premium Web Services & Hosting',
     template: `%s | Grock Technologies`,
   },
   description: 'Grock Technologies offers blazing-fast, secure, and reliable web hosting and development services. Get your professional website online in minutes with our competitive pricing and expert support.',
-  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server'],
-  authors: [{ name: 'Grock Technologies', url: 'https://grock.dev' }],
+  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server', 'Grock Fun'],
+  authors: [{ name: 'Grock Technologies', url: 'https://www.grock.fun' }],
   creator: 'Grock Technologies',
   publisher: 'Grock Technologies',
   robots: {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Grock Technologies: Professional Web Services',
     description: 'Fast, secure, and reliable web solutions to build your digital presence.',
-    url: 'https://grock.dev',
+    url: 'https://www.grock.fun',
     siteName: 'Grock Technologies',
     images: [
       {

@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
-import Image from "next/image";
 
 export default function ContactPage() {
     return (
@@ -17,7 +16,7 @@ export default function ContactPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
                 <div className="space-y-8">
-                    <Card>
+                    <Card className="shadow-lg">
                         <CardHeader>
                             <CardTitle className="font-headline text-2xl">Get in Touch</CardTitle>
                         </CardHeader>
@@ -45,9 +44,6 @@ export default function ContactPage() {
                             </div>
                         </CardContent>
                     </Card>
-                    <div>
-                        <Image src="https://placehold.co/600x400.png" alt="Map" width={600} height={400} className="rounded-lg shadow-md" data-ai-hint="office map" />
-                    </div>
                 </div>
                 <Card className="shadow-lg">
                     <CardHeader>

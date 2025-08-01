@@ -64,7 +64,7 @@ export default function PricingPage() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {services.map((service, index) => (
-          <Card key={index} className={`flex flex-col h-full ${service.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg relative' : 'shadow-lg'}`}>
+          <Card key={index} className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${service.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg relative' : 'shadow-lg'}`}>
             {service.popular && <div className="absolute top-0 right-4 -mt-4 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">Most Popular</div>}
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-headline">{service.title}</CardTitle>

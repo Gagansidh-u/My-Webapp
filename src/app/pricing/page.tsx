@@ -1,12 +1,11 @@
+
 "use client"
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const plans = [
   {
@@ -61,16 +60,7 @@ const plans = [
   }
 ];
 
-const durationOptions = [
-    { value: "6", label: "6 Months", months: 6 },
-    { value: "12", label: "1 Year", months: 12 },
-    { value: "24", label: "2 Years", months: 24 },
-    { value: "36", label: "3 Years", months: 36 },
-]
-
 export default function PricingPage() {
-  const [duration, setDuration] = useState(durationOptions[1]); // Default to 1 Year
-
   return (
     <div 
       className="container mx-auto py-16 md:py-24"
@@ -79,20 +69,9 @@ export default function PricingPage() {
         <h1 className="text-4xl md:text-5xl font-headline font-bold">Our Pricing Plans</h1>
         <p className="text-lg text-muted-foreground mt-2">Choose the perfect plan for your needs. Simple, transparent, and powerful.</p>
       </div>
-
-      <div className="flex justify-center mb-12">
-        <Tabs defaultValue={duration.value} onValueChange={(value) => setDuration(durationOptions.find(d => d.value === value)!)}>
-            <TabsList className="grid w-full grid-cols-4">
-                {durationOptions.map(option => (
-                    <TabsTrigger key={option.value} value={option.value}>{option.label}</TabsTrigger>
-                ))}
-            </TabsList>
-        </Tabs>
-      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
         {plans.map((plan, index) => {
-          const totalPrice = plan.monthlyPrice * duration.months;
           return (
             <div key={index}>
               <Card className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg' : 'shadow-lg'} relative`}>
@@ -116,7 +95,7 @@ export default function PricingPage() {
                         <span className="text-muted-foreground">/mo</span>
                     </div>
                      <p className="text-sm text-muted-foreground">
-                        Billed as ₹{totalPrice.toFixed(2)} for {duration.label}
+                        + Taxes
                      </p>
                   </div>
                   <ul className="space-y-3">
@@ -130,7 +109,7 @@ export default function PricingPage() {
                 </CardContent>
                 <CardFooter>
                   <Button asChild className="w-full font-bold" size="lg" variant={plan.popular ? 'default' : 'secondary'}>
-                    <Link href={`/checkout?plan=${plan.planId}&price=${totalPrice}&duration=${duration.months}`}>Get Started</Link>
+                    <Link href={`/checkout?plan=${plan.planId}&price=${plan.monthlyPrice}`}>Get Started</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -141,3 +120,5 @@ export default function PricingPage() {
     </div>
   );
 }
+
+    

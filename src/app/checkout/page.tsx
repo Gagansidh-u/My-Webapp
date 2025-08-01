@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -15,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 declare global {
@@ -23,13 +25,21 @@ declare global {
   }
 }
 
+const durationOptions = [
+    { value: "6", label: "6 Months" },
+    { value: "12", label: "1 Year" },
+    { value: "24", label: "2 Years" },
+    { value: "36", label: "3 Years" },
+]
+
 function CheckoutPage() {
     const searchParams = useSearchParams();
     const { user, loading: authLoading } = useAuth();
     const { toast } = useToast();
     const [plan, setPlan] = useState("");
-    const [price, setPrice] = useState(0);
-    const [duration, setDuration] = useState(0);
+    const [monthlyPrice, setMonthlyPrice] = useState(0);
+    const [selectedDuration, setSelectedDuration] = useState(durationOptions[1]); // Default to 1 Year
+    
     const [loading, setLoading] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
@@ -42,15 +52,12 @@ function CheckoutPage() {
     useEffect(() => {
         const planId = searchParams.get('plan');
         const priceStr = searchParams.get('price');
-        const durationStr = searchParams.get('duration');
+        
         if (planId) {
             setPlan(planId.charAt(0).toUpperCase() + planId.slice(1));
         }
         if (priceStr) {
-            setPrice(parseFloat(priceStr));
-        }
-        if (durationStr) {
-            setDuration(parseInt(durationStr));
+            setMonthlyPrice(parseFloat(priceStr));
         }
     }, [searchParams]);
 
@@ -58,11 +65,16 @@ function CheckoutPage() {
         const { id, value } = e.target;
         setWebsiteDetails(prev => ({ ...prev, [id]: value }));
     }
+
+    const handleDurationChange = (value: string) => {
+        const newDuration = durationOptions.find(d => d.value === value);
+        if (newDuration) {
+            setSelectedDuration(newDuration);
+        }
+    }
     
-    const getDurationText = () => {
-        if (duration < 12) return `${duration} Months`;
-        const years = duration / 12;
-        return `${years} Year${years > 1 ? 's' : ''}`;
+    const getTotalPrice = () => {
+        return monthlyPrice * parseInt(selectedDuration.value);
     }
 
     const handlePayment = async () => {
@@ -86,7 +98,8 @@ function CheckoutPage() {
 
         setLoading(true);
 
-        const result = await createOrder({ amount: price });
+        const totalPrice = getTotalPrice();
+        const result = await createOrder({ amount: totalPrice });
 
         if (result.error || !result.order) {
             toast({
@@ -105,7 +118,7 @@ function CheckoutPage() {
             amount: order.amount,
             currency: order.currency,
             name: "Grock Technologies",
-            description: `Payment for ${plan} Plan (${getDurationText()})`,
+            description: `Payment for ${plan} Plan (${selectedDuration.label})`,
             order_id: order.id,
             handler: async function (response: any) {
                 try {
@@ -114,8 +127,8 @@ function CheckoutPage() {
                         userId: user.uid,
                         userEmail: user.email,
                         plan: plan,
-                        price: price,
-                        duration: duration,
+                        price: totalPrice,
+                        duration: parseInt(selectedDuration.value),
                         websiteDetails: websiteDetails,
                         razorpayPaymentId: response.razorpay_payment_id,
                         orderId: order.id,
@@ -140,7 +153,7 @@ function CheckoutPage() {
             notes: {
                 plan: plan,
                 userId: user.uid,
-                duration: `${duration} months`,
+                duration: `${selectedDuration.value} months`,
                 description: websiteDetails.description.substring(0, 50),
             },
             theme: {
@@ -165,6 +178,8 @@ function CheckoutPage() {
         return <div className="container mx-auto py-12 text-center"><Loader2 className="animate-spin mx-auto" /></div>;
     }
 
+    const totalPrice = getTotalPrice();
+
     return (
         <>
             <div className="container mx-auto py-12 flex justify-center">
@@ -175,19 +190,28 @@ function CheckoutPage() {
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="p-4 border rounded-md">
-                            <h3 className="font-bold text-lg mb-2">Order Summary</h3>
-                            <div className="space-y-2">
-                                <div className="flex justify-between">
+                            <h3 className="font-bold text-lg mb-4">Order Summary</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
                                     <span className="text-muted-foreground">Plan:</span>
-                                    <span className="font-semibold">{plan}</span>
+                                    <span className="font-semibold text-lg">{plan}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Billing Cycle:</span>
-                                    <span className="font-semibold">{getDurationText()}</span>
+                                <div className="flex justify-between items-center">
+                                    <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</Label>
+                                    <Select value={selectedDuration.value} onValueChange={handleDurationChange}>
+                                        <SelectTrigger className="w-[180px]" id="duration-select">
+                                            <SelectValue placeholder="Select duration" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {durationOptions.map(option => (
+                                                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="flex justify-between items-center border-t pt-4 mt-4">
                                     <span className="text-lg font-bold">Total:</span>
-                                    <span className="text-xl font-bold font-headline text-primary">₹{price.toFixed(2)}</span>
+                                    <span className="text-xl font-bold font-headline text-primary">₹{totalPrice.toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>
@@ -214,9 +238,9 @@ function CheckoutPage() {
                             Please <Link href="/login" className="font-bold underline">log in</Link> to complete your purchase.
                             </div>
                         )}
-                        <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading}>
+                        <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading || !totalPrice}>
                             {loading ? <Loader2 className="animate-spin mr-2" /> : null}
-                            {loading ? 'Processing...' : `Pay ₹${price.toFixed(2)}`}
+                            {loading ? 'Processing...' : `Pay ₹${totalPrice > 0 ? totalPrice.toFixed(2) : '0.00'}`}
                         </Button>
                     </CardFooter>
                 </Card>
@@ -242,3 +266,5 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
+
+    

@@ -61,10 +61,10 @@ export default function Home() {
               className="flex flex-col sm:flex-row gap-4 justify-center"
               variants={fadeIn}
             >
-              <Button asChild size="lg" className="font-bold">
+              <Button asChild size="lg" className="font-bold btn">
                 <Link href="/pricing">Get Started Now</Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild size="lg" variant="outline" className="btn">
                 <Link href="/contact">Talk to an Expert</Link>
               </Button>
             </motion.div>

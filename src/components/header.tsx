@@ -52,7 +52,7 @@ const Header = () => {
         <div className="flex flex-1 items-center justify-end space-x-2">
            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="btn">
                   <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                   <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                   <span className="sr-only">Toggle theme</span>
@@ -74,9 +74,9 @@ const Header = () => {
             {loading ? (
                 <div className="h-9 w-20 rounded-md bg-muted animate-pulse" />
             ) : user ? (
-                <Button onClick={handleLogout} variant="secondary">Logout</Button>
+                <Button onClick={handleLogout} variant="secondary" className="btn">Logout</Button>
             ) : (
-                <Button asChild>
+                <Button asChild className="btn">
                 <Link href="/login">Login</Link>
                 </Button>
             )}
@@ -105,9 +105,9 @@ const Header = () => {
                         {loading ? (
                             <div className="h-9 w-20 rounded-md bg-muted animate-pulse" />
                         ) : user ? (
-                            <Button onClick={() => {handleLogout(); setIsOpen(false);}} variant="secondary" className="w-full">Logout</Button>
+                            <Button onClick={() => {handleLogout(); setIsOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
                         ) : (
-                            <Button asChild className="w-full">
+                            <Button asChild className="w-full btn">
                             <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
                             </Button>
                         )}

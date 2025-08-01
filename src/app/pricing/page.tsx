@@ -105,7 +105,7 @@ export default function PricingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button asChild className="w-full font-bold" size="lg" variant={service.popular ? 'default' : 'secondary'}>
+                <Button asChild className="w-full font-bold btn" size="lg" variant={service.popular ? 'default' : 'secondary'}>
                   <Link href={`/checkout?plan=${service.planId}&price=${service.price}`}>Get Started</Link>
                 </Button>
               </CardFooter>

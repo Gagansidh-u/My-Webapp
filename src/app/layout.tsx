@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: `%s | Grock Technologies`,
   },
   description: 'Grock Technologies offers blazing-fast, secure, and reliable web hosting and development services. Get your professional website online in minutes with our competitive pricing and expert support.',
-  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website'],
+  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server'],
   authors: [{ name: 'Grock Technologies', url: 'https://grock.dev' }],
   creator: 'Grock Technologies',
   publisher: 'Grock Technologies',

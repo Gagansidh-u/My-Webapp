@@ -7,8 +7,42 @@ import Footer from "@/components/footer";
 import { AuthProvider } from "@/components/auth-provider";
 
 export const metadata: Metadata = {
-  title: 'Grock Technologies: Web Services',
-  description: 'Modern website development services with competitive pricing.',
+  metadataBase: new URL('https://grock.dev'), // Replace with your actual domain
+  title: {
+    default: 'Grock Technologies: Web Services',
+    template: `%s | Grock Technologies`,
+  },
+  description: 'Grock Technologies offers blazing-fast, secure, and reliable web hosting and development services. Get your professional website online in minutes with our competitive pricing and expert support.',
+  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website'],
+  authors: [{ name: 'Grock Technologies', url: 'https://grock.dev' }],
+  creator: 'Grock Technologies',
+  publisher: 'Grock Technologies',
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: 'Grock Technologies: Professional Web Services',
+    description: 'Fast, secure, and reliable web solutions to build your digital presence.',
+    url: 'https://grock.dev',
+    siteName: 'Grock Technologies',
+    images: [
+      {
+        url: 'https://placehold.co/1200x630.png', // Replace with your OG image URL
+        width: 1200,
+        height: 630,
+        alt: 'Grock Technologies Hero Image',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Grock Technologies: Professional Web Services',
+    description: 'Launch your professional website in minutes with Grock Technologies. Fast, secure, and reliable hosting solutions.',
+    images: ['https://placehold.co/1200x630.png'], // Replace with your Twitter image URL
+  },
 };
 
 export default function RootLayout({

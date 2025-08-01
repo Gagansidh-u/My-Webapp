@@ -1,9 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Cloud, Database, ShieldCheck, Zap } from "lucide-react";
+import { Cloud, Database, ShieldCheck, Zap, User } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -34,19 +34,16 @@ const testimonials = [
   {
     name: "Jane Doe",
     title: "CEO, Startup Inc.",
-    avatar: "https://placehold.co/100x100.png",
     text: "Grock Technologies made it incredibly simple to get our website up and running. The speed and support are second to none. Our site loads instantly, and we've seen a noticeable boost in user engagement. Highly recommended!"
   },
   {
     name: "John Smith",
     title: "Freelance Developer",
-    avatar: "https://placehold.co/100x100.png",
     text: "As a developer, I appreciate the power and flexibility Grock provides. Their infrastructure is solid, the developer tools are a huge plus, and their managed WordPress hosting saves me hours of work every month."
   },
     {
     name: "Emily White",
     title: "E-commerce Store Owner",
-    avatar: "https://placehold.co/100x100.png",
     text: "Our online store has never been faster or more secure since moving to Grock. The peace of mind we get from their managed hosting and daily backups is invaluable for our business. Sales have even increased!"
   }
 ]
@@ -129,8 +126,9 @@ export default function Home() {
                     <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>
                     <div className="flex items-center gap-4">
                       <Avatar>
-                        <AvatarImage src={testimonial.avatar} alt={`${testimonial.name} - ${testimonial.title}`} data-ai-hint="business person" />
-                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                         <AvatarFallback>
+                            <User className="h-5 w-5" />
+                          </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-bold font-headline">{testimonial.name}</p>

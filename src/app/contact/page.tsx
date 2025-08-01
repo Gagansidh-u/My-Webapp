@@ -41,6 +41,7 @@ export default function ContactPage() {
         try {
             await addDoc(collection(db, "contacts"), {
                 ...formData,
+                status: 'Unread',
                 createdAt: serverTimestamp()
             });
             toast({

@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import React from "react";
+import React, { Suspense } from "react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -20,7 +20,7 @@ const formSchema = z.object({
 const ADMIN_EMAIL = "helpdesk.grock@outlook.com";
 const ADMIN_PASSWORD = "Gagan@123";
 
-export default function AdminLoginPage() {
+function AdminLoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
@@ -111,4 +111,12 @@ export default function AdminLoginPage() {
       </Card>
     </div>
   );
+}
+
+export default function AdminLoginSuspenseWrapper() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-12 text-center"><Loader2 className="animate-spin mx-auto" /></div>}>
+      <AdminLoginPage />
+    </Suspense>
+  )
 }

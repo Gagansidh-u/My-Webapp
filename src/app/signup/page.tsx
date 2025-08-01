@@ -12,7 +12,7 @@ import { auth } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -20,7 +20,7 @@ const formSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
-export default function SignupPage() {
+function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
@@ -137,4 +137,12 @@ export default function SignupPage() {
       </Card>
     </div>
   );
+}
+
+export default function SignupSuspenseWrapper() {
+  return (
+    <Suspense fallback={<div className="container mx-auto py-12 text-center"><Loader2 className="animate-spin mx-auto" /></div>}>
+      <SignupPage />
+    </Suspense>
+  )
 }

@@ -30,8 +30,8 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center">
       <section className="w-full bg-background">
-        <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-20 md:py-32">
-          <div className="space-y-6 text-center md:text-left">
+        <div className="container mx-auto flex items-center py-20 md:py-32">
+          <div className="space-y-6 text-center md:text-left w-full">
             <h1 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter">
               Build Your Digital Presence with <span className="text-primary">Grock</span>
             </h1>
@@ -46,16 +46,6 @@ export default function Home() {
                 <Link href="/contact">Talk to an Expert</Link>
               </Button>
             </div>
-          </div>
-          <div>
-            <Image 
-              src="https://placehold.co/600x400.png"
-              alt="Web development illustration"
-              width={600}
-              height={400}
-              className="rounded-lg shadow-2xl"
-              data-ai-hint="website development"
-            />
           </div>
         </div>
       </section>

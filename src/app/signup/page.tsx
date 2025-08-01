@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import React from "react";
@@ -20,7 +20,7 @@ const formSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
@@ -37,8 +37,8 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      toast({ title: "Success", description: "Logged in successfully." });
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      toast({ title: "Success", description: "Account created successfully." });
       router.push("/");
     } catch (error: any) {
       toast({
@@ -50,13 +50,13 @@ export default function LoginPage() {
         setLoading(false);
     }
   }
-
+  
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      toast({ title: "Success", description: "Logged in successfully." });
+      toast({ title: "Success", description: "Signed up successfully." });
       router.push("/");
     } catch (error: any) {
       toast({
@@ -73,8 +73,8 @@ export default function LoginPage() {
     <div className="container mx-auto flex min-h-[calc(100vh-12rem)] items-center justify-center py-12">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
-          <CardDescription>Sign in to access your account</CardDescription>
+          <CardTitle className="text-3xl font-headline">Create an Account</CardTitle>
+          <CardDescription>Get started with our services</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -107,11 +107,11 @@ export default function LoginPage() {
               />
               <Button type="submit" className="w-full font-bold" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Sign In
+                Sign Up
               </Button>
             </form>
           </Form>
-          <div className="relative my-6">
+           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t"></span>
             </div>
@@ -128,9 +128,9 @@ export default function LoginPage() {
              Google
           </Button>
           <div className="mt-4 text-center text-sm">
-            Don't have an account?{' '}
-            <Link href="/signup" className="underline">
-              Sign up
+            Already have an account?{' '}
+            <Link href="/login" className="underline">
+              Log in
             </Link>
           </div>
         </CardContent>

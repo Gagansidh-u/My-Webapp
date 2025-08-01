@@ -1,8 +1,11 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Cloud, Database, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const features = [
     {
@@ -48,12 +51,22 @@ const testimonials = [
   }
 ]
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
+
 export default function Home() {
   return (
     <div className="flex flex-col items-center">
       <section className="w-full bg-background">
         <div className="container mx-auto flex items-center py-20 md:py-32">
-          <div className="space-y-6 text-center w-full">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-6 text-center w-full"
+          >
             <h1 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter">
               Build Your Digital Presence with <span className="text-primary">Grock</span>
             </h1>
@@ -61,14 +74,14 @@ export default function Home() {
               Launch your professional website in minutes. We provide fast, secure, and reliable hosting solutions with competitive pricing, tailored for your success.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="font-bold btn">
+              <Button asChild size="lg" className="font-bold">
                 <Link href="/pricing">Get Started Now</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="btn">
+              <Button asChild size="lg" variant="outline">
                 <Link href="/contact">Talk to an Expert</Link>
               </Button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -78,14 +91,19 @@ export default function Home() {
             <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">We provide the best tools and infrastructure to help you succeed online, whether you're a beginner or a pro.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {features.map((feature, index) => (
-                    <div
+                    <motion.div
                         key={index}
+                        variants={cardVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.5 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
                         className="p-6 rounded-lg text-left space-y-3 bg-background/50 hover:bg-background transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-2"
                     >
                         {feature.icon}
                         <h3 className="text-xl font-headline font-semibold">{feature.title}</h3>
                         <p className="text-muted-foreground">{feature.description}</p>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
         </div>
@@ -98,7 +116,14 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div key={index}>
+              <motion.div 
+                key={index}
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
                 <Card className="h-full flex flex-col justify-between p-6 bg-card shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
                   <CardContent className="p-0">
                     <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>
@@ -114,7 +139,7 @@ export default function Home() {
                     </div>
                   </CardContent>
                 </Card>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -129,7 +154,7 @@ export default function Home() {
             Join thousands of satisfied customers and launch your dream website today.
           </p>
           <div>
-            <Button asChild size="lg" className="font-bold btn mt-4">
+            <Button asChild size="lg" className="font-bold mt-4">
               <Link href="/pricing">View Plans & Get Started</Link>
             </Button>
           </div>

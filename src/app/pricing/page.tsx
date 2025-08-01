@@ -64,7 +64,7 @@ export default function PricingPage() {
         <h1 className="text-4xl md:text-5xl font-headline font-bold">Our Pricing Plans</h1>
         <p className="text-lg text-muted-foreground mt-2">Choose the perfect plan for your needs. Simple, transparent, and powerful.</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
         {services.map((service, index) => (
           <div
             key={index}
@@ -90,7 +90,7 @@ export default function PricingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button asChild className="w-full font-bold btn" size="lg" variant={service.popular ? 'default' : 'secondary'}>
+                <Button asChild className="w-full font-bold" size="lg" variant={service.popular ? 'default' : 'secondary'}>
                   <Link href={`/checkout?plan=${service.planId}&price=${service.price}`}>Get Started</Link>
                 </Button>
               </CardFooter>

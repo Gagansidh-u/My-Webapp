@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Cloud, Database, ShieldCheck, Zap, User } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Spline from '@splinetool/react-spline/next';
+
 
 const features = [
     {
@@ -56,8 +58,13 @@ const cardVariants = {
 export default function Home() {
   return (
     <div className="flex flex-col items-center">
-      <section className="w-full bg-background">
-        <div className="container mx-auto flex items-center py-20 md:py-32">
+      <section className="w-full bg-background relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Spline
+            scene="https://prod.spline.design/DTuKGopBJRCfX8lR/scene.splinecode" 
+          />
+        </div>
+        <div className="container mx-auto flex items-center py-20 md:py-32 relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}

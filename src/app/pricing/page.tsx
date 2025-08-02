@@ -11,6 +11,7 @@ const plans = [
   {
     title: 'Single Website',
     monthlyPrice: 149.00,
+    buildingCharge: 999.00,
     description: 'Ideal for beginners',
     features: [
       '1 Website',
@@ -27,6 +28,7 @@ const plans = [
   {
     title: 'Web Starter',
     monthlyPrice: 249.00,
+    buildingCharge: 999.00,
     description: 'Perfect for personal websites',
     features: [
       '100 Websites',
@@ -44,6 +46,7 @@ const plans = [
   {
     title: 'Business Website',
     monthlyPrice: 399.00,
+    buildingCharge: 999.00,
     description: 'Optimized for small businesses',
     features: [
       '100 Websites',
@@ -94,7 +97,10 @@ export default function PricingPage() {
                         <span className="text-4xl font-bold font-headline">₹{plan.monthlyPrice.toFixed(2)}</span>
                         <span className="text-muted-foreground">/mo</span>
                     </div>
-                     <p className="text-sm text-muted-foreground">
+                     <p className="text-sm text-muted-foreground mt-1">
+                        + ₹{plan.buildingCharge.toFixed(2)} Website Building Charges
+                     </p>
+                     <p className="text-xs text-muted-foreground">
                         + Taxes
                      </p>
                   </div>
@@ -109,7 +115,7 @@ export default function PricingPage() {
                 </CardContent>
                 <CardFooter>
                   <Button asChild className="w-full font-bold" size="lg" variant={plan.popular ? 'default' : 'secondary'}>
-                    <Link href={`/checkout?plan=${plan.planId}&price=${plan.monthlyPrice}`}>Get Started</Link>
+                    <Link href={`/checkout?plan=${plan.planId}&price=${plan.monthlyPrice}&buildingCharge=${plan.buildingCharge}`}>Get Started</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -120,5 +126,3 @@ export default function PricingPage() {
     </div>
   );
 }
-
-    

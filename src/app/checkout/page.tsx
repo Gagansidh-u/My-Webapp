@@ -39,6 +39,7 @@ function CheckoutPage() {
     const { toast } = useToast();
     const [plan, setPlan] = useState("");
     const [monthlyPrice, setMonthlyPrice] = useState(0);
+    const [buildingCharge, setBuildingCharge] = useState(0);
     const [selectedDuration, setSelectedDuration] = useState(durationOptions[2]); // Default to 1 Year
     
     const [loading, setLoading] = useState(false);
@@ -53,12 +54,16 @@ function CheckoutPage() {
     useEffect(() => {
         const planId = searchParams.get('plan');
         const priceStr = searchParams.get('price');
+        const buildingChargeStr = searchParams.get('buildingCharge');
         
         if (planId) {
             setPlan(planId.charAt(0).toUpperCase() + planId.slice(1));
         }
         if (priceStr) {
             setMonthlyPrice(parseFloat(priceStr));
+        }
+        if(buildingChargeStr) {
+            setBuildingCharge(parseFloat(buildingChargeStr));
         }
     }, [searchParams]);
 
@@ -76,10 +81,13 @@ function CheckoutPage() {
     
     const getTotalPrice = () => {
         const durationValue = parseInt(selectedDuration.value);
+        let hostingPrice;
         if (durationValue === 1) {
-            return monthlyPrice * 2;
+            hostingPrice = monthlyPrice * 2;
+        } else {
+            hostingPrice = monthlyPrice * durationValue;
         }
-        return monthlyPrice * durationValue;
+        return hostingPrice + buildingCharge;
     }
 
     const handlePayment = async () => {
@@ -213,6 +221,10 @@ function CheckoutPage() {
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                </div>
+                                 <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground">Building Charges:</span>
+                                    <span className="font-semibold">₹{buildingCharge.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between items-center border-t pt-4 mt-4">
                                     <span className="text-lg font-bold">Total:</span>

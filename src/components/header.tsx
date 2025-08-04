@@ -7,7 +7,7 @@ import { useAuth } from './auth-provider';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart } from 'lucide-react';
+import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MailQuestion } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import React from 'react';
 import { useTheme } from 'next-themes';
@@ -34,6 +34,7 @@ const Header = () => {
   
   const userNavLinks = [
       { href: '/account/orders', label: 'My Orders', icon: <ShoppingCart className="mr-2 h-4 w-4" /> },
+      { href: '/account/queries', label: 'My Queries', icon: <MailQuestion className="mr-2 h-4 w-4" /> },
   ]
 
   const getUserInitials = (email: string | null | undefined) => {

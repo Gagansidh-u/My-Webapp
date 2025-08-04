@@ -10,6 +10,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { slug: 'demystifying-managed-wordpress', lastModified: new Date() },
     { slug: 'securing-your-digital-presence', lastModified: new Date() },
     { slug: 'small-business-big-impact', lastModified: new Date() },
+    { slug: 'how-we-keep-prices-low', lastModified: new Date() },
+    { slug: 'smart-tech-stack-savings', lastModified: new Date() },
+    { slug: 'true-value-managed-hosting', lastModified: new Date() },
+    { slug: 'scaling-on-a-budget', lastModified: new Date() },
+    { slug: 'unlimited-hosting-myth', lastModified: new Date() },
   ];
 
   const blogPostUrls = blogPosts.map(post => ({

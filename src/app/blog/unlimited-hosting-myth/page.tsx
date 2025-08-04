@@ -25,7 +25,7 @@ export default function BlogPost() {
                     <CardDescription>
                         By Grock Technologies on November 10, 2023
                     </CardDescription>
-                </Header>
+                </CardHeader>
                 <CardContent className="prose prose-lg max-w-none text-muted-foreground space-y-6">
                     <p className="lead text-xl">
                         If you’ve spent any time looking for web hosting, you’ve seen the magic word: "Unlimited." Unlimited storage, unlimited bandwidth, unlimited everything! It sounds like an incredible deal. But if it sounds too good to be true, it probably is. The concept of "unlimited" hosting is one of the biggest myths in the industry.

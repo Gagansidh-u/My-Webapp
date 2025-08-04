@@ -3,9 +3,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/components/auth-provider";
+import { useEffect, useState } from "react";
+import { collection, getDocs, query, where, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const plans = [
   {
@@ -63,7 +67,52 @@ const plans = [
   }
 ];
 
+type Order = {
+    id: string;
+    userId: string;
+    plan: string;
+    duration: number; // in months
+    createdAt: Timestamp;
+};
+
 export default function PricingPage() {
+  const { user, loading: authLoading } = useAuth();
+  const [activePlans, setActivePlans] = useState<string[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+
+  useEffect(() => {
+    if (authLoading) return;
+    
+    if (!user) {
+        setLoadingPlans(false);
+        return;
+    }
+
+    const fetchUserOrders = async () => {
+        try {
+            const ordersQuery = query(collection(db, "orders"), where("userId", "==", user.uid));
+            const querySnapshot = await getDocs(ordersQuery);
+            const userOrders = querySnapshot.docs.map(doc => doc.data() as Order);
+            
+            const currentlyActivePlans = userOrders.filter(order => {
+                const expirationDate = new Date(order.createdAt.seconds * 1000);
+                expirationDate.setMonth(expirationDate.getMonth() + order.duration);
+                return expirationDate > new Date();
+            }).map(order => order.plan);
+            
+            setActivePlans(currentlyActivePlans);
+
+        } catch (error) {
+            console.error("Failed to fetch user orders:", error);
+        } finally {
+            setLoadingPlans(false);
+        }
+    };
+
+    fetchUserOrders();
+  }, [user, authLoading]);
+
+
   return (
     <div 
       className="container mx-auto py-16 md:py-24"
@@ -75,6 +124,8 @@ export default function PricingPage() {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
         {plans.map((plan, index) => {
+          const isPlanActive = activePlans.includes(plan.title);
+          
           return (
             <div key={index}>
               <Card className={`flex flex-col h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular ? 'border-primary border-2 shadow-primary/20 shadow-lg' : 'shadow-lg'} relative`}>
@@ -114,9 +165,19 @@ export default function PricingPage() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Button asChild className="w-full font-bold" size="lg" variant={plan.popular ? 'default' : 'secondary'}>
-                    <Link href={`/checkout?plan=${plan.planId}&price=${plan.monthlyPrice}&buildingCharge=${plan.buildingCharge}`}>Get Started</Link>
-                  </Button>
+                    {loadingPlans ? (
+                        <Button className="w-full font-bold" size="lg" disabled>
+                            <Loader2 className="animate-spin mr-2"/> Loading...
+                        </Button>
+                    ) : isPlanActive ? (
+                         <Button className="w-full font-bold" size="lg" disabled>
+                            Active Plan
+                        </Button>
+                    ) : (
+                        <Button asChild className="w-full font-bold" size="lg" variant={plan.popular ? 'default' : 'secondary'}>
+                            <Link href={`/checkout?plan=${plan.planId}&price=${plan.monthlyPrice}&buildingCharge=${plan.buildingCharge}`}>Get Started</Link>
+                        </Button>
+                    )}
                 </CardFooter>
               </Card>
             </div>

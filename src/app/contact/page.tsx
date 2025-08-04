@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,9 +11,11 @@ import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useAuth } from "@/components/auth-provider";
 
 export default function ContactPage() {
     const { toast } = useToast();
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -21,6 +24,16 @@ export default function ContactPage() {
     });
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                email: user.email || '',
+                name: user.displayName || ''
+            }));
+        }
+    }, [user]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         setFormData(prev => ({...prev, [id]: value}));
@@ -28,10 +41,21 @@ export default function ContactPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if(!formData.name || !formData.email || !formData.subject || !formData.message) {
+        
+        // If user is not logged in, name is required.
+        if (!user && !formData.name) {
+             toast({
+                title: "Error",
+                description: "Please enter your name.",
+                variant: "destructive"
+            });
+            return;
+        }
+        
+        if(!formData.email || !formData.subject || !formData.message) {
             toast({
                 title: "Error",
-                description: "Please fill out all fields.",
+                description: "Please fill out all required fields.",
                 variant: "destructive"
             });
             return;
@@ -40,7 +64,10 @@ export default function ContactPage() {
         setLoading(true);
         try {
             await addDoc(collection(db, "contacts"), {
-                ...formData,
+                name: formData.name || user?.displayName || 'N/A',
+                email: formData.email,
+                subject: formData.subject,
+                message: formData.message,
                 status: 'Unread',
                 createdAt: serverTimestamp()
             });
@@ -48,7 +75,13 @@ export default function ContactPage() {
                 title: "Success",
                 description: "Your message has been sent successfully."
             });
-            setFormData({ name: '', email: '', subject: '', message: '' });
+            // Reset form but keep user details if logged in
+            setFormData({ 
+                name: user?.displayName || '', 
+                email: user?.email || '', 
+                subject: '', 
+                message: '' 
+            });
         } catch (error) {
              toast({
                 title: "Error",
@@ -107,11 +140,11 @@ export default function ContactPage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Name</Label>
-                                    <Input id="name" placeholder="Your Name" value={formData.name} onChange={handleInputChange} />
+                                    <Input id="name" placeholder="Your Name" value={formData.name} onChange={handleInputChange} disabled={!!user?.displayName} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleInputChange} />
+                                    <Input id="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleInputChange} disabled={!!user} />
                                 </div>
                             </div>
                             <div className="space-y-2">

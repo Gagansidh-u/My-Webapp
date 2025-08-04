@@ -13,7 +13,7 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630.png"
+                    src="https://placehold.co/1200x630/f0db4f/000000.png"
                     alt="A stopwatch symbolizing website speed" 
                     width={1200} 
                     height={630} 

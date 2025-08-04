@@ -13,7 +13,7 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630.png"
+                    src="https://placehold.co/1200x630/21759b/ffffff.png"
                     alt="WordPress logo on a server background" 
                     width={1200} 
                     height={630} 

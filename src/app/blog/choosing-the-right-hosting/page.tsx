@@ -13,7 +13,7 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630.png"
+                    src="https://placehold.co/1200x630/673ab7/ffffff.png"
                     alt="Server database comparison" 
                     width={1200} 
                     height={630} 

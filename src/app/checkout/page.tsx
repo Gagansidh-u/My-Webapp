@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, where, getDocs, limit } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
@@ -40,6 +40,7 @@ function CheckoutPage() {
     const [plan, setPlan] = useState("");
     const [monthlyPrice, setMonthlyPrice] = useState(0);
     const [buildingCharge, setBuildingCharge] = useState(0);
+    const [initialBuildingCharge, setInitialBuildingCharge] = useState(0);
     const [selectedDuration, setSelectedDuration] = useState(durationOptions[2]); // Default to 1 Year
     
     const [loading, setLoading] = useState(false);
@@ -63,9 +64,34 @@ function CheckoutPage() {
             setMonthlyPrice(parseFloat(priceStr));
         }
         if(buildingChargeStr) {
-            setBuildingCharge(parseFloat(buildingChargeStr));
+            const charge = parseFloat(buildingChargeStr);
+            setBuildingCharge(charge);
+            setInitialBuildingCharge(charge);
         }
     }, [searchParams]);
+
+    useEffect(() => {
+        if (authLoading || !user) return;
+
+        const checkForPreviousOrders = async () => {
+            const ordersQuery = query(
+                collection(db, "orders"),
+                where("userId", "==", user.uid),
+                limit(1)
+            );
+            const querySnapshot = await getDocs(ordersQuery);
+            if (!querySnapshot.empty) {
+                // User has previous orders, waive the building charge
+                setBuildingCharge(0);
+            } else {
+                // First-time user, keep the initial building charge
+                setBuildingCharge(initialBuildingCharge);
+            }
+        };
+
+        checkForPreviousOrders();
+    }, [user, authLoading, initialBuildingCharge]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
@@ -223,7 +249,7 @@ function CheckoutPage() {
                                     </Select>
                                 </div>
                                  <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground">Building Charges:</span>
+                                    <span className="text-muted-foreground">Building Charges (One-Time):</span>
                                     <span className="font-semibold">₹{buildingCharge.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between items-center border-t pt-4 mt-4">

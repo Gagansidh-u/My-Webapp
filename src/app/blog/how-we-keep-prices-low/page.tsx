@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'How We Keep Hosting Prices Low Without Sacrificing Quality | Grock Technologies',
   description: 'Discover the business strategies and technical efficiencies that allow Grock Technologies to offer premium, high-speed hosting services at budget-friendly prices. Learn how we pass our savings directly to you.',
-  keywords: ['affordable hosting', 'cheap web hosting', 'low price hosting', 'hosting business model', 'efficient hosting', 'value hosting', 'Grock Technologies pricing', 'hosting savings'],
+  keywords: ['affordable hosting', 'cheap web hosting', 'low price hosting', 'Grock Technologies pricing', 'grock.fun hosting', 'efficient hosting', 'value hosting', 'hosting savings'],
 };
 
 export default function BlogPost() {

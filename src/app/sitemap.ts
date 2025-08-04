@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { slug: 'true-value-managed-hosting', lastModified: new Date() },
     { slug: 'scaling-on-a-budget', lastModified: new Date() },
     { slug: 'unlimited-hosting-myth', lastModified: new Date() },
+    { slug: 'small-business-big-impact', lastModified: new Date() },
   ];
 
   const blogPostUrls = blogPosts.map(post => ({

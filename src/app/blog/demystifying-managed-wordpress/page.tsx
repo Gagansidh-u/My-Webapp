@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Demystifying Managed WordPress Hosting | Grock Technologies',
   description: 'What is managed WordPress hosting and is it right for you? This guide breaks down the benefits, from automated updates and security to expert support, and explains how Grock Technologies takes the hassle out of WordPress.',
-  keywords: ['managed wordpress hosting', 'what is managed hosting', 'wordpress hosting', 'automatic wordpress updates', 'wordpress security', 'wordpress performance', 'litespeed cache', 'Grock Technologies'],
+  keywords: ['managed wordpress hosting', 'what is managed hosting', 'wordpress hosting', 'Grock Technologies', 'grock.fun', 'automatic wordpress updates', 'wordpress security', 'wordpress performance', 'litespeed cache'],
 };
 
 export default function BlogPost() {

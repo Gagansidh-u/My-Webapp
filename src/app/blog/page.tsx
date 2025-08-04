@@ -7,7 +7,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Blog | Grock Technologies',
   description: 'Explore the latest insights on web hosting, website performance, security, and digital strategy from the experts at Grock Technologies. Stay ahead with our tips and tutorials.',
-  keywords: ['web hosting blog', 'website speed', 'NVMe hosting', 'LiteSpeed server', 'website security', 'managed WordPress', 'digital strategy', 'small business online', 'tech blog', 'Grock Technologies blog'],
+  keywords: ['Grock Technologies blog', 'grock.fun blog', 'web hosting blog', 'website speed', 'NVMe hosting', 'LiteSpeed server', 'website security', 'managed WordPress', 'digital strategy', 'small business online', 'tech blog'],
 };
 
 
@@ -16,7 +16,7 @@ const blogPosts = [
     slug: 'why-speed-matters',
     title: 'Why Website Speed is the Most Important Metric You\'re Ignoring',
     description: 'In today\'s digital landscape, a slow website is a silent business killer. Discover why site speed isn\'t just a technical detail but a critical factor for user experience, conversion rates, and SEO ranking. We break down how our NVMe storage and LiteSpeed servers give you the competitive edge.',
-    image: 'https://placehold.co/1200x630/ee4b2b/ffffff.png',
+    image: 'https://placehold.co/1200x630/f0db4f/000000.png',
     imageHint: 'stopwatch speed',
     author: 'Grock Technologies',
     date: 'October 26, 2023',

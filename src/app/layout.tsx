@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     default: 'Grock Technologies: Blazing-Fast NVMe Hosting & Web Services',
     template: `%s | Grock Technologies`,
   },
-  description: 'Elevate your online presence with Grock Technologies. We offer blazing-fast, secure, and reliable web hosting with NVMe storage and LiteSpeed servers. Get your professional website online in minutes.',
-  keywords: ['web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'Grock Technologies', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server', 'managed WordPress', 'e-commerce hosting', '99.9% uptime', 'free SSL', 'affordable web hosting', 'business hosting', 'developer hosting'],
+  description: 'Elevate your online presence with Grock Technologies. We offer blazing-fast, secure, and reliable web hosting with NVMe storage and LiteSpeed servers. Get your professional website online in minutes with grock.fun.',
+  keywords: ['Grock Technologies', 'grock.fun', 'web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server', 'managed WordPress', 'e-commerce hosting', '99.9% uptime', 'free SSL', 'affordable web hosting', 'business hosting', 'developer hosting'],
   authors: [{ name: 'Grock Technologies', url: 'https://www.grock.fun' }],
   creator: 'Grock Technologies',
   publisher: 'Grock Technologies',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Grock Technologies: Fast, Secure & Reliable Web Solutions',
-    description: 'Launch your professional website in minutes with our high-performance NVMe hosting, LiteSpeed servers, and 99.9% uptime guarantee. Expert support included.',
+    description: 'Launch your professional website in minutes with our high-performance NVMe hosting, LiteSpeed servers, and 99.9% uptime guarantee. Expert support included on grock.fun.',
     url: 'https://www.grock.fun',
     siteName: 'Grock Technologies',
     images: [

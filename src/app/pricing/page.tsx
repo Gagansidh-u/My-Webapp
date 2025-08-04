@@ -98,7 +98,7 @@ export default function PricingPage() {
                         <span className="text-muted-foreground">/mo</span>
                     </div>
                      <p className="text-sm text-muted-foreground mt-1">
-                        + ₹{plan.buildingCharge.toFixed(2)} Website Building Charges
+                        + ₹{plan.buildingCharge.toFixed(2)} One-Time Building Fee
                      </p>
                      <p className="text-xs text-muted-foreground">
                         + Taxes

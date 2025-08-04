@@ -3,6 +3,22 @@ import { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.grock.fun';
 
+  // Define blog posts for the sitemap
+  const blogPosts = [
+    { slug: 'why-speed-matters', lastModified: new Date() },
+    { slug: 'choosing-the-right-hosting', lastModified: new Date() },
+    { slug: 'demystifying-managed-wordpress', lastModified: new Date() },
+    { slug: 'securing-your-digital-presence', lastModified: new Date() },
+    { slug: 'small-business-big-impact', lastModified: new Date() },
+  ];
+
+  const blogPostUrls = blogPosts.map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.lastModified,
+    changeFrequency: 'yearly' as 'yearly',
+    priority: 0.7,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -16,6 +32,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    ...blogPostUrls,
     {
       url: `${baseUrl}/contact`,
       lastModified: new Date(),

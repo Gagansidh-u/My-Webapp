@@ -7,7 +7,7 @@ import { useAuth } from './auth-provider';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MailQuestion, Tag, Activity, FileText, MessageSquare } from 'lucide-react';
+import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MailQuestion, Tag, Activity, FileText, MessageSquare, Newspaper } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import React from 'react';
 import { useTheme } from 'next-themes';
@@ -27,6 +27,7 @@ const Header = () => {
   
   const navLinks = [
       { href: '/pricing', label: 'Pricing', icon: <Tag className="mr-2 h-4 w-4" /> },
+      { href: '/blog', label: 'Blog', icon: <Newspaper className="mr-2 h-4 w-4" /> },
       { href: '/status', label: 'Status', icon: <Activity className="mr-2 h-4 w-4" /> },
       { href: '/documentation', label: 'Documentation', icon: <FileText className="mr-2 h-4 w-4" /> },
       { href: '/contact', label: 'Contact', icon: <MessageSquare className="mr-2 h-4 w-4" /> },

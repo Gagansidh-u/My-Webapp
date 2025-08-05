@@ -55,7 +55,7 @@ export default function AdminMessagesPage() {
             setLoading(false);
         }, (error) => {
             console.error("Failed to fetch contacts:", error);
-            toast({ title: "Error", description: "Failed to load messages.", variant: "destructive" });
+            toast({ title: "Error", description: "Failed to load messages. Check Firestore rules and indexes.", variant: "destructive" });
             setLoading(false);
         });
 
@@ -79,7 +79,6 @@ export default function AdminMessagesPage() {
         try {
             await deleteDoc(contactRef);
             toast({ title: "Success", description: "Message has been deleted." });
-            // The onSnapshot listener will automatically update the UI
         } catch (error) {
             console.error("Failed to delete message:", error);
             toast({ title: "Error", description: "Failed to delete message.", variant: "destructive" });
@@ -143,7 +142,7 @@ export default function AdminMessagesPage() {
                                                         From: {message.name} ({message.email})
                                                     </DialogDescription>
                                                 </DialogHeader>
-                                                <div className="py-4 bg-muted/50 p-4 rounded-md">
+                                                <div className="py-4 bg-muted/50 p-4 rounded-md mt-4">
                                                     <p className="text-sm">{message.message}</p>
                                                 </div>
                                             </DialogContent>
@@ -211,7 +210,7 @@ export default function AdminMessagesPage() {
                                                 From: {message.name} ({message.email})
                                             </DialogDescription>
                                         </DialogHeader>
-                                        <div className="py-4 bg-muted/50 p-4 rounded-md">
+                                        <div className="py-4 bg-muted/50 p-4 rounded-md mt-4">
                                             <p className="text-sm">{message.message}</p>
                                         </div>
                                     </DialogContent>
@@ -259,6 +258,3 @@ export default function AdminMessagesPage() {
         </Card>
     );
 }
-
-
-    

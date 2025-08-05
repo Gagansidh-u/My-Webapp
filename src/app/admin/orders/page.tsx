@@ -4,16 +4,15 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
-import { Loader2, FileText, MoreHorizontal, ShoppingCart, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, FileText, MoreHorizontal, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
 
@@ -55,7 +54,7 @@ export default function AdminOrdersPage() {
                 setOrders(ordersData);
             } catch (error) {
                 console.error("Failed to fetch orders:", error);
-                toast({ title: "Error", description: "Failed to fetch orders.", variant: "destructive" });
+                toast({ title: "Error", description: "Failed to fetch orders. Check Firestore rules and indexes.", variant: "destructive" });
             } finally {
                 setLoading(false);
             }
@@ -207,7 +206,7 @@ export default function AdminOrdersPage() {
                     {orders.map(order => (
                          <Card key={order.id} className="shadow-md">
                             <CardHeader>
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                         <Avatar>
                                             <AvatarFallback>{getUserInitials(order.userEmail)}</AvatarFallback>
@@ -255,7 +254,10 @@ export default function AdminOrdersPage() {
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>
-                                            <DialogTitle>Website Details</DialogTitle>
+                                            <DialogTitle>Website Details for {order.userEmail}</DialogTitle>
+                                             <DialogDescription>
+                                                Plan: {order.plan} ({getDurationText(order.duration)})
+                                            </DialogDescription>
                                         </DialogHeader>
                                         <div className="space-y-4 py-4">
                                             <div>

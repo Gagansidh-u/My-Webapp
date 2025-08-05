@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'Grock Technologies: Fast, Secure & Reliable Web Solutions',
     description: 'Launch your professional website in minutes with our high-performance NVMe hosting, LiteSpeed servers, and 99.9% uptime guarantee. Expert support included on grock.fun.',

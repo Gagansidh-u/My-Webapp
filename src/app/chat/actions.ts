@@ -3,7 +3,7 @@
 
 import { z } from "zod";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, doc, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, setDoc, query, where, getDocs, orderBy } from "firebase/firestore";
 import { uploadImage } from "@/ai/flows/upload-image-flow";
 
 const sendMessageSchema = z.object({
@@ -33,6 +33,16 @@ export async function sendMessage(data: z.infer<typeof sendMessageSchema>) {
             senderId,
             createdAt: serverTimestamp(),
         });
+        
+        // Also update the lastMessage on the chat document
+        const chatRef = doc(db, "chats", chatId);
+        await setDoc(chatRef, { 
+            lastMessage: {
+                text: text || "Image sent",
+                createdAt: serverTimestamp()
+            }
+        }, { merge: true });
+
         return { success: true };
     } catch (error) {
         console.error("Error sending message:", error);

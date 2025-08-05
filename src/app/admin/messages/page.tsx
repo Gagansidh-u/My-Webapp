@@ -3,16 +3,26 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
-import { Loader2, Mail, CheckCircle, XCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { Loader2, Mail, CheckCircle, XCircle, Trash2, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 type ContactMessage = {
     id: string;
@@ -63,6 +73,18 @@ export default function AdminMessagesPage() {
             toast({ title: "Error", description: "Failed to update message status.", variant: "destructive" });
         }
     };
+    
+    const handleDelete = async (id: string) => {
+        const contactRef = doc(db, "contacts", id);
+        try {
+            await deleteDoc(contactRef);
+            toast({ title: "Success", description: "Message has been deleted." });
+            // The onSnapshot listener will automatically update the UI
+        } catch (error) {
+            console.error("Failed to delete message:", error);
+            toast({ title: "Error", description: "Failed to delete message.", variant: "destructive" });
+        }
+    };
 
     const getUserInitials = (name: string | null | undefined) => {
       if (!name) return 'U';
@@ -95,6 +117,7 @@ export default function AdminMessagesPage() {
                                 <TableHead>From</TableHead>
                                 <TableHead>Subject</TableHead>
                                 <TableHead>Status</TableHead>
+                                <TableHead>Date</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -107,31 +130,49 @@ export default function AdminMessagesPage() {
                                     </TableCell>
                                     <TableCell>{message.subject}</TableCell>
                                     <TableCell><Badge variant="outline" className={statusColors[message.status]}>{message.status}</Badge></TableCell>
+                                    <TableCell>{message.createdAt.toDate().toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" size="sm">View Message</Button>
+                                                <Button variant="outline" size="sm"><Eye className="mr-2 h-4 w-4"/>View</Button>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
                                                     <DialogTitle>{message.subject}</DialogTitle>
-                                                </DialogHeader>
-                                                <div className="py-4">
-                                                    <p className="text-sm text-muted-foreground">
+                                                     <DialogDescription>
                                                         From: {message.name} ({message.email})
-                                                    </p>
-                                                    <p className="mt-4">{message.message}</p>
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <div className="py-4 bg-muted/50 p-4 rounded-md">
+                                                    <p className="text-sm">{message.message}</p>
                                                 </div>
                                             </DialogContent>
                                         </Dialog>
                                         <Button
-                                            variant="secondary"
+                                            variant={message.status === 'Unread' ? 'secondary' : 'outline'}
                                             size="sm"
                                             onClick={() => handleStatusChange(message.id, message.status)}
                                         >
                                             {message.status === 'Unread' ? <CheckCircle className="mr-2 h-4 w-4"/> : <XCircle className="mr-2 h-4 w-4"/>}
                                             Mark as {message.status === 'Unread' ? 'Read' : 'Unread'}
                                         </Button>
+                                         <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete the message.
+                                                </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDelete(message.id)}>Continue</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -156,28 +197,52 @@ export default function AdminMessagesPage() {
                                     </div>
                                     <Badge variant="outline" className={statusColors[message.status]}>{message.status}</Badge>
                                 </div>
-                                <p className="font-semibold text-sm pt-2">{message.subject}</p>
+                                <p className="font-semibold text-sm pt-4">{message.subject}</p>
                             </CardHeader>
-                            <CardContent>
-                                <Collapsible>
-                                    <CollapsibleTrigger asChild>
-                                         <Button variant="link" className="p-0 text-sm">
-                                            Show Message <ChevronDown className="h-4 w-4 ml-1" />
-                                        </Button>
-                                    </CollapsibleTrigger>
-                                    <CollapsibleContent>
-                                        <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md mt-2">{message.message}</p>
-                                    </CollapsibleContent>
-                                </Collapsible>
+                            <CardContent className="flex flex-col space-y-2">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" className="w-full"><Eye className="mr-2 h-4 w-4"/>View Message</Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>{message.subject}</DialogTitle>
+                                                <DialogDescription>
+                                                From: {message.name} ({message.email})
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="py-4 bg-muted/50 p-4 rounded-md">
+                                            <p className="text-sm">{message.message}</p>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+
                                  <Button
-                                    variant="secondary"
+                                    variant={message.status === 'Unread' ? 'secondary' : 'outline'}
                                     size="sm"
-                                    className="w-full mt-4"
                                     onClick={() => handleStatusChange(message.id, message.status)}
                                 >
                                     {message.status === 'Unread' ? <CheckCircle className="mr-2 h-4 w-4"/> : <XCircle className="mr-2 h-4 w-4"/>}
                                     Mark as {message.status === 'Unread' ? 'Read' : 'Unread'}
                                 </Button>
+                                
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the message.
+                                        </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDelete(message.id)}>Continue</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </CardContent>
                         </Card>
                     ))}
@@ -195,3 +260,5 @@ export default function AdminMessagesPage() {
     );
 }
 
+
+    

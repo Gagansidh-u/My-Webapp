@@ -26,6 +26,31 @@ const testimonials = [
     name: "Michael Brown",
     title: "Blogger & Content Creator",
     text: "The performance on Grock is just fantastic. My blog has never been faster, and the automatic updates for WordPress mean I can focus on writing instead of worrying about maintenance. It's a game-changer."
+  },
+  {
+    name: "Sarah Lee",
+    title: "Digital Marketing Manager",
+    text: "Grock's hosting is incredibly reliable. The 99.9% uptime is real, and the speed has directly improved our campaign landing page conversions. Their support team is also very responsive and knowledgeable."
+  },
+  {
+    name: "David Chen",
+    title: "Small Business Owner",
+    text: "I needed a professional website but didn't know where to start. Grock handled everything from design to launch. Their all-in-one package saved me time and money, and the site looks fantastic."
+  },
+  {
+    name: "Maria Garcia",
+    title: "Photographer",
+    text: "My portfolio site is image-heavy, and I was worried about load times. With Grock's NVMe storage, my photos load instantly. It's made a huge difference in showcasing my work professionally."
+  },
+  {
+    name: "Tom Johnson",
+    title: "SaaS Founder",
+    text: "We moved our application's marketing site to Grock, and the performance improvement was immediate. The combination of LiteSpeed and NVMe is a powerhouse. It's enterprise-grade hosting at a startup-friendly price."
+  },
+  {
+    name: "Amanda Wilson",
+    title: "Agency Owner",
+    text: "Managing multiple client sites is easy with Grock. The 'Web Starter' plan gives us the resources we need, and the performance keeps our clients happy. It's a reliable partner for our agency's growth."
   }
 ]
 

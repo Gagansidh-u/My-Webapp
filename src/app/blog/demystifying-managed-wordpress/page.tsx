@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: 'What Is Managed WordPress Hosting? | Grock Technologies',
   description: 'Our guide to managed WordPress hosting. We provide automated updates, security, and expert support to take the hassle out of WordPress. Get started with Grock today!',
-  keywords: ['managed wordpress hosting', 'what is managed hosting', 'wordpress hosting', 'Grock Technologies', 'grock.fun', 'Grock Company', 'automatic wordpress updates', 'wordpress security', 'wordpress performance'],
+  keywords: ['managed wordpress hosting', 'what is managed hosting', 'wordpress hosting', 'Grock Technologies', 'grock.fun', 'Grock Company', 'automatic wordpress updates', 'wordpress security', 'wordpress performance', 'we provide', 'get started'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/21759b/ffffff.png?text=Managed+WordPress+Explained"
-                    alt="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="managed wordpress security"
+                <BlogImageGenerator
+                    blogSlug="demystifying-managed-wordpress"
+                    initialImage="https://placehold.co/1200x630/21759b/ffffff.png?text=Managed+WordPress"
+                    altText="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security"
+                    prompt="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Demystifying Managed WordPress: A Beginner's Guide</CardTitle>

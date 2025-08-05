@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: '5 Steps to Secure Your Website | Grock Technologies',
-  description: 'Learn the essential steps to protect your website. The Grock Technologies Company provides free SSL, daily backups, and proactive security to keep your digital assets safe.',
-  keywords: ['website security', 'how to secure a website', 'free SSL', 'Grock Technologies Company', 'grock.fun', 'website backups', 'malware scanning', 'wordpress security', 'secure hosting', 'cybersecurity'],
+  description: 'Learn the essential steps to protect your website. The Grock Technologies Company provides free SSL, daily backups, and proactive security to keep your digital assets safe. We provide managed wordpress, get started today!',
+  keywords: ['website security', 'how to secure a website', 'free SSL', 'Grock Technologies Company', 'grock.fun', 'website backups', 'malware scanning', 'wordpress security', 'secure hosting', 'cybersecurity', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/32cd32/ffffff.png?text=Website+Security"
-                    alt="A glowing digital shield protecting a website from cyber threats" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="digital security shield"
+                <BlogImageGenerator
+                    blogSlug="securing-your-digital-presence"
+                    initialImage="https://placehold.co/1200x630/32cd32/ffffff.png?text=Website+Security"
+                    altText="A glowing digital shield protecting a website from cyber threats"
+                    prompt="A glowing digital shield protecting a website from cyber threats."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">5 Essential Steps to Securing Your Digital Presence in 2023</CardTitle>

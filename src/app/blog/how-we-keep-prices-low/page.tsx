@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: 'How We Keep Hosting Prices Low | Grock Technologies',
-  description: 'Discover how Grock Technologies offers premium, high-speed hosting at budget-friendly prices. Our Grock company provides quality service without the high cost.',
-  keywords: ['affordable hosting', 'cheap web hosting', 'low price hosting', 'Grock Technologies pricing', 'grock.fun hosting', 'Grock Company', 'efficient hosting', 'value hosting', 'hosting savings'],
+  description: 'Discover how Grock Technologies offers premium, high-speed hosting at budget-friendly prices. Our Grock company provides quality service without the high cost. We provide managed wordpress, get started today!',
+  keywords: ['affordable hosting', 'cheap web hosting', 'low price hosting', 'Grock Technologies pricing', 'grock.fun hosting', 'Grock Company', 'efficient hosting', 'value hosting', 'hosting savings', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/4caf50/ffffff.png?text=Affordable+Hosting+Tech"
-                    alt="An abstract image representing technology and savings, with circuitry and coins" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="technology savings abstract"
+                <BlogImageGenerator
+                    blogSlug="how-we-keep-prices-low"
+                    initialImage="https://placehold.co/1200x630/4caf50/ffffff.png?text=Affordable+Hosting"
+                    altText="An abstract image representing technology and savings, with circuitry and coins"
+                    prompt="An abstract image representing technology and savings, with circuitry and coins."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">How We Keep Our Hosting Prices Low Without Sacrificing Quality</CardTitle>

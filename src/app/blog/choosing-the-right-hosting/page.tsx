@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: 'NVMe vs. SSD Hosting: A Guide | Grock Technologies',
-  description: 'Understand the benefits of NVMe vs. SSD storage for hosting. See why our Grock Tech company provides NVMe to deliver superior speed and performance for your website.',
-  keywords: ['NVMe hosting', 'SSD hosting', 'NVMe vs SSD', 'fast web hosting', 'Grock Technologies', 'grock.fun', 'Grock Tech', 'storage performance', 'website speed', 'e-commerce hosting'],
+  description: 'Understand the benefits of NVMe vs. SSD storage for hosting. See why our Grock Tech company provides NVMe to deliver superior speed and performance for your website. We provide managed wordpress, get started today!',
+  keywords: ['NVMe hosting', 'SSD hosting', 'NVMe vs SSD', 'fast web hosting', 'Grock Technologies', 'grock.fun', 'Grock Tech', 'storage performance', 'website speed', 'e-commerce hosting', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/673ab7/ffffff.png?text=NVMe+vs.+SSD+Hosting"
-                    alt="A futuristic image comparing NVMe and SSD technologies, showing data streams" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="futuristic comparison NVMe SSD"
+                <BlogImageGenerator
+                    blogSlug="choosing-the-right-hosting"
+                    initialImage="https://placehold.co/1200x630/673ab7/ffffff.png?text=NVMe+vs+SSD"
+                    altText="A futuristic image comparing NVMe and SSD technologies, showing data streams"
+                    prompt="A futuristic image comparing NVMe and SSD technologies, showing data streams."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">NVMe vs. SSD: Choosing the Right Hosting for Your Business</CardTitle>

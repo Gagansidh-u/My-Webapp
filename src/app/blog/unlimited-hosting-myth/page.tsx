@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: 'Is "Unlimited" Hosting a Myth? | Grock Technologies',
-  description: 'Many hosts offer "unlimited" plans with hidden catches. At Grock, our hosting company provides transparent hosting with clear, generous resource allocations.',
-  keywords: ['unlimited hosting', 'hosting resource limits', 'transparent hosting', 'Grock Technologies company', 'grock.fun', 'Grock Company', 'fair use policy', 'hosting limitations', 'honest hosting'],
+  description: 'Many hosts offer "unlimited" plans with hidden catches. At Grock, our hosting company provides transparent hosting with clear, generous resource allocations. We provide managed wordpress, get started today!',
+  keywords: ['unlimited hosting', 'hosting resource limits', 'transparent hosting', 'Grock Technologies company', 'grock.fun', 'Grock Company', 'fair use policy', 'hosting limitations', 'honest hosting', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/f44336/ffffff.png?text=The+Unlimited+Myth"
-                    alt="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="unlimited myth transparency"
+                <BlogImageGenerator
+                    blogSlug="unlimited-hosting-myth"
+                    initialImage="https://placehold.co/1200x630/f44336/ffffff.png?text=Unlimited+Myth"
+                    altText="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass"
+                    prompt="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Is 'Unlimited' Hosting a Myth? Our Transparent Approach to Resources</CardTitle>

@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: 'Our Tech Stack: How We Provide Value | Grock Tech',
-  description: 'Learn how our Grock Tech company uses LiteSpeed and NVMe SSDs to boost performance, creating efficiencies that make our hosting plans more affordable for you.',
-  keywords: ['hosting tech stack', 'litespeed vs apache', 'nvme vs ssd', 'Grock Tech', 'grock.fun', 'hosting performance', 'affordable hosting', 'hosting technology', 'website optimization'],
+  description: 'Learn how our Grock Tech company uses LiteSpeed and NVMe SSDs to boost performance, creating efficiencies that make our hosting plans more affordable for you. We provide managed wordpress, get started today!',
+  keywords: ['hosting tech stack', 'litespeed vs apache', 'nvme vs ssd', 'Grock Tech', 'grock.fun', 'hosting performance', 'affordable hosting', 'hosting technology', 'website optimization', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/ffc107/000000.png?text=Smart+Tech+Savings"
-                    alt="An abstract visualization of a tech stack with gears and code, leading to savings" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="tech stack savings"
+                <BlogImageGenerator
+                    blogSlug="smart-tech-stack-savings"
+                    initialImage="https://placehold.co/1200x630/ffc107/000000.png?text=Tech+Savings"
+                    altText="An abstract visualization of a tech stack with gears and code, leading to savings"
+                    prompt="An abstract visualization of a tech stack with gears and code, leading to savings."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">The Smart Tech Stack: How Our Choices Lead to Your Savings</CardTitle>

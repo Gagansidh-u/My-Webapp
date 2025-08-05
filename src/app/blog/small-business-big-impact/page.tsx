@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: 'Websites for Small Business | Grock Technologies Company',
-  description: 'Learn how a fast, secure website from the Grock Technologies Company can transform your small business. We provide Grock Website Building to help you grow.',
-  keywords: ['small business website', 'professional website', 'online presence', 'Grock Technologies Company', 'grock.fun', 'Grock Website Building', 'website for business', 'grow my business', 'customer credibility'],
+  description: 'Learn how a fast, secure website from the Grock Technologies Company can transform your small business. We provide Grock Website Building to help you grow. Get started today!',
+  keywords: ['small business website', 'professional website', 'online presence', 'Grock Technologies Company', 'grock.fun', 'Grock Website Building', 'website for business', 'grow my business', 'customer credibility', 'we provide', 'get started'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/ff6347/ffffff.png?text=Small+Business+Big+Impact"
-                    alt="A small local shop transforming into a global online store, showing growth" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="local global transformation"
+                <BlogImageGenerator
+                    blogSlug="small-business-big-impact"
+                    initialImage="https://placehold.co/1200x630/ff6347/ffffff.png?text=Business+Impact"
+                    altText="A small local shop transforming into a global online store, showing growth"
+                    prompt="A small local shop transforming into a global online store, showing growth."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">From Local to Global: How a Professional Website Gives Your Small Business a Big Impact</CardTitle>

@@ -1,24 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Image from "next/image";
 import type { Metadata } from 'next';
+import BlogImageGenerator from "@/components/blog-image-generator";
 
 export const metadata: Metadata = {
   title: 'Scaling on a Budget: Hosting Tiers | Grock Technologies',
-  description: 'Your hosting should grow with you. Our guide explains the affordable hosting tiers from Grock, so you can start small and scale up your website seamlessly.',
-  keywords: ['scalable hosting', 'hosting plans', 'business growth', 'Grock Technologies', 'grock.fun', 'Grock', 'hosting tiers', 'upgrade hosting plan', 'budget hosting', 'small business hosting'],
+  description: 'Your hosting should grow with you. Our guide explains the affordable hosting tiers from Grock, so you can start small and scale up your website seamlessly. Get started today!',
+  keywords: ['scalable hosting', 'hosting plans', 'business growth', 'Grock Technologies', 'grock.fun', 'Grock', 'hosting tiers', 'upgrade hosting plan', 'budget hosting', 'small business hosting', 'get started'],
 };
 
 export default function BlogPost() {
     return (
         <article>
             <Card className="shadow-lg overflow-hidden">
-                <Image 
-                    src="https://placehold.co/1200x630/03a9f4/ffffff.png?text=Scaling+Your+Business"
-                    alt="An illustration of a small plant growing into a large tree, symbolizing business growth" 
-                    width={1200} 
-                    height={630} 
-                    className="w-full h-auto object-cover" 
-                    data-ai-hint="business growth illustration"
+                <BlogImageGenerator
+                    blogSlug="scaling-on-a-budget"
+                    initialImage="https://placehold.co/1200x630/03a9f4/ffffff.png?text=Scaling+Business"
+                    altText="An illustration of a small plant growing into a large tree, symbolizing business growth"
+                    prompt="An illustration of a small plant growing into a large tree, symbolizing business growth."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Scaling Your Business on a Budget: Our Hosting Tiers Explained</CardTitle>

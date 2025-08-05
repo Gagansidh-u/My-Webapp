@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, onSnapshot, orderBy, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot, orderBy, doc, setDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -98,12 +98,12 @@ export default function UserChatPage() {
         } else {
              // Also update the lastMessage on the chat document
             const chatRef = doc(db, "chats", chatId);
-            await setDoc(chatRef, { 
+            await updateDoc(chatRef, { 
                 lastMessage: {
                     text: content.text || "Image sent",
                     createdAt: serverTimestamp()
                 }
-            }, { merge: true });
+            });
         }
     };
     

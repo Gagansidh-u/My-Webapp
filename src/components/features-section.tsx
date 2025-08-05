@@ -2,8 +2,7 @@
 "use client"
 
 import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { Zap, ShieldCheck, Cloud, Database, TrendingUp } from "lucide-react";
+import { Zap, ShieldCheck, Cloud, Database, TrendingUp, ShoppingCart } from "lucide-react";
 
 const features = [
     {
@@ -30,6 +29,11 @@ const features = [
         icon: <Database className="w-8 h-8 text-primary" />,
         title: "Managed WordPress",
         description: "Focus on your content while we handle the technical details. Enjoy automated updates, performance optimization, and expert support for your WordPress sites."
+    },
+    {
+        icon: <ShoppingCart className="w-8 h-8 text-primary" />,
+        title: "Complete E-commerce Solutions",
+        description: "We build and manage powerful online stores. Whether it's a custom WooCommerce setup or integration with Shopify, we provide full store management."
     }
 ]
 
@@ -44,7 +48,7 @@ export default function FeaturesSection() {
             <div className="container mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">Why Choose Grock Technologies?</h2>
                 <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">We provide the best tools and infrastructure to help you succeed online, whether you're a beginner launching your first site or a pro managing multiple projects.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature, index) => (
                         <motion.div
                             key={index}

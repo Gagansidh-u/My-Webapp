@@ -2,20 +2,15 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Cloud, Database, ShieldCheck, Zap } from "lucide-react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import dynamic from 'next/dynamic';
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 const FeaturesSection = dynamic(() => import('@/components/features-section'), { 
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false 
-});
-const PricingPreviewSection = dynamic(() => import('@/components/pricing-preview-section'), {
-    loading: () => <Skeleton className="h-[500px] w-full" />,
-    ssr: false
 });
 const TestimonialsSection = dynamic(() => import('@/components/testimonials-section'), {
     loading: () => <Skeleton className="h-[400px] w-full" />,
@@ -58,10 +53,6 @@ export default function Home() {
 
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
         <FeaturesSection />
-      </Suspense>
-
-      <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-none" />}>
-        <PricingPreviewSection />
       </Suspense>
 
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>

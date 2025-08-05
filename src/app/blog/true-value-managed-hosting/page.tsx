@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: 'The Value of Managed Hosting | Grock Technologies',
@@ -18,11 +18,13 @@ export default function BlogPost() {
             </div>
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                 <BlogImageGenerator
-                    blogSlug="true-value-managed-hosting"
-                    initialImage="https://placehold.co/1200x630/9c27b0/ffffff.png?text=Value+Hosting"
-                    altText="An image showing a price tag being outweighed by features like 'time' and 'security' on a scale"
-                    title="Beyond the Price Tag: The True Value of Managed Hosting"
+                 <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="value scale"
+                    alt="An image showing a price tag being outweighed by features like 'time' and 'security' on a scale"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

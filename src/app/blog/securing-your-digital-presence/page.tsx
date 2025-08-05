@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: '5 Steps to Secure Your Website | Grock Technologies',
@@ -18,11 +18,13 @@ export default function BlogPost() {
             </div>
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                <BlogImageGenerator
-                    blogSlug="securing-your-digital-presence"
-                    initialImage="https://placehold.co/1200x630/32cd32/ffffff.png?text=Website+Security"
-                    altText="A glowing digital shield protecting a website from cyber threats"
-                    title="5 Essential Steps to Securing Your Digital Presence in 2023"
+                <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="digital security shield"
+                    alt="A glowing digital shield protecting a website from cyber threats"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

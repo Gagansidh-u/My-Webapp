@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: 'Websites for Small Business | Grock Technologies Company',
@@ -18,11 +18,13 @@ export default function BlogPost() {
             </div>
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                <BlogImageGenerator
-                    blogSlug="small-business-big-impact"
-                    initialImage="https://placehold.co/1200x630/ff6347/ffffff.png?text=Business+Impact"
-                    altText="A small local shop transforming into a global online store, showing growth"
-                    title="From Local to Global: How a Professional Website Gives Your Small Business a Big Impact"
+                <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="local global growth"
+                    alt="A small local shop transforming into a global online store, showing growth"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

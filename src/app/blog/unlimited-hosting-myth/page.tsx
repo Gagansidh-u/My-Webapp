@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: 'Is "Unlimited" Hosting a Myth? | Grock Technologies',
@@ -18,11 +18,13 @@ export default function BlogPost() {
             </div>
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                <BlogImageGenerator
-                    blogSlug="unlimited-hosting-myth"
-                    initialImage="https://placehold.co/1200x630/f44336/ffffff.png?text=Unlimited+Myth"
-                    altText="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass"
-                    title="Is 'Unlimited' Hosting a Myth? Our Transparent Approach to Resources"
+                <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="unlimited fine print"
+                    alt="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

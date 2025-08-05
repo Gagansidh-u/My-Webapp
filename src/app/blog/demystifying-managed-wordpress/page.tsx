@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: 'What Is Managed WordPress Hosting? | Grock Technologies',
@@ -18,11 +18,13 @@ export default function BlogPost() {
             </div>
             
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                <BlogImageGenerator
-                    blogSlug="demystifying-managed-wordpress"
-                    initialImage="https://placehold.co/1200x630/21759b/ffffff.png?text=Managed+WordPress"
-                    altText="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security"
-                    title="Demystifying Managed WordPress: A Beginner's Guide"
+                <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="WordPress logo gears"
+                    alt="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

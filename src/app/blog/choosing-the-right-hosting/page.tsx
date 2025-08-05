@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: 'NVMe vs. SSD Hosting: A Guide | Grock Technologies',
@@ -19,11 +19,13 @@ export default function BlogPost() {
             </div>
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                <BlogImageGenerator
-                    blogSlug="choosing-the-right-hosting"
-                    initialImage="https://placehold.co/1200x630/673ab7/ffffff.png?text=NVMe+vs+SSD"
-                    altText="A futuristic image comparing NVMe and SSD technologies, showing data streams"
-                    title="NVMe vs. SSD: Choosing the Right Hosting for Your Business"
+                 <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="futuristic technology"
+                    alt="A futuristic image comparing NVMe and SSD technologies, showing data streams"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

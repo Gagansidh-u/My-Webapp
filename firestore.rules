@@ -3,37 +3,18 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper function to check if a user is authenticated
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    // Rules for the 'orders' collection
     match /orders/{orderId} {
-      // Allow any signed-in user to create an order.
-      allow create: if isSignedIn();
-
-      // Allow a user to read their own order.
-      allow read: if isSignedIn() && request.auth.uid == resource.data.userId;
-
-      // Allow any signed-in user (for admin panel) to list and update orders.
-      // List is needed for the main admin orders table.
-      // Update is needed to change order status.
-      allow list, update: if isSignedIn();
+      // Allow admin (any authenticated user) to list and update orders.
+      allow list, update: if request.auth != null;
+      // Allow users to create orders and read their own orders.
+      allow create, get: if request.auth != null && request.auth.uid == request.resource.data.userId;
     }
 
-    // Rules for the 'contacts' collection
     match /contacts/{contactId} {
-      // Allow anyone to create a contact message (for the contact form).
-      allow create: if true;
-
-      // Allow a user to read and delete their own messages in their "Inquiries" page.
-      // We check that the resource being accessed has a userId that matches the user's uid.
-      allow read, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
-
-      // Allow any signed-in user (for admin panel) to read, update, list, and delete any contact message.
-      allow list, get, update, delete: if isSignedIn();
+        // Allow admin (any authenticated user) to manage messages.
+        allow read, update, delete: if request.auth != null;
+        // Allow any user (authenticated or not) to create a message.
+        allow create: if true;
     }
   }
 }

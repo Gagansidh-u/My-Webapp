@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: 'Our Tech Stack: How We Provide Value | Grock Tech',
@@ -18,11 +18,13 @@ export default function BlogPost() {
             </div>
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                <BlogImageGenerator
-                    blogSlug="smart-tech-stack-savings"
-                    initialImage="https://placehold.co/1200x630/ffc107/000000.png?text=Tech+Savings"
-                    altText="An abstract visualization of a tech stack with gears and code, leading to savings"
-                    title="The Smart Tech Stack: How Our Choices Lead to Your Savings"
+                <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="tech stack gears"
+                    alt="An abstract visualization of a tech stack with gears and code, leading to savings"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

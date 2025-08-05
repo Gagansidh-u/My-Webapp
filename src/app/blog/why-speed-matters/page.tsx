@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import BlogImageGenerator from "@/components/blog-image-generator";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: 'Why Website Speed Matters | Grock Technologies',
@@ -18,11 +18,13 @@ export default function BlogPost() {
             </div>
             
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
-                <BlogImageGenerator
-                    blogSlug="why-speed-matters"
-                    initialImage="https://placehold.co/1200x630/f0db4f/000000.png?text=Website+Speed"
-                    altText="A rocket launching, symbolizing extreme speed and performance"
-                    title="Why Website Speed is the Most Important Metric You're Ignoring"
+                <Image
+                    src="https://placehold.co/1200x630.png"
+                    data-ai-hint="rocket launching"
+                    alt="A rocket launching, symbolizing extreme speed and performance"
+                    width={1200}
+                    height={630}
+                    className="w-full h-full object-cover"
                 />
             </div>
             

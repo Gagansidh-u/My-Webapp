@@ -13,6 +13,10 @@ const FeaturesSection = dynamic(() => import('@/components/features-section'), {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false 
 });
+const PricingPreviewSection = dynamic(() => import('@/components/pricing-preview-section'), {
+    loading: () => <Skeleton className="h-[500px] w-full" />,
+    ssr: false
+});
 const TestimonialsSection = dynamic(() => import('@/components/testimonials-section'), {
     loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false 
@@ -54,6 +58,10 @@ export default function Home() {
 
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
         <FeaturesSection />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-none" />}>
+        <PricingPreviewSection />
       </Suspense>
 
       <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>

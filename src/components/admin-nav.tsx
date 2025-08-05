@@ -22,6 +22,7 @@ export default function AdminNav() {
                     <SidebarMenuButton
                         asChild
                         isActive={pathname === item.href}
+                        className="font-semibold"
                     >
                         <Link href={item.href}>
                             {item.icon}

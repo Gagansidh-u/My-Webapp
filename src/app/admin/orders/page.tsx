@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
 
@@ -133,6 +133,7 @@ export default function AdminOrdersPage() {
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar>
+                                                <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${order.userEmail}`} alt={order.userEmail} />
                                                 <AvatarFallback>{getUserInitials(order.userEmail)}</AvatarFallback>
                                             </Avatar>
                                             <div>
@@ -209,6 +210,7 @@ export default function AdminOrdersPage() {
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                         <Avatar>
+                                            <AvatarImage src={`https://api.dicebear.com/8.x/initials/svg?seed=${order.userEmail}`} alt={order.userEmail} />
                                             <AvatarFallback>{getUserInitials(order.userEmail)}</AvatarFallback>
                                         </Avatar>
                                         <div>

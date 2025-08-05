@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import AdminNav from "@/components/admin-nav";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Gem } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 
 const getPageTitle = (pathname: string) => {
@@ -61,7 +61,10 @@ export default function AdminLayout({
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-           <h1 className="text-xl font-bold font-headline px-2">Admin Panel</h1>
+           <div className="flex items-center gap-2 p-2">
+            <Gem className="w-6 h-6 text-primary" />
+            <h1 className="text-xl font-bold font-headline">Admin Panel</h1>
+           </div>
         </SidebarHeader>
         <SidebarContent>
           <AdminNav />
@@ -74,8 +77,8 @@ export default function AdminLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 mb-4">
-             <SidebarTrigger />
+        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 mb-6">
+             <SidebarTrigger className="md:hidden"/>
              <h1 className="text-2xl font-bold font-headline">{getPageTitle(pathname)}</h1>
         </header>
         <div className="p-4 pt-0 md:p-6 md:pt-0">

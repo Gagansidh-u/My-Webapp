@@ -19,31 +19,31 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
 
     return (
         <div className="container mx-auto py-12 md:py-16">
-             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-start">
+             <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-12 gap-y-8 items-start">
                 <div className="lg:col-span-3">
                     {children}
                 </div>
-                <aside className="space-y-8 sticky top-20">
-                     <Card>
+                <aside className="space-y-8 sticky top-24 lg:top-28">
+                     <Card className="bg-muted/30 border-dashed">
                         <CardHeader>
                             <CardTitle className="font-headline text-xl flex items-center gap-2">
-                                <Newspaper className="w-5 h-5" />
+                                <Newspaper className="w-5 h-5 text-primary" />
                                 Popular Articles
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ul className="space-y-3">
+                            <ul className="space-y-4">
                                 {popularPosts.map(post => (
                                      <li key={post.href}>
-                                        <Link href={post.href} className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                                            {post.title}
+                                        <Link href={post.href} className="text-muted-foreground hover:text-primary font-medium transition-colors group">
+                                           <span className="group-hover:underline">{post.title}</span>
                                         </Link>
                                     </li>
                                 ))}
                                 {!isBlogIndex && (
-                                     <li>
-                                        <Link href="/blog" className="text-primary font-bold hover:underline mt-4 inline-block">
-                                            &larr; Back to Blog
+                                     <li className="pt-4 border-t border-dashed">
+                                        <Link href="/blog" className="text-primary font-bold hover:underline inline-block text-sm">
+                                            &larr; Back to All Articles
                                         </Link>
                                     </li>
                                 )}

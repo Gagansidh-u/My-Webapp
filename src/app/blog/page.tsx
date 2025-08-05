@@ -1,8 +1,8 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Metadata } from 'next';
 import BlogImageGenerator from "@/components/blog-image-generator";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: 'Blog | Grock Technologies',
@@ -95,7 +95,6 @@ const blogPosts = [
 ];
 
 export default function BlogIndexPage() {
-    // Sort posts by date in descending order
     const sortedPosts = blogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return (
@@ -104,34 +103,32 @@ export default function BlogIndexPage() {
                 <h1 className="text-4xl md:text-5xl font-headline font-bold">Grock Insights</h1>
                 <p className="text-lg text-muted-foreground mt-2">Your source for web hosting news, tips, and tutorials.</p>
             </div>
-            <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
                 {sortedPosts.map((post) => (
-                    <Card key={post.slug} className="shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-                        <BlogImageGenerator 
-                            blogSlug={post.slug}
-                            initialImage={post.image}
-                            altText={post.title}
-                            title={post.title}
-                        />
-                        <CardHeader>
-                            <CardTitle className="font-headline text-2xl hover:text-primary transition-colors">
+                    <article key={post.slug} className="group flex flex-col">
+                        <div className="overflow-hidden rounded-lg mb-4">
+                            <BlogImageGenerator 
+                                blogSlug={post.slug}
+                                initialImage={post.image}
+                                altText={post.title}
+                                title={post.title}
+                            />
+                        </div>
+                        <div className="flex flex-col flex-grow">
+                             <p className="text-sm text-muted-foreground mb-2">{post.date}</p>
+                            <h2 className="font-headline text-2xl font-semibold group-hover:text-primary transition-colors">
                                 <Link href={`/blog/${post.slug}`}>
                                    {post.title}
                                 </Link>
-                            </CardTitle>
-                            <CardDescription>
-                                By {post.author} on {post.date}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{post.description}</p>
-                        </CardContent>
-                        <CardFooter>
-                            <Button asChild variant="link" className="p-0 font-bold">
-                                <Link href={`/blog/${post.slug}`}>Read More &rarr;</Link>
+                            </h2>
+                            <p className="text-muted-foreground mt-2 flex-grow">{post.description}</p>
+                            <Button asChild variant="link" className="p-0 font-bold mt-4 self-start">
+                                <Link href={`/blog/${post.slug}`}>
+                                    Read More <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                </Link>
                             </Button>
-                        </CardFooter>
-                    </Card>
+                        </div>
+                    </article>
                 ))}
             </div>
         </div>

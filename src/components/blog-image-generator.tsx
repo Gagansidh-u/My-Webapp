@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -9,12 +8,13 @@ import { generateBlogImage } from '@/ai/flows/generate-blog-image-flow';
 import { useToast } from '@/hooks/use-toast';
 
 interface BlogImageGeneratorProps {
+  blogSlug: string;
   initialImage: string;
   altText: string;
   title: string;
 }
 
-export default function BlogImageGenerator({ initialImage, altText, title }: BlogImageGeneratorProps) {
+export default function BlogImageGenerator({ initialImage, altText, title, blogSlug }: BlogImageGeneratorProps) {
   const [imageUrl, setImageUrl] = useState(initialImage);
   const [loading, setLoading] = useState(false);
   const [imageGenerated, setImageGenerated] = useState(false);
@@ -47,27 +47,28 @@ export default function BlogImageGenerator({ initialImage, altText, title }: Blo
   };
 
   return (
-    <div className="relative group w-full aspect-video">
-        <Image
-            src={imageUrl}
-            alt={altText}
-            width={1200}
-            height={630}
-            className="w-full h-full object-cover transition-all duration-300"
-            priority={true}
-        />
-        {!imageGenerated && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <Button onClick={handleGenerateImage} disabled={loading} size="lg">
-                {loading ? (
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                ) : (
-                <ImageIcon className="mr-2 h-5 w-5" />
-                )}
-                {loading ? 'Generating...' : 'Generate Image'}
-            </Button>
-            </div>
-        )}
+    <div className="relative group w-full aspect-video overflow-hidden rounded-lg">
+      <Image
+        src={imageUrl}
+        alt={altText}
+        width={1200}
+        height={630}
+        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+        priority={!imageGenerated} 
+        key={imageUrl} 
+      />
+      {!imageGenerated && (
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <Button onClick={handleGenerateImage} disabled={loading} size="lg">
+            {loading ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              <ImageIcon className="mr-2 h-5 w-5" />
+            )}
+            {loading ? 'Generating...' : 'Generate New Image'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

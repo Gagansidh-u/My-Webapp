@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     default: 'Grock: Fast NVMe Hosting & Web Services',
     template: `%s | Grock Technologies`,
   },
-  description: 'Elevate your online presence with Grock Technologies. We provide blazing-fast, secure, and reliable web hosting with NVMe storage. Get started in minutes.',
+  description: 'Elevate your online presence with Grock Technologies. We provide blazing-fast, secure, and reliable web hosting with NVMe storage. Get started today!',
   keywords: ['Grock Technologies', 'grock.fun', 'web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server', 'managed WordPress', 'e-commerce hosting', '99.9% uptime', 'free SSL', 'affordable web hosting', 'business hosting', 'developer hosting'],
   authors: [{ name: 'Grock Technologies', url: 'https://www.grock.fun' }],
   creator: 'Grock Technologies',
@@ -57,6 +57,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F0FE" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0A0A0B" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />

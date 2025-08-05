@@ -1,24 +1,7 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Previous rules...
-    match /orders/{orderId} {
-      allow read, write: if request.auth != null && request.auth.uid == request.resource.data.userId;
-    }
-    
-    match /contacts/{contactId} {
-      allow create;
-      allow read: if request.auth != null && request.auth.uid != null;
-    }
-
-    // Allow public read and write access to the blog_images collection
-    match /blog_images/{slug} {
-      allow read, write: if true;
-    }
-    
     match /{document=**} {
       allow read, write: if false;
     }

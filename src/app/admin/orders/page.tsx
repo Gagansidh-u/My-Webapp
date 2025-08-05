@@ -4,15 +4,16 @@
 import React, { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
-import { Loader2, FileText, MoreHorizontal, ShoppingCart } from "lucide-react";
+import { Loader2, FileText, MoreHorizontal, ShoppingCart, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
 
@@ -114,7 +115,8 @@ export default function AdminOrdersPage() {
                 <CardDescription>A list of all the orders placed by users.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="border rounded-lg">
+                {/* Desktop Table View */}
+                <div className="hidden md:block border rounded-lg">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -200,6 +202,82 @@ export default function AdminOrdersPage() {
                         </TableBody>
                     </Table>
                 </div>
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                    {orders.map(order => (
+                         <Card key={order.id} className="shadow-md">
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar>
+                                            <AvatarFallback>{getUserInitials(order.userEmail)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <CardTitle className="text-base">{order.userEmail}</CardTitle>
+                                            <CardDescription>{order.createdAt.toDate().toLocaleDateString()}</CardDescription>
+                                        </div>
+                                    </div>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                <span className="sr-only">Open menu</span>
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuLabel>Update Status</DropdownMenuLabel>
+                                            <DropdownMenuItem onClick={() => handleOrderStatusChange(order.id, 'Paid')}>Paid</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleOrderStatusChange(order.id, 'Pending')}>Pending</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleOrderStatusChange(order.id, 'In-Progress')}>In-Progress</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleOrderStatusChange(order.id, 'Delivered')}>Delivered</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </CardHeader>
+                             <CardContent className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground text-sm">Plan</span>
+                                    <span className="font-semibold">{order.plan} ({getDurationText(order.duration)})</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground text-sm">Total</span>
+                                    <span className="font-semibold">₹{order.price.toFixed(2)}</span>
+                                </div>
+                                 <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground text-sm">Status</span>
+                                    <Badge variant='outline' className={orderStatusColors[order.status] || ''}>{order.status}</Badge>
+                                </div>
+                                 <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" className="w-full mt-2">
+                                            <FileText className="h-4 w-4 mr-2" /> View Details
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Website Details</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="space-y-4 py-4">
+                                            <div>
+                                                <h4 className="font-semibold">Description</h4>
+                                                <p className="text-sm text-muted-foreground">{order.websiteDetails.description}</p>
+                                            </div>
+                                            <div>
+                                                <h4 className="font-semibold">Colors</h4>
+                                                <p className="text-sm text-muted-foreground">{order.websiteDetails.colors}</p>
+                                            </div>
+                                            <div>
+                                                <h4 className="font-semibold">Style/Vibe</h4>
+                                                <p className="text-sm text-muted-foreground">{order.websiteDetails.style}</p>
+                                            </div>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
                 {orders.length === 0 && !loading && (
                     <div className="text-center py-20 text-muted-foreground">
                         <ShoppingCart className="mx-auto h-12 w-12" />

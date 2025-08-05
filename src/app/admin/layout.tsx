@@ -15,15 +15,28 @@ import {
 import AdminNav from "@/components/admin-nav";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+
+const getPageTitle = (pathname: string) => {
+    switch (pathname) {
+        case "/admin":
+            return "Dashboard";
+        case "/admin/orders":
+            return "User Orders";
+        case "/admin/messages":
+            return "Contact Messages";
+        default:
+            return "Admin";
+    }
+}
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
   const router = useRouter();
+  const pathname = usePathname();
   const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
@@ -40,6 +53,7 @@ export default function AdminLayout({
   };
 
   if (!isClient) {
+    // You can return a loader here
     return null; 
   }
 
@@ -54,17 +68,17 @@ export default function AdminLayout({
         </SidebarContent>
         <SidebarFooter>
             <Button onClick={handleLogout} variant="ghost" className="justify-start gap-2 w-full">
-                <LogOut />
+                <LogOut className="h-5 w-5" />
                 <span>Logout</span>
             </Button>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <div className="p-4 md:p-6">
-            <div className="flex items-center gap-2 mb-4">
-                <SidebarTrigger className="md:hidden"/>
-                <h1 className="text-2xl font-bold font-headline md:hidden">Admin</h1>
-            </div>
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 mb-4">
+             <SidebarTrigger className="md:hidden"/>
+             <h1 className="text-2xl font-bold font-headline">{getPageTitle(pathname)}</h1>
+        </header>
+        <div className="p-4 pt-0 md:p-6 md:pt-0">
             {children}
         </div>
         <Toaster />
@@ -72,3 +86,4 @@ export default function AdminLayout({
     </SidebarProvider>
   );
 }
+

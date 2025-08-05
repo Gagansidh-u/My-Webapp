@@ -19,16 +19,9 @@ export default function BlogImageGenerator({ blogSlug, initialImage, altText, ti
   const [loading, setLoading] = useState(false);
   const [imageGenerated, setImageGenerated] = useState(false);
   const { toast } = useToast();
-  const localStorageKey = `blog-image-${blogSlug}`;
-
-  useEffect(() => {
-    // On component mount, check if an image URL is already saved in local storage
-    const savedImageUrl = localStorage.getItem(localStorageKey);
-    if (savedImageUrl) {
-      setImageUrl(savedImageUrl);
-      setImageGenerated(true);
-    }
-  }, [localStorageKey]);
+  
+  // This component no longer uses localStorage to avoid quota errors.
+  // The generated image will not persist across page reloads.
 
   const handleGenerateImage = async () => {
     setLoading(true);
@@ -36,9 +29,7 @@ export default function BlogImageGenerator({ blogSlug, initialImage, altText, ti
       const result = await generateBlogImage({ prompt: title });
       if (result.imageUrl) {
         setImageUrl(result.imageUrl);
-        setImageGenerated(true);
-        // Save the new image URL to local storage
-        localStorage.setItem(localStorageKey, result.imageUrl);
+        setImageGenerated(true); // Hide button after generation for this session
         toast({
           title: "Success!",
           description: "New blog image has been generated.",

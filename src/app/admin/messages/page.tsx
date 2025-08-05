@@ -1,16 +1,19 @@
 
 "use client";
 
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query, onSnapshot, Timestamp, collectionGroup } from "firebase/firestore";
-import { Loader2, User, Send } from "lucide-react";
+import { collection, onSnapshot, orderBy, query, Timestamp, collectionGroup } from "firebase/firestore";
+import { Loader2, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import ChatBubbles from "@/components/chat-bubbles";
 import ChatInput from "@/components/chat-input";
 import { sendMessage } from "@/app/chat/actions";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Chat {
     id: string;
@@ -37,6 +40,7 @@ export default function AdminMessagesPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loadingChats, setLoadingChats] = useState(true);
     const [loadingMessages, setLoadingMessages] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         const q = query(collection(db, "chats"), orderBy("lastMessage.createdAt", "desc"));
@@ -95,68 +99,95 @@ export default function AdminMessagesPage() {
       if (!email) return 'U';
       return email.substring(0, 2).toUpperCase();
     }
+    
+    const handleChatSelect = (chat: Chat) => {
+        setSelectedChat(chat);
+        setIsDialogOpen(true);
+    }
 
+    if (loadingChats) {
+        return (
+            <div className="flex h-[calc(100vh-8rem)] items-center justify-center bg-background">
+                <Loader2 className="animate-spin text-primary" size={48} />
+            </div>
+        );
+    }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[calc(100vh-6rem)]">
-            <Card className="md:col-span-1 lg:col-span-1 h-full flex flex-col">
-                <CardHeader>
-                    <CardTitle>Conversations</CardTitle>
-                    <CardDescription>Select a conversation to view messages.</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow overflow-y-auto">
-                    {loadingChats ? (
-                        <div className="flex items-center justify-center h-full">
-                            <Loader2 className="animate-spin text-primary" size={32} />
-                        </div>
-                    ) : (
-                        <div className="space-y-2">
-                            {chats.map(chat => (
-                                <button key={chat.id} onClick={() => setSelectedChat(chat)} className={`w-full text-left p-3 rounded-md transition-colors ${selectedChat?.id === chat.id ? 'bg-accent' : 'hover:bg-accent/50'}`}>
+        <Card>
+            <CardHeader>
+                <CardTitle>User Messages</CardTitle>
+                <CardDescription>A list of all conversations from users.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Customer</TableHead>
+                            <TableHead>Last Message</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {chats.map(chat => (
+                            <TableRow key={chat.id}>
+                                <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar>
                                             <AvatarFallback>{getUserInitials(chat.userEmail)}</AvatarFallback>
                                         </Avatar>
-                                        <div className="flex-grow truncate">
-                                            <p className="font-semibold truncate">{chat.userEmail}</p>
-                                            <p className="text-sm text-muted-foreground truncate">{chat.lastMessage?.text || 'Image'}</p>
-                                        </div>
-                                         {chat.lastMessage?.createdAt && (
-                                            <p className="text-xs text-muted-foreground self-start">{chat.lastMessage.createdAt.toDate().toLocaleTimeString()}</p>
-                                         )}
+                                        <div className="font-medium">{chat.userEmail}</div>
                                     </div>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-
-            <Card className="md:col-span-2 lg:col-span-3 h-full flex flex-col">
-                {selectedChat ? (
-                    <>
-                        <CardHeader className="border-b">
-                            <CardTitle>Chat with {selectedChat.userEmail}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-grow overflow-y-auto p-4">
-                            {loadingMessages ? (
-                                <div className="flex items-center justify-center h-full">
-                                    <Loader2 className="animate-spin text-primary" size={32} />
-                                </div>
-                            ) : (
-                                <ChatBubbles messages={messages} currentUserId="admin" />
-                            )}
-                        </CardContent>
-                        <div className="border-t p-4">
-                            <ChatInput onSendMessage={handleSendMessage} />
-                        </div>
-                    </>
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                        <p>Select a conversation to start chatting.</p>
+                                </TableCell>
+                                <TableCell className="truncate max-w-sm">{chat.lastMessage?.text || 'Image'}</TableCell>
+                                <TableCell>
+                                    {chat.lastMessage?.createdAt ? new Date(chat.lastMessage.createdAt.seconds * 1000).toLocaleString() : 'N/A'}
+                                </TableCell>
+                                <TableCell>
+                                     <Button variant="outline" size="sm" onClick={() => handleChatSelect(chat)}>
+                                         <MessageSquare className="h-4 w-4 mr-2" />
+                                         View Chat
+                                     </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                 {chats.length === 0 && !loadingChats && (
+                    <div className="text-center py-12 text-muted-foreground">
+                        No conversations found.
                     </div>
                 )}
-            </Card>
-        </div>
+            </CardContent>
+
+             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0">
+                    {selectedChat ? (
+                        <>
+                            <DialogHeader className="p-6 border-b">
+                                <DialogTitle>Chat with {selectedChat.userEmail}</DialogTitle>
+                            </DialogHeader>
+                            <div className="flex-grow overflow-y-auto p-6">
+                                {loadingMessages ? (
+                                    <div className="flex items-center justify-center h-full">
+                                        <Loader2 className="animate-spin text-primary" size={32} />
+                                    </div>
+                                ) : (
+                                    <ChatBubbles messages={messages} currentUserId="admin" />
+                                )}
+                            </div>
+                            <div className="border-t p-6 bg-background">
+                                <ChatInput onSendMessage={handleSendMessage} />
+                            </div>
+                        </>
+                    ) : (
+                         <div className="flex items-center justify-center h-full">
+                            <p>No chat selected.</p>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+        </Card>
     );
 }

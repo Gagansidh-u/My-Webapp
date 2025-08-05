@@ -35,6 +35,7 @@ const Header = () => {
   
   const userNavLinks = [
       { href: '/account/orders', label: 'My Orders', icon: <ShoppingCart className="mr-2 h-4 w-4" /> },
+      { href: '/account/inquiries', label: 'My Inquiries', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
   ]
 
   const getUserInitials = (email: string | null | undefined) => {

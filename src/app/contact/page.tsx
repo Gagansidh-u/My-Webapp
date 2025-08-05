@@ -42,17 +42,7 @@ export default function ContactPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // If user is not logged in, name is required.
-        if (!user && !formData.name) {
-             toast({
-                title: "Error",
-                description: "Please enter your name.",
-                variant: "destructive"
-            });
-            return;
-        }
-        
-        if(!formData.email || !formData.subject || !formData.message) {
+        if (!formData.name || !formData.email || !formData.subject || !formData.message) {
             toast({
                 title: "Error",
                 description: "Please fill out all required fields.",
@@ -64,12 +54,13 @@ export default function ContactPage() {
         setLoading(true);
         try {
             await addDoc(collection(db, "contacts"), {
-                name: formData.name || user?.displayName || 'N/A',
+                name: formData.name,
                 email: formData.email,
                 subject: formData.subject,
                 message: formData.message,
                 status: 'Unread',
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                userId: user ? user.uid : null // Add userId if user is logged in
             });
             toast({
                 title: "Success",

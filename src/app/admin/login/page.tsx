@@ -25,11 +25,13 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = React.useState(true);
 
   React.useEffect(() => {
-    // Check if the user is already "logged in" via session storage
     if (sessionStorage.getItem("isAdminAuthenticated") === "true") {
-      router.push("/admin");
+      router.replace("/admin");
+    } else {
+      setIsCheckingAuth(false);
     }
   }, [router]);
 
@@ -48,8 +50,6 @@ export default function AdminLoginPage() {
         throw new Error("Invalid email or password.");
       }
       
-      // Using session storage for simplicity as requested.
-      // Note: This is not a secure way to handle authentication.
       sessionStorage.setItem("isAdminAuthenticated", "true");
 
       toast({ title: "Success", description: "Logged in successfully." });
@@ -64,6 +64,14 @@ export default function AdminLoginPage() {
     } finally {
         setLoading(false);
     }
+  }
+
+  if (isCheckingAuth) {
+     return (
+        <div className="flex h-screen items-center justify-center bg-background">
+            <Loader2 className="animate-spin text-primary" size={48} />
+        </div>
+    );
   }
 
   return (

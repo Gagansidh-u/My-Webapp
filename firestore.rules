@@ -1,46 +1,29 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if a user is an admin.
-    // For now, this is hardcoded, but could be based on a custom claim or a document read.
+    // Helper function to check for admin credentials.
+    // In this simple setup, any authenticated user can perform admin actions.
     function isAdmin() {
-      // Since we can't check session storage, we'll assume any logged-in user
-      // accessing the collections needed by the admin panel is an "admin" for rule purposes.
-      // This is a simplification for the current auth model.
       return request.auth != null;
     }
 
-    match /orders/{orderId} {
+    match /orders/{documentId} {
       // Allow users to create their own orders.
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      
       // Allow users to read their own orders.
-      // Allow admins to read any order.
-      allow read: if (request.auth != null && resource.data.userId == request.auth.uid) || isAdmin();
-      
-      // Allow admins to update orders (e.g., change status).
-      allow update: if isAdmin();
-      
-      // Disallow deleting orders.
-      allow delete: if false;
+      allow get: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow admins to read, update, and delete any order.
+      allow list, update, delete: if isAdmin();
     }
-    
-    match /contacts/{contactId} {
-        // Allow anyone to create a contact message.
-        allow create: if true;
 
-        // Allow admins to read and update (e.g., status) all contact messages.
-        allow read, update: if isAdmin();
-        
-        // Disallow deleting contact messages.
-        allow delete: if false;
-    }
-    
-    // Fallback rule: deny all other access to all other collections.
-    match /{document=**} {
-      allow read, write: if false;
+    match /contacts/{documentId} {
+      // Allow anyone to create a contact message.
+      allow create: if true;
+      // Allow admins to manage contact messages.
+      allow read, update, delete: if isAdmin();
     }
   }
 }

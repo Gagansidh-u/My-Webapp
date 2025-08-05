@@ -36,7 +36,6 @@ const generateBlogImageFlow = ai.defineFlow(
       prompt: `Generate a high-quality, visually appealing image for a blog post with the following theme: ${input.prompt}. The image should be in a 16:9 aspect ratio and suitable for a technology or business blog.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
-        aspectRatio: '16:9',
       },
     });
     

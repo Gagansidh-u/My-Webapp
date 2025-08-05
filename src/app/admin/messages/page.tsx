@@ -1,10 +1,10 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Loader2, Mail, CheckCircle, XCircle, Trash2, Eye } from "lucide-react";
+import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc, writeBatch, where, getDocs } from "firebase/firestore";
+import { Loader2, Mail, CheckCircle, XCircle, Trash2, Eye, CircleSlash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -62,28 +62,57 @@ export default function AdminMessagesPage() {
         return () => unsubscribe();
     }, [toast]);
 
-    const handleStatusChange = async (id: string, currentStatus: ContactMessage['status']) => {
-        const newStatus = currentStatus === 'Unread' ? 'Read' : 'Unread';
+    const handleMarkAsRead = async (id: string, currentStatus: ContactMessage['status']) => {
+        if (currentStatus === 'Read') return; // No need to update if already read
         const contactRef = doc(db, "contacts", id);
         try {
-            await updateDoc(contactRef, { status: newStatus });
-            toast({ title: "Success", description: `Message marked as ${newStatus}.` });
+            await updateDoc(contactRef, { status: 'Read' });
         } catch (error) {
-            console.error("Failed to update status:", error);
-            toast({ title: "Error", description: "Failed to update message status.", variant: "destructive" });
+            console.error("Failed to mark as read:", error);
         }
     };
     
-    const handleDelete = async (id: string) => {
-        const contactRef = doc(db, "contacts", id);
+    const handleDeleteAllRead = async () => {
+        const readMessagesQuery = query(collection(db, "contacts"), where("status", "==", "Read"));
         try {
-            await deleteDoc(contactRef);
-            toast({ title: "Success", description: "Message has been deleted." });
+            const querySnapshot = await getDocs(readMessagesQuery);
+            if (querySnapshot.empty) {
+                toast({ title: "No read messages to delete.", description: "All messages are marked as unread." });
+                return;
+            }
+            
+            const batch = writeBatch(db);
+            querySnapshot.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+
+            toast({ title: "Success", description: "All read messages have been deleted." });
         } catch (error) {
-            console.error("Failed to delete message:", error);
-            toast({ title: "Error", description: "Failed to delete message.", variant: "destructive" });
+            console.error("Failed to delete read messages:", error);
+            toast({ title: "Error", description: "Failed to delete read messages.", variant: "destructive" });
         }
     };
+    
+    const handleBulkStatusUpdate = async (newStatus: 'Read' | 'Unread') => {
+        const batch = writeBatch(db);
+        messages.forEach(message => {
+            if (message.status !== newStatus) {
+                const contactRef = doc(db, "contacts", message.id);
+                batch.update(contactRef, { status: newStatus });
+            }
+        });
+        
+        try {
+            await batch.commit();
+            toast({ title: "Success", description: `All messages marked as ${newStatus}.` });
+        } catch (error) {
+            console.error("Failed to bulk update status:", error);
+            toast({ title: "Error", description: "Failed to update messages.", variant: "destructive" });
+        }
+    }
+
+    const allMessagesRead = useMemo(() => messages.every(m => m.status === 'Read'), [messages]);
 
     const getUserInitials = (name: string | null | undefined) => {
       if (!name) return 'U';
@@ -101,10 +130,45 @@ export default function AdminMessagesPage() {
     return (
         <Card>
             <CardHeader>
-                 <div className="flex items-center gap-2">
-                    <Mail className="h-6 w-6"/>
-                    <CardTitle className="text-2xl font-headline">Contact Messages</CardTitle>
-                </div>
+                 <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Mail className="h-6 w-6"/>
+                        <CardTitle className="text-2xl font-headline">Contact Messages</CardTitle>
+                    </div>
+                     <div className="flex items-center gap-2">
+                        {allMessagesRead ? (
+                            <Button variant="outline" onClick={() => handleBulkStatusUpdate('Unread')} disabled={messages.length === 0}>
+                                <XCircle className="mr-2 h-4 w-4"/>
+                                Mark all as Unread
+                            </Button>
+                        ) : (
+                            <Button variant="outline" onClick={() => handleBulkStatusUpdate('Read')} disabled={messages.length === 0}>
+                                <CheckCircle className="mr-2 h-4 w-4"/>
+                                Mark all as Read
+                            </Button>
+                        )}
+                         <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive" disabled={messages.filter(m => m.status === 'Read').length === 0}>
+                                    <Trash2 className="mr-2 h-4 w-4"/>
+                                    Delete all Read
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete all messages marked as 'Read'.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleDeleteAllRead}>Continue</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
+                 </div>
                 <CardDescription>Messages submitted through the contact form.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -139,7 +203,7 @@ export default function AdminMessagesPage() {
                                     <TableCell><Badge variant="outline" className={statusColors[message.status]}>{message.status}</Badge></TableCell>
                                     <TableCell>{message.createdAt.toDate().toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
-                                        <Dialog>
+                                        <Dialog onOpenChange={(open) => open && handleMarkAsRead(message.id, message.status)}>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline" size="sm"><Eye className="mr-2 h-4 w-4"/>View</Button>
                                             </DialogTrigger>
@@ -155,31 +219,6 @@ export default function AdminMessagesPage() {
                                                 </div>
                                             </DialogContent>
                                         </Dialog>
-                                        <Button
-                                            variant={message.status === 'Unread' ? 'secondary' : 'outline'}
-                                            size="sm"
-                                            onClick={() => handleStatusChange(message.id, message.status)}
-                                        >
-                                            {message.status === 'Unread' ? <CheckCircle className="mr-2 h-4 w-4"/> : <XCircle className="mr-2 h-4 w-4"/>}
-                                            Mark as {message.status === 'Unread' ? 'Read' : 'Unread'}
-                                        </Button>
-                                         <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    This action cannot be undone. This will permanently delete the message.
-                                                </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDelete(message.id)}>Continue</AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -208,7 +247,7 @@ export default function AdminMessagesPage() {
                                 <p className="font-semibold text-sm pt-4">{message.subject}</p>
                             </CardHeader>
                             <CardContent className="flex flex-col space-y-2">
-                                <Dialog>
+                                <Dialog onOpenChange={(open) => open && handleMarkAsRead(message.id, message.status)}>
                                     <DialogTrigger asChild>
                                         <Button variant="outline" className="w-full"><Eye className="mr-2 h-4 w-4"/>View Message</Button>
                                     </DialogTrigger>
@@ -224,33 +263,6 @@ export default function AdminMessagesPage() {
                                         </div>
                                     </DialogContent>
                                 </Dialog>
-
-                                 <Button
-                                    variant={message.status === 'Unread' ? 'secondary' : 'outline'}
-                                    size="sm"
-                                    onClick={() => handleStatusChange(message.id, message.status)}
-                                >
-                                    {message.status === 'Unread' ? <CheckCircle className="mr-2 h-4 w-4"/> : <XCircle className="mr-2 h-4 w-4"/>}
-                                    Mark as {message.status === 'Unread' ? 'Read' : 'Unread'}
-                                </Button>
-                                
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete the message.
-                                        </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDelete(message.id)}>Continue</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
                             </CardContent>
                         </Card>
                     ))}

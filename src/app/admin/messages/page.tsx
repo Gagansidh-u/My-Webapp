@@ -130,26 +130,26 @@ export default function AdminMessagesPage() {
     return (
         <Card>
             <CardHeader>
-                 <div className="flex items-center justify-between">
+                 <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-2">
                         <Mail className="h-6 w-6"/>
                         <CardTitle className="text-2xl font-headline">Contact Messages</CardTitle>
                     </div>
-                     <div className="flex items-center gap-2">
+                     <div className="flex items-center gap-2 w-full sm:w-auto">
                         {allMessagesRead ? (
-                            <Button variant="outline" onClick={() => handleBulkStatusUpdate('Unread')} disabled={messages.length === 0}>
+                            <Button variant="outline" onClick={() => handleBulkStatusUpdate('Unread')} disabled={messages.length === 0} className="w-1/2 sm:w-auto">
                                 <XCircle className="mr-2 h-4 w-4"/>
                                 Mark all as Unread
                             </Button>
                         ) : (
-                            <Button variant="outline" onClick={() => handleBulkStatusUpdate('Read')} disabled={messages.length === 0}>
+                            <Button variant="outline" onClick={() => handleBulkStatusUpdate('Read')} disabled={messages.length === 0} className="w-1/2 sm:w-auto">
                                 <CheckCircle className="mr-2 h-4 w-4"/>
                                 Mark all as Read
                             </Button>
                         )}
                          <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="destructive" disabled={messages.filter(m => m.status === 'Read').length === 0}>
+                                <Button variant="destructive" disabled={messages.filter(m => m.status === 'Read').length === 0} className="w-1/2 sm:w-auto">
                                     <Trash2 className="mr-2 h-4 w-4"/>
                                     Delete all Read
                                 </Button>

@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="unlimited-hosting-myth"
                     initialImage="https://placehold.co/1200x630/f44336/ffffff.png?text=Unlimited+Myth"
                     altText="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass"
-                    prompt="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass."
+                    prompt="A 3D image showing the word 'Unlimited' with a large, glowing asterisk next to it. A magnifying glass is revealing fine print that talks about fair use policies, symbolizing the hidden catches."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Is 'Unlimited' Hosting a Myth? Our Transparent Approach to Resources</CardTitle>

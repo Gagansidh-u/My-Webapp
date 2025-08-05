@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="scaling-on-a-budget"
                     initialImage="https://placehold.co/1200x630/03a9f4/ffffff.png?text=Scaling+Business"
                     altText="An illustration of a small plant growing into a large tree, symbolizing business growth"
-                    prompt="An illustration of a small plant growing into a large tree, symbolizing business growth."
+                    prompt="A 3D illustration of a small digital plant in a pot, with a data-stream watering can nurturing it into a large, thriving digital tree, symbolizing business growth on a budget."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Scaling Your Business on a Budget: Our Hosting Tiers Explained</CardTitle>

@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="choosing-the-right-hosting"
                     initialImage="https://placehold.co/1200x630/673ab7/ffffff.png?text=NVMe+vs+SSD"
                     altText="A futuristic image comparing NVMe and SSD technologies, showing data streams"
-                    prompt="A futuristic image comparing NVMe and SSD technologies, showing data streams."
+                    prompt="A futuristic, 3D visualization comparing NVMe and SSD technologies, showing glowing blue data streams flowing from an NVMe chip at high speed versus slower red streams from a traditional SSD."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">NVMe vs. SSD: Choosing the Right Hosting for Your Business</CardTitle>

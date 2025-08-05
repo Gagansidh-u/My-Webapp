@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="demystifying-managed-wordpress"
                     initialImage="https://placehold.co/1200x630/21759b/ffffff.png?text=Managed+WordPress"
                     altText="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security"
-                    prompt="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security."
+                    prompt="A 3D illustration showing the WordPress logo at the center of a complex set of interlocking gears, with a protective shield subtly integrated, symbolizing managed services, automation, and security."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Demystifying Managed WordPress: A Beginner's Guide</CardTitle>

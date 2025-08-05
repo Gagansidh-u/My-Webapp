@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="securing-your-digital-presence"
                     initialImage="https://placehold.co/1200x630/32cd32/ffffff.png?text=Website+Security"
                     altText="A glowing digital shield protecting a website from cyber threats"
-                    prompt="A glowing digital shield protecting a website from cyber threats."
+                    prompt="A glowing, translucent 3D shield protecting a stylized website from incoming digital threats, represented as red arrows. The concepts of SSL, backups, and firewalls are shown as smaller icons on the shield."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">5 Essential Steps to Securing Your Digital Presence in 2023</CardTitle>

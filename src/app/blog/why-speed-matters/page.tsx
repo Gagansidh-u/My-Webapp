@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="why-speed-matters"
                     initialImage="https://placehold.co/1200x630/f0db4f/000000.png?text=Website+Speed"
                     altText="A rocket launching, symbolizing extreme speed and performance"
-                    prompt="A rocket launching, symbolizing extreme speed and performance for a website."
+                    prompt="A dynamic 3D rendering of a rocket launching from a server rack, symbolizing extreme speed and high-performance web hosting."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Why Website Speed is the Most Important Metric You're Ignoring</CardTitle>

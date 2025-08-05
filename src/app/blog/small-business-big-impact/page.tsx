@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="small-business-big-impact"
                     initialImage="https://placehold.co/1200x630/ff6347/ffffff.png?text=Business+Impact"
                     altText="A small local shop transforming into a global online store, showing growth"
-                    prompt="A small local shop transforming into a global online store, showing growth."
+                    prompt="A 3D illustration showing a small local storefront transforming into a large, glowing digital storefront on a globe, illustrating the transition from local to global impact."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">From Local to Global: How a Professional Website Gives Your Small Business a Big Impact</CardTitle>

@@ -33,7 +33,7 @@ const generateBlogImageFlow = ai.defineFlow(
   async (input) => {
     const { media } = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `Generate a high-quality, visually appealing image for a blog post with the following theme: ${input.prompt}. The image should be in a 16:9 aspect ratio and suitable for a technology or business blog.`,
+      prompt: `Generate a dynamic, 3D-style digital art piece for a blog post. The image should be a high-quality, visually appealing representation of the following theme, suitable for a technology or business blog in a 16:9 aspect ratio: ${input.prompt}.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },

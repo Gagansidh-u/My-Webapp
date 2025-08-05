@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="smart-tech-stack-savings"
                     initialImage="https://placehold.co/1200x630/ffc107/000000.png?text=Tech+Savings"
                     altText="An abstract visualization of a tech stack with gears and code, leading to savings"
-                    prompt="An abstract visualization of a tech stack with gears and code, leading to savings."
+                    prompt="A dynamic 3D visualization of a technology stack, with icons for servers, databases, and code, forming a stable pyramid that leads to a piggy bank at the top, symbolizing savings."
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">The Smart Tech Stack: How Our Choices Lead to Your Savings</CardTitle>

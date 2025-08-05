@@ -3,7 +3,7 @@
 
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Zap, ShieldCheck, Cloud, Database } from "lucide-react";
+import { Zap, ShieldCheck, Cloud, Database, TrendingUp } from "lucide-react";
 
 const features = [
     {
@@ -15,6 +15,11 @@ const features = [
         icon: <ShieldCheck className="w-8 h-8 text-primary" />,
         title: "Top-Tier Security",
         description: "Protect your website and visitor data with our robust security suite, including unlimited free SSL, automatic backups, and proactive threat detection."
+    },
+    {
+        icon: <TrendingUp className="w-8 h-8 text-primary" />,
+        title: "SEO Ready & Google Friendly",
+        description: "Our websites are built with best SEO practices for fast Google indexing and easy integration with tools like Google Analytics to track your growth."
     },
     {
         icon: <Cloud className="w-8 h-8 text-primary" />,
@@ -39,7 +44,7 @@ export default function FeaturesSection() {
             <div className="container mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">Why Choose Grock Technologies?</h2>
                 <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">We provide the best tools and infrastructure to help you succeed online, whether you're a beginner launching your first site or a pro managing multiple projects.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                     {features.map((feature, index) => (
                         <motion.div
                             key={index}

@@ -61,6 +61,7 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F3E5F5" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0A0A0B" />
+        <link rel="icon" href="https://placehold.co/32x32.png" data-ai-hint="logo" sizes="any" />
         <link rel="apple-touch-icon" href="https://placehold.co/180x180.png" data-ai-hint="logo" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

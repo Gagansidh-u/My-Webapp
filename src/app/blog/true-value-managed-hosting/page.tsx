@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/9c27b0/ffffff.png"
-                    alt="A price tag with a heart, showing value beyond cost" 
+                    src="https://placehold.co/1200x630/9c27b0/ffffff.png?text=True+Value+of+Hosting"
+                    alt="An image showing a price tag being outweighed by features like 'time' and 'security' on a scale" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="value tag"
+                    data-ai-hint="value scale price"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Beyond the Price Tag: The True Value of Managed Hosting</CardTitle>

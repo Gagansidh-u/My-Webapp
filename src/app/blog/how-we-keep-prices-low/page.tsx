@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/4caf50/ffffff.png"
-                    alt="A piggy bank with coins, symbolizing savings" 
+                    src="https://placehold.co/1200x630/4caf50/ffffff.png?text=Affordable+Hosting+Tech"
+                    alt="An abstract image representing technology and savings, with circuitry and coins" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="coins savings"
+                    data-ai-hint="technology savings abstract"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">How We Keep Our Hosting Prices Low Without Sacrificing Quality</CardTitle>

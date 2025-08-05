@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/03a9f4/ffffff.png"
-                    alt="An ascending bar chart symbolizing growth" 
+                    src="https://placehold.co/1200x630/03a9f4/ffffff.png?text=Scaling+Your+Business"
+                    alt="An illustration of a small plant growing into a large tree, symbolizing business growth" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="growth chart"
+                    data-ai-hint="business growth illustration"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Scaling Your Business on a Budget: Our Hosting Tiers Explained</CardTitle>

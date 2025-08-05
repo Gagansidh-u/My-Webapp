@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/ff6347/ffffff.png"
-                    alt="A chart showing business growth" 
+                    src="https://placehold.co/1200x630/ff6347/ffffff.png?text=Small+Business+Big+Impact"
+                    alt="A small local shop transforming into a global online store, showing growth" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="business growth"
+                    data-ai-hint="local global transformation"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">From Local to Global: How a Professional Website Gives Your Small Business a Big Impact</CardTitle>
@@ -66,7 +66,7 @@ export default function BlogPost() {
                         Your website isn't just a brochure; it's an active business tool. With a well-placed contact form, a newsletter sign-up, or a full-fledged e-commerce store, your website can generate business for you around the clock.
                     </p>
                     <p>
-                        A secure and reliable host is paramount here. When a customer is ready to make a purchase or submit their contact details, your site must be online and functioning perfectly. Our 99.9% uptime guarantee and robust security features ensure that you never miss an opportunity because your website is down or compromised.
+                        A secure and reliable host is paramount here. When a customer is ready to make a purchase or submit their contact details, your site must be online and functioning perfectly. Our 99.9% uptime guarantee and robust security features ensure that you never miss an opportunity because your site is down or compromised.
                     </p>
 
                      <h2 className="font-headline text-2xl text-foreground">5. Provide a Central Hub for Your Marketing</h2>

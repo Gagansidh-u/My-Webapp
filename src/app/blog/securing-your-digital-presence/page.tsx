@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/32cd32/ffffff.png"
-                    alt="A digital security shield protecting data" 
+                    src="https://placehold.co/1200x630/32cd32/ffffff.png?text=Website+Security"
+                    alt="A glowing digital shield protecting a website from cyber threats" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="security shield"
+                    data-ai-hint="digital security shield"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">5 Essential Steps to Securing Your Digital Presence in 2023</CardTitle>

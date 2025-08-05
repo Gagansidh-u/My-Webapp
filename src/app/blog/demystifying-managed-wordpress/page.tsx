@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/21759b/ffffff.png"
-                    alt="WordPress logo on a server background" 
+                    src="https://placehold.co/1200x630/21759b/ffffff.png?text=Managed+WordPress+Explained"
+                    alt="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="wordpress logo"
+                    data-ai-hint="managed wordpress security"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Demystifying Managed WordPress: A Beginner's Guide</CardTitle>

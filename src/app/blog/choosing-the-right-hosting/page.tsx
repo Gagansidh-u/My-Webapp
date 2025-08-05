@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/673ab7/ffffff.png"
-                    alt="Server database comparison" 
+                    src="https://placehold.co/1200x630/673ab7/ffffff.png?text=NVMe+vs.+SSD+Hosting"
+                    alt="A futuristic image comparing NVMe and SSD technologies, showing data streams" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="server database"
+                    data-ai-hint="futuristic comparison NVMe SSD"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">NVMe vs. SSD: Choosing the Right Hosting for Your Business</CardTitle>

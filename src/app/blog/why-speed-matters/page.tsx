@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/f0db4f/000000.png"
-                    alt="A stopwatch symbolizing website speed" 
+                    src="https://placehold.co/1200x630/f0db4f/000000.png?text=Website+Speed+Matters"
+                    alt="A rocket launching, symbolizing extreme speed and performance" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="stopwatch speed"
+                    data-ai-hint="rocket speed performance"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Why Website Speed is the Most Important Metric You're Ignoring</CardTitle>

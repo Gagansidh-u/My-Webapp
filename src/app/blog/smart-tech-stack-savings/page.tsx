@@ -13,12 +13,12 @@ export default function BlogPost() {
         <article>
             <Card className="shadow-lg overflow-hidden">
                 <Image 
-                    src="https://placehold.co/1200x630/ffc107/000000.png"
-                    alt="Diagram of a technology stack" 
+                    src="https://placehold.co/1200x630/ffc107/000000.png?text=Smart+Tech+Savings"
+                    alt="An abstract visualization of a tech stack with gears and code, leading to savings" 
                     width={1200} 
                     height={630} 
                     className="w-full h-auto object-cover" 
-                    data-ai-hint="technology stack"
+                    data-ai-hint="tech stack savings"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">The Smart Tech Stack: How Our Choices Lead to Your Savings</CardTitle>

@@ -11,10 +11,10 @@ interface BlogImageGeneratorProps {
   blogSlug: string;
   initialImage: string;
   altText: string;
-  prompt: string;
+  title: string;
 }
 
-export default function BlogImageGenerator({ blogSlug, initialImage, altText, prompt }: BlogImageGeneratorProps) {
+export default function BlogImageGenerator({ blogSlug, initialImage, altText, title }: BlogImageGeneratorProps) {
   const [imageUrl, setImageUrl] = useState(initialImage);
   const [loading, setLoading] = useState(false);
   const [imageGenerated, setImageGenerated] = useState(false);
@@ -33,7 +33,7 @@ export default function BlogImageGenerator({ blogSlug, initialImage, altText, pr
   const handleGenerateImage = async () => {
     setLoading(true);
     try {
-      const result = await generateBlogImage({ prompt });
+      const result = await generateBlogImage({ prompt: title });
       if (result.imageUrl) {
         setImageUrl(result.imageUrl);
         setImageGenerated(true);

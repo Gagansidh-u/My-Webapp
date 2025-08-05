@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="true-value-managed-hosting"
                     initialImage="https://placehold.co/1200x630/9c27b0/ffffff.png?text=Value+Hosting"
                     altText="An image showing a price tag being outweighed by features like 'time' and 'security' on a scale"
-                    prompt="A 3D image showing a balancing scale. On one side is a small price tag, and on the other, heavier blocks labeled 'Time,' 'Security,' and 'Performance,' showing that the value outweighs the cost."
+                    title="Beyond the Price Tag: The True Value of Managed Hosting"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">Beyond the Price Tag: The True Value of Managed Hosting</CardTitle>

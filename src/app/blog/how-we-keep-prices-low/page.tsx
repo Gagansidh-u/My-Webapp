@@ -16,7 +16,7 @@ export default function BlogPost() {
                     blogSlug="how-we-keep-prices-low"
                     initialImage="https://placehold.co/1200x630/4caf50/ffffff.png?text=Affordable+Hosting"
                     altText="An abstract image representing technology and savings, with circuitry and coins"
-                    prompt="A 3D abstract image representing technology and savings, with glowing digital circuitry intertwining with stacks of virtual coins, symbolizing cost-efficiency through smart tech."
+                    title="How We Keep Our Hosting Prices Low Without Sacrificing Quality"
                 />
                 <CardHeader>
                     <CardTitle className="font-headline text-3xl md:text-4xl">How We Keep Our Hosting Prices Low Without Sacrificing Quality</CardTitle>

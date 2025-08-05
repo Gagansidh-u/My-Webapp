@@ -1,184 +1,162 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Loader2, FileText, MoreHorizontal, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { collection, getDocs, orderBy, query, onSnapshot, Timestamp, collectionGroup } from "firebase/firestore";
+import { Loader2, User, Send } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import ChatBubbles from "@/components/chat-bubbles";
+import ChatInput from "@/components/chat-input";
+import { sendMessage } from "@/app/chat/actions";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-type MessageStatus = "Read" | "Unread";
-
-type ContactMessage = {
+interface Chat {
     id: string;
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-    createdAt: Timestamp;
-    status: MessageStatus;
+    lastMessage?: {
+        text?: string | null;
+        createdAt: Timestamp;
+    };
+    userEmail: string;
+    userId: string;
 }
 
-const messageStatusColors: Record<MessageStatus, string> = {
-    "Read": "bg-gray-500/20 text-gray-700 border-gray-500/30",
-    "Unread": "bg-green-500/20 text-green-700 border-green-500/30"
+interface Message {
+    id: string;
+    text: string | null;
+    imageUrl: string | null;
+    senderId: string;
+    createdAt: Timestamp;
 }
 
 export default function AdminMessagesPage() {
     const { toast } = useToast();
-    const [contacts, setContacts] = useState<ContactMessage[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    const fetchContacts = React.useCallback(async () => {
-        try {
-            setLoading(true);
-            const contactsQuery = query(collection(db, "contacts"), orderBy("createdAt", "desc"));
-            const contactsSnapshot = await getDocs(contactsQuery);
-            const contactsData = contactsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ContactMessage));
-            setContacts(contactsData);
-        } catch (error) {
-            console.error("Failed to fetch messages:", error);
-            toast({ title: "Error", description: "Failed to fetch messages.", variant: "destructive" });
-        } finally {
-            setLoading(false);
-        }
-    }, [toast]);
-
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [loadingChats, setLoadingChats] = useState(true);
+    const [loadingMessages, setLoadingMessages] = useState(false);
 
     useEffect(() => {
-        fetchContacts();
-    }, [fetchContacts]);
+        const q = query(collection(db, "chats"), orderBy("lastMessage.createdAt", "desc"));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const chatsData: Chat[] = [];
+            querySnapshot.forEach((doc) => {
+                chatsData.push({ id: doc.id, ...doc.data() } as Chat);
+            });
+            setChats(chatsData);
+            setLoadingChats(false);
+        }, (error) => {
+            console.error("Failed to fetch chats:", error);
+            toast({ title: "Error", description: "Failed to load chat sessions.", variant: "destructive" });
+            setLoadingChats(false);
+        });
 
-    const handleMessageStatusChange = async (messageId: string, newStatus: MessageStatus) => {
-        try {
-            const messageRef = doc(db, "contacts", messageId);
-            await updateDoc(messageRef, { status: newStatus });
-            await fetchContacts(); // Refetch to update the list
-            toast({
-                title: "Success",
-                description: `Message marked as ${newStatus}.`
-            });
-        } catch (error) {
-            console.error("Failed to update message status:", error);
-            toast({
-                title: "Error",
-                description: "Failed to update message status.",
-                variant: "destructive",
-            });
-        }
-    };
+        return () => unsubscribe();
+    }, [toast]);
 
-    const handleMessageDelete = async (messageId: string) => {
-        try {
-            await deleteDoc(doc(db, "contacts", messageId));
-            await fetchContacts(); // Refetch to update the list
-            toast({
-                title: "Success",
-                description: "Message deleted successfully."
-            });
-        } catch (error) {
-            console.error("Failed to delete message:", error);
-            toast({
-                title: "Error",
-                description: "Failed to delete message.",
-                variant: "destructive",
-            });
-        }
-    };
+    useEffect(() => {
+        if (!selectedChat) return;
 
-    if (loading) {
-        return (
-            <div className="flex h-[calc(100vh-8rem)] items-center justify-center bg-background">
-                <Loader2 className="animate-spin text-primary" size={48} />
-            </div>
+        setLoadingMessages(true);
+        const messagesQuery = query(
+            collection(db, "chats", selectedChat.id, "messages"),
+            orderBy("createdAt", "asc")
         );
-    }
+
+        const unsubscribe = onSnapshot(messagesQuery, (querySnapshot) => {
+            const messagesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+            setMessages(messagesData);
+            setLoadingMessages(false);
+        }, (error) => {
+            console.error("Failed to fetch messages:", error);
+            setLoadingMessages(false);
+        });
+
+        return () => unsubscribe();
+    }, [selectedChat]);
+
+    const handleSendMessage = async (content: { text?: string; imageUrl?: string }) => {
+        if (!selectedChat || (!content.text && !content.imageUrl)) return;
+
+        const result = await sendMessage({
+            chatId: selectedChat.id,
+            senderId: "admin",
+            ...content,
+        });
+
+        if (result.error) {
+            toast({ title: "Error", description: result.error, variant: "destructive" });
+        }
+    };
     
+    const getUserInitials = (email: string | null | undefined) => {
+      if (!email) return 'U';
+      return email.substring(0, 2).toUpperCase();
+    }
+
+
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Contact Messages</CardTitle>
-                <CardDescription>Messages submitted through the contact form.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>From</TableHead>
-                            <TableHead>Subject</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Message</TableHead>
-                            <TableHead>Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {contacts.map(contact => (
-                            <TableRow key={contact.id}>
-                                <TableCell>
-                                    <div className="font-medium">{contact.name}</div>
-                                    <div className="text-xs text-muted-foreground">{contact.email}</div>
-                                </TableCell>
-                                <TableCell>{contact.subject}</TableCell>
-                                <TableCell><Badge variant='outline' className={messageStatusColors[contact.status] || ''}>{contact.status}</Badge></TableCell>
-                                <TableCell>{contact.createdAt.toDate().toLocaleDateString()}</TableCell>
-                                <TableCell>
-                                        <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" size="icon">
-                                                <FileText className="h-4 w-4" />
-                                                <span className="sr-only">View Message</span>
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Message from {contact.name}</DialogTitle>
-                                                <DialogDescription>
-                                                    Subject: {contact.subject}
-                                                </DialogDescription>
-                                            </DialogHeader>
-                                            <div className="py-4">
-                                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{contact.message}</p>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                                <span className="sr-only">Open menu</span>
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => handleMessageStatusChange(contact.id, 'Read')}>Mark as Read</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleMessageStatusChange(contact.id, 'Unread')}>Mark as Unread</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-500/10" onClick={() => handleMessageDelete(contact.id)}>
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                {contacts.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground">
-                        No messages found.
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 h-[calc(100vh-6rem)]">
+            <Card className="md:col-span-1 lg:col-span-1 h-full flex flex-col">
+                <CardHeader>
+                    <CardTitle>Conversations</CardTitle>
+                    <CardDescription>Select a conversation to view messages.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow overflow-y-auto">
+                    {loadingChats ? (
+                        <div className="flex items-center justify-center h-full">
+                            <Loader2 className="animate-spin text-primary" size={32} />
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            {chats.map(chat => (
+                                <button key={chat.id} onClick={() => setSelectedChat(chat)} className={`w-full text-left p-3 rounded-md transition-colors ${selectedChat?.id === chat.id ? 'bg-accent' : 'hover:bg-accent/50'}`}>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar>
+                                            <AvatarFallback>{getUserInitials(chat.userEmail)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-grow truncate">
+                                            <p className="font-semibold truncate">{chat.userEmail}</p>
+                                            <p className="text-sm text-muted-foreground truncate">{chat.lastMessage?.text || 'Image'}</p>
+                                        </div>
+                                         {chat.lastMessage?.createdAt && (
+                                            <p className="text-xs text-muted-foreground self-start">{chat.lastMessage.createdAt.toDate().toLocaleTimeString()}</p>
+                                         )}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            <Card className="md:col-span-2 lg:col-span-3 h-full flex flex-col">
+                {selectedChat ? (
+                    <>
+                        <CardHeader className="border-b">
+                            <CardTitle>Chat with {selectedChat.userEmail}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow overflow-y-auto p-4">
+                            {loadingMessages ? (
+                                <div className="flex items-center justify-center h-full">
+                                    <Loader2 className="animate-spin text-primary" size={32} />
+                                </div>
+                            ) : (
+                                <ChatBubbles messages={messages} currentUserId="admin" />
+                            )}
+                        </CardContent>
+                        <div className="border-t p-4">
+                            <ChatInput onSendMessage={handleSendMessage} />
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                        <p>Select a conversation to start chatting.</p>
                     </div>
                 )}
-            </CardContent>
-        </Card>
+            </Card>
+        </div>
     );
 }
-

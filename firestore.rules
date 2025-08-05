@@ -1,9 +1,48 @@
-rules_version = '2';
 
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    match /orders/{orderId} {
+      // Allow user to read their own orders
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Allow authenticated users to create orders
+      allow create: if request.auth != null;
+    }
+    
+    match /contacts/{contactId} {
+      // Allow anyone to create a contact message
+      allow create: if true;
+      // Allow only admins to read/write contact messages (for this example, we assume no admin role system)
+      // In a real app, you'd check for an admin claim: request.auth.token.admin == true
+      allow read, update, delete: if true; 
+    }
+
+    match /blog_images/{slug} {
+      // Allow anyone to read and write to the blog_images collection
+      allow read, write: if true;
+    }
+
+    // Rules for the new chat feature
+    match /chats/{chatId} {
+      // Users can read/write to their own chat document
+      allow read, update, create: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Admins can read/write any chat document
+      allow read, update, create: if get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /chats/{chatId}/messages/{messageId} {
+      // Users can read messages in their own chat and write new ones
+      allow read, create: if request.auth != null && get(/databases/$(database)/documents/chats/$(chatId)).data.userId == request.auth.uid;
+       // Admins can read/write any message
+      allow read, create: if get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /admins/{userId} {
+      allow read: if true;
     }
   }
 }

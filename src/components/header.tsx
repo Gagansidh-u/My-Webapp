@@ -7,7 +7,7 @@ import { useAuth } from './auth-provider';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MailQuestion, Tag, Activity, FileText, MessageSquare, Newspaper } from 'lucide-react';
+import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MessageSquare, Tag, Activity, FileText, Contact, Newspaper } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import React from 'react';
 import { useTheme } from 'next-themes';
@@ -30,12 +30,12 @@ const Header = () => {
       { href: '/blog', label: 'Blog', icon: <Newspaper className="mr-2 h-4 w-4" /> },
       { href: '/status', label: 'Status', icon: <Activity className="mr-2 h-4 w-4" /> },
       { href: '/documentation', label: 'Documentation', icon: <FileText className="mr-2 h-4 w-4" /> },
-      { href: '/contact', label: 'Contact', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
+      { href: '/contact', label: 'Contact', icon: <Contact className="mr-2 h-4 w-4" /> },
   ]
   
   const userNavLinks = [
       { href: '/account/orders', label: 'My Orders', icon: <ShoppingCart className="mr-2 h-4 w-4" /> },
-      { href: '/account/queries', label: 'My Queries', icon: <MailQuestion className="mr-2 h-4 w-4" /> },
+      { href: '/account/chat', label: 'Chat', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
   ]
 
   const getUserInitials = (email: string | null | undefined) => {

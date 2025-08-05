@@ -15,7 +15,16 @@ export async function getBlogImageUrl(slug: string): Promise<string | null> {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            return docSnap.data().imageUrl;
+            const data = docSnap.data();
+            // Reconstruct the data URI
+            if (data.base64Content) {
+                 return `data:image/png;base64,${data.base64Content}`;
+            }
+            // Fallback for old format
+            if (data.imageUrl) {
+                return data.imageUrl;
+            }
+            return null;
         } else {
             return null;
         }
@@ -28,13 +37,18 @@ export async function getBlogImageUrl(slug: string): Promise<string | null> {
 /**
  * Saves a new generated image URL to Firestore.
  * @param slug - The unique identifier for the blog post.
- * @param imageUrl - The data URI of the generated image to save.
+ *param imageUrl - The data URI of the generated image to save.
  * @returns An object indicating success or failure.
  */
 export async function saveBlogImageUrl(slug: string, imageUrl: string): Promise<{ success: boolean; error?: string }> {
     try {
         const docRef = doc(db, "blog_images", slug);
-        await setDoc(docRef, { imageUrl });
+        // Extract the Base64 content from the data URI
+        const base64Content = imageUrl.split(',')[1];
+        if (!base64Content) {
+            return { success: false, error: "Invalid image data URI." };
+        }
+        await setDoc(docRef, { base64Content });
         return { success: true };
     } catch (error) {
         console.error("Error setting document:", error);

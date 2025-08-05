@@ -3,34 +3,32 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
+    // Function to check if the requesting user is an admin.
+    // For this to work, you must have an 'admins' collection 
+    // where each document ID is the user's UID.
     function isAdmin() {
       return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // Users can read their own orders.
+    // Admins can read all orders.
     match /orders/{orderId} {
-      // Allow users to create orders for themselves
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      // Allow users to read their own orders
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      // Allow admins to read, update any order
-      allow read, update: if isAdmin();
-    }
-    
-    match /contacts/{contactId} {
-        // Anyone can create a contact message
-        allow create: if true;
-        // Only admins can read or update (e.g., change status)
-        allow read, update, delete: if isAdmin();
+      allow read: if (request.auth != null && request.auth.uid == resource.data.userId) || isAdmin();
+      allow write: if isAdmin(); // Only admins can update order status
     }
 
-    match /admins/{adminId} {
-      allow read, write: if false; // Should be managed manually
+    // Anyone can create a contact message.
+    // Only admins can read or update them.
+    match /contacts/{contactId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
     }
     
-    // Default deny all other reads/writes
-    match /{document=**} {
-      allow read, write: if false;
+    // A placeholder rule for the admins collection itself.
+    // In a real application, you would restrict this more.
+    match /admins/{adminId} {
+        allow read, write: if isAdmin();
     }
   }
 }

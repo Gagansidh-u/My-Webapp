@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'NVMe vs. SSD Hosting: A Guide | Grock Technologies',
-  description: 'Understand the benefits of NVMe vs. SSD storage for hosting. See why we provide NVMe to deliver superior speed and performance for your website. Get started today!',
-  keywords: ['NVMe hosting', 'SSD hosting', 'NVMe vs SSD', 'fast web hosting', 'Grock Technologies', 'grock.fun', 'storage performance', 'website speed', 'e-commerce hosting', 'database hosting'],
+  description: 'Understand the benefits of NVMe vs. SSD storage for hosting. See why our Grock Tech company provides NVMe to deliver superior speed and performance for your website.',
+  keywords: ['NVMe hosting', 'SSD hosting', 'NVMe vs SSD', 'fast web hosting', 'Grock Technologies', 'grock.fun', 'Grock Tech', 'storage performance', 'website speed', 'e-commerce hosting'],
 };
 
 export default function BlogPost() {

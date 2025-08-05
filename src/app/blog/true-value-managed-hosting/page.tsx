@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'The Value of Managed Hosting | Grock Technologies',
-  description: 'Low prices are just the beginning. We provide managed hosting with automated maintenance and expert support to save you time and give you peace of mind. Get started!',
-  keywords: ['managed hosting value', 'what is managed hosting', 'is managed hosting worth it', 'Grock Technologies company', 'grock.fun', 'automated wordpress updates', 'website maintenance', 'hosting support', 'website security'],
+  description: 'Grock provides managed hosting with automated maintenance and expert support to save you time. Low prices are just the beginning when you get started with us.',
+  keywords: ['managed hosting value', 'what is managed hosting', 'is managed hosting worth it', 'Grock Technologies Company', 'grock.fun', 'Grock', 'automated wordpress updates', 'website maintenance', 'hosting support'],
 };
 
 export default function BlogPost() {

@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '5 Steps to Secure Your Website | Grock Technologies',
-  description: 'Learn the essential steps to protect your website. We provide free SSL, daily backups, and proactive security to keep your digital assets safe. Get started with us.',
-  keywords: ['website security', 'how to secure a website', 'free SSL', 'Grock Technologies company', 'grock.fun', 'website backups', 'malware scanning', 'wordpress security', 'secure hosting', 'cybersecurity'],
+  description: 'Learn the essential steps to protect your website. The Grock Technologies Company provides free SSL, daily backups, and proactive security to keep your digital assets safe.',
+  keywords: ['website security', 'how to secure a website', 'free SSL', 'Grock Technologies Company', 'grock.fun', 'website backups', 'malware scanning', 'wordpress security', 'secure hosting', 'cybersecurity'],
 };
 
 export default function BlogPost() {

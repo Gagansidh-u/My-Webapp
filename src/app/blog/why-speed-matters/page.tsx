@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Why Website Speed Matters | Grock Technologies',
-  description: 'A deep dive into why website speed is critical for user experience, conversion rates, and SEO. Learn how our NVMe hosting gives you a competitive advantage.',
-  keywords: ['website speed', 'page load time', 'conversion rate optimization', 'Grock Technologies', 'grock.fun', 'SEO ranking factor', 'user experience', 'NVMe hosting', 'LiteSpeed server', 'fast hosting'],
+  description: 'A deep dive into why website speed is critical for user experience, conversions, and SEO. Learn how Grock Fun provides NVMe hosting for a competitive advantage.',
+  keywords: ['website speed', 'page load time', 'conversion rate optimization', 'Grock Technologies', 'grock.fun', 'Grock Fun', 'SEO ranking factor', 'user experience', 'NVMe hosting', 'LiteSpeed server', 'fast hosting'],
 };
 
 export default function BlogPost() {

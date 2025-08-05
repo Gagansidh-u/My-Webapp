@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Scaling on a Budget: Hosting Tiers | Grock Technologies',
-  description: 'Your hosting should grow with you. Our guide breaks down our affordable hosting tiers, so you can start small and scale up seamlessly. Get started today!',
-  keywords: ['scalable hosting', 'hosting plans', 'business growth', 'Grock Technologies', 'grock.fun', 'hosting tiers', 'upgrade hosting plan', 'budget hosting', 'small business hosting'],
+  description: 'Your hosting should grow with you. Our guide explains the affordable hosting tiers from Grock, so you can start small and scale up your website seamlessly.',
+  keywords: ['scalable hosting', 'hosting plans', 'business growth', 'Grock Technologies', 'grock.fun', 'Grock', 'hosting tiers', 'upgrade hosting plan', 'budget hosting', 'small business hosting'],
 };
 
 export default function BlogPost() {

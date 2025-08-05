@@ -20,7 +20,7 @@ const CallToActionSection = dynamic(() => import('@/components/cta-section'), {
     ssr: false 
 });
 const ECommerceSection = dynamic(() => import('@/components/e-commerce-section'), {
-    loading: () => <Skeleton className="h-[300px] w-full" />,
+    loading: () => <Skeleton className="h-[400px] w-full" />,
     ssr: false
 });
 
@@ -57,7 +57,7 @@ export default function HomePageClient() {
         <FeaturesSection />
       </Suspense>
 
-      <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
           <ECommerceSection />
       </Suspense>
 

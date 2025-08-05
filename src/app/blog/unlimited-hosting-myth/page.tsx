@@ -4,8 +4,8 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Is "Unlimited" Hosting a Myth? | Grock Technologies',
-  description: 'Many hosts offer "unlimited" plans with hidden catches. At Grock, we provide transparent hosting with clear, generous resource allocations. Get started with us.',
-  keywords: ['unlimited hosting', 'hosting resource limits', 'transparent hosting', 'Grock Technologies company', 'grock.fun', 'fair use policy', 'hosting limitations', 'honest hosting', 'website resources'],
+  description: 'Many hosts offer "unlimited" plans with hidden catches. At Grock, our hosting company provides transparent hosting with clear, generous resource allocations.',
+  keywords: ['unlimited hosting', 'hosting resource limits', 'transparent hosting', 'Grock Technologies company', 'grock.fun', 'Grock Company', 'fair use policy', 'hosting limitations', 'honest hosting'],
 };
 
 export default function BlogPost() {

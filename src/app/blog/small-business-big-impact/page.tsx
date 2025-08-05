@@ -3,9 +3,9 @@ import Image from "next/image";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Websites for Small Business | Grock Technologies',
-  description: 'Learn how a fast, secure, and professional website can transform your small business. We provide the tools to build credibility and reach new customers online.',
-  keywords: ['small business website', 'professional website', 'online presence', 'Grock Technologies company', 'grock.fun', 'digital marketing', 'website for business', 'grow my business', 'customer credibility'],
+  title: 'Websites for Small Business | Grock Technologies Company',
+  description: 'Learn how a fast, secure website from the Grock Technologies Company can transform your small business. We provide Grock Website Building to help you grow.',
+  keywords: ['small business website', 'professional website', 'online presence', 'Grock Technologies Company', 'grock.fun', 'Grock Website Building', 'website for business', 'grow my business', 'customer credibility'],
 };
 
 export default function BlogPost() {

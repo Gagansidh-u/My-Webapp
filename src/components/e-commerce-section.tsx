@@ -23,7 +23,7 @@ const ECommerceSection = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                We design and develop beautiful, responsive, and SEO-friendly websites tailored to your brand. Let us build the perfect online presence for your business.
+                We design and develop beautiful, responsive, and SEO-friendly websites tailored to your brand. Let our Grock Website Building service create the perfect online presence for you.
               </p>
             </CardContent>
           </Card>

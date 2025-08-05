@@ -3,8 +3,8 @@ import Image from "next/image";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'NVMe vs. SSD: Choosing the Right Hosting | Grock Technologies',
-  description: 'A deep dive into NVMe and SSD storage for web hosting. Understand the performance benefits of NVMe and why Grock Technologies uses it to deliver superior speed for your websites.',
+  title: 'NVMe vs. SSD Hosting: A Guide | Grock Technologies',
+  description: 'Understand the benefits of NVMe vs. SSD storage for hosting. See why we provide NVMe to deliver superior speed and performance for your website. Get started today!',
   keywords: ['NVMe hosting', 'SSD hosting', 'NVMe vs SSD', 'fast web hosting', 'Grock Technologies', 'grock.fun', 'storage performance', 'website speed', 'e-commerce hosting', 'database hosting'],
 };
 

@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Blog | Grock Technologies',
-  description: 'Explore the latest insights on web hosting, website performance, security, and digital strategy from the experts at Grock Technologies. Stay ahead with our tips and tutorials.',
+  description: 'Explore the latest insights on web hosting, website performance, and digital strategy from the experts at Grock Technologies. Get started with our tips and tutorials.',
   keywords: ['Grock Technologies blog', 'grock.fun blog', 'web hosting blog', 'website speed', 'NVMe hosting', 'LiteSpeed server', 'website security', 'managed WordPress', 'digital strategy', 'small business online', 'tech blog'],
 };
 

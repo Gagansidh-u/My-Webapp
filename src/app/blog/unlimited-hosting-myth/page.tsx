@@ -3,8 +3,8 @@ import Image from "next/image";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Is "Unlimited" Hosting a Myth? Our Transparent Approach | Grock Technologies',
-  description: 'Many hosts offer "unlimited" plans with hidden catches and fine print. At Grock, we believe in transparency. Learn about our clear, generous resource allocations and why our honest approach is better for your business.',
+  title: 'Is "Unlimited" Hosting a Myth? | Grock Technologies',
+  description: 'Many hosts offer "unlimited" plans with hidden catches. At Grock, we provide transparent hosting with clear, generous resource allocations. Get started with us.',
   keywords: ['unlimited hosting', 'hosting resource limits', 'transparent hosting', 'Grock Technologies company', 'grock.fun', 'fair use policy', 'hosting limitations', 'honest hosting', 'website resources'],
 };
 

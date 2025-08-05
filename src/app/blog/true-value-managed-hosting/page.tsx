@@ -3,8 +3,8 @@ import Image from "next/image";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Beyond the Price Tag: The True Value of Managed Hosting | Grock Technologies',
-  description: 'Our low prices are just the beginning. Discover the incredible value packed into our managed hosting plans, from automated maintenance that saves you time and money to expert support that provides peace of mind.',
+  title: 'The Value of Managed Hosting | Grock Technologies',
+  description: 'Low prices are just the beginning. We provide managed hosting with automated maintenance and expert support to save you time and give you peace of mind. Get started!',
   keywords: ['managed hosting value', 'what is managed hosting', 'is managed hosting worth it', 'Grock Technologies company', 'grock.fun', 'automated wordpress updates', 'website maintenance', 'hosting support', 'website security'],
 };
 

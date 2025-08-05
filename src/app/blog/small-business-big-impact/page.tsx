@@ -3,8 +3,8 @@ import Image from "next/image";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'How a Professional Website Gives Your Small Business a Big Impact | Grock Technologies',
-  description: 'Discover how a fast, secure, and professional website can transform your small business. Learn how to build credibility, reach new customers, and compete in the digital marketplace with Grock Technologies.',
+  title: 'Websites for Small Business | Grock Technologies',
+  description: 'Learn how a fast, secure, and professional website can transform your small business. We provide the tools to build credibility and reach new customers online.',
   keywords: ['small business website', 'professional website', 'online presence', 'Grock Technologies company', 'grock.fun', 'digital marketing', 'website for business', 'grow my business', 'customer credibility'],
 };
 

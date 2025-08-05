@@ -3,8 +3,8 @@ import Image from "next/image";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Demystifying Managed WordPress Hosting | Grock Technologies',
-  description: 'What is managed WordPress hosting and is it right for you? This guide breaks down the benefits, from automated updates and security to expert support, and explains how Grock Technologies takes the hassle out of WordPress.',
+  title: 'What Is Managed WordPress Hosting? | Grock Technologies',
+  description: 'Our guide to managed WordPress hosting. We provide automated updates, security, and expert support to take the hassle out of WordPress. Get started with us today!',
   keywords: ['managed wordpress hosting', 'what is managed hosting', 'wordpress hosting', 'Grock Technologies', 'grock.fun', 'automatic wordpress updates', 'wordpress security', 'wordpress performance', 'litespeed cache'],
 };
 

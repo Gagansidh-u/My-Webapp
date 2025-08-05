@@ -3,8 +3,8 @@ import Image from "next/image";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'How We Keep Hosting Prices Low Without Sacrificing Quality | Grock Technologies',
-  description: 'Discover the business strategies and technical efficiencies that allow Grock Technologies to offer premium, high-speed hosting services at budget-friendly prices. Learn how we pass our savings directly to you.',
+  title: 'How We Keep Hosting Prices Low | Grock Technologies',
+  description: 'Discover how Grock Technologies offers premium, high-speed hosting at budget-friendly prices. We provide quality service without the high cost. Get started today!',
   keywords: ['affordable hosting', 'cheap web hosting', 'low price hosting', 'Grock Technologies pricing', 'grock.fun hosting', 'efficient hosting', 'value hosting', 'hosting savings'],
 };
 

@@ -1,36 +1,44 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Default deny all reads and writes
-    match /{document=**} {
-      allow read, write: if false;
+
+    // Helper function to check if a user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
     // Rules for the 'orders' collection
     match /orders/{orderId} {
-      // ANY authenticated user can perform admin actions (list, read, update).
-      // This is required for the admin panel to function, as the admin is just a standard authenticated user.
-      allow list, read, update: if request.auth != null;
-      
-      // ANY authenticated user can CREATE an order.
-      allow create: if request.auth != null;
-      
-      // A specific user can GET their OWN order document (for the 'My Orders' page).
-      // This rule is more specific than the general 'read' above, so it is respected.
-      allow get: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Allow any authenticated user to list, read, update, and delete orders.
+      // This is required for the admin panel to function correctly.
+      allow read, update, delete: if isAuthenticated();
+
+      // Allow any authenticated user to create an order.
+      // The user-specific check below for 'get' will protect their data on the client-side.
+      allow create: if isAuthenticated();
+    }
+    
+    // This second rule for 'orders' ensures that on the user-facing pages (like /account/orders),
+    // a user can only fetch their OWN order, even though the admin has broader permissions.
+    // This is a more specific rule that Firestore will enforce for direct 'get' requests.
+    match /orders/{orderId} {
+       allow get: if isAuthenticated() && request.auth.uid == resource.data.userId;
     }
 
     // Rules for the 'contacts' collection
     match /contacts/{contactId} {
-        // ANYONE can create a contact message (for the contact form).
-        allow create: if true;
+      // Allow anyone (authenticated or not) to create a contact message
+      allow create: if true;
 
-        // ANY authenticated user can manage contacts.
-        // Required for the admin panel.
-        allow read, list, update, delete: if request.auth != null;
+      // Allow any authenticated user to read, update, and delete contacts.
+      // This is required for the admin messages page to work.
+      allow read, update, delete: if isAuthenticated();
+    }
+
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

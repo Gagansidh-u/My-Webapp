@@ -100,17 +100,6 @@ export default function AdminDashboardPage() {
                     </CardContent>
                 </Card>
             </div>
-             <Card>
-                <CardHeader>
-                    <CardTitle>Welcome to the Admin Panel</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">
-                        Use the sidebar to navigate between orders and messages. Your dashboard provides a quick overview of site activity.
-                    </p>
-                </CardContent>
-            </Card>
         </div>
     );
 }
-

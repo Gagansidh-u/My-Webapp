@@ -3,32 +3,58 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Function to check if the requesting user is an admin.
-    // For this to work, you must have an 'admins' collection 
-    // where each document ID is the user's UID.
+
+    function isUserAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUserOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Admins have special access
     function isAdmin() {
-      return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      // For simplicity, we assume an admin's UID is known or stored elsewhere.
+      // In a real app, you'd likely check a 'roles' field on the user document.
+      // THIS IS A PLACEHOLDER - A real app would have a more robust admin check.
+      return request.auth.uid in get(/databases/$(database)/documents/admins).data.uids;
     }
 
-    // Users can read their own orders.
-    // Admins can read all orders.
+    // Orders collection rules
     match /orders/{orderId} {
-      allow read: if (request.auth != null && request.auth.uid == resource.data.userId) || isAdmin();
-      allow write: if isAdmin(); // Only admins can update order status
+      // Users can create their own orders.
+      allow create: if isUserAuthenticated() && isUserOwner(request.resource.data.userId);
+
+      // Users can only read their own orders. Admins can read any order.
+      allow read: if (isUserAuthenticated() && isUserOwner(resource.data.userId)) || isAdmin();
+
+      // Only admins can update the status of an order.
+      allow update: if isAdmin() && request.resource.data.keys().hasOnly(['status']);
+
+      // No one can delete orders for data integrity.
+      allow delete: if false;
     }
 
-    // Anyone can create a contact message.
-    // Only admins can read or update them.
+    // Contacts collection rules
     match /contacts/{contactId} {
+      // Anyone can create a contact message.
       allow create: if true;
-      allow read, update, delete: if isAdmin();
+
+      // Only admins can read contact messages.
+      allow read: if isAdmin();
+
+      // Only admins can update the status of a message.
+      allow update: if isAdmin() && request.resource.data.keys().hasOnly(['status']);
+
+      // No one can delete contact messages.
+      allow delete: if false;
     }
     
-    // A placeholder rule for the admins collection itself.
-    // In a real application, you would restrict this more.
-    match /admins/{adminId} {
-        allow read, write: if isAdmin();
+    // Admins list - Only readable by admins themselves to check for existence.
+    match /admins/{adminList} {
+        allow read: if isAdmin();
+        allow write: if false; // Should be managed manually or via a secure function
     }
+
   }
 }

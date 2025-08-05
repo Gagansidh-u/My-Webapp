@@ -35,7 +35,6 @@ const Header = () => {
   
   const userNavLinks = [
       { href: '/account/orders', label: 'My Orders', icon: <ShoppingCart className="mr-2 h-4 w-4" /> },
-      { href: '/account/chat', label: 'Chat', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
   ]
 
   const getUserInitials = (email: string | null | undefined) => {
@@ -121,7 +120,7 @@ const Header = () => {
             </SheetTrigger>
             <SheetContent side="left">
                  <SheetHeader>
-                    <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                    <SheetTitle>Menu</SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col space-y-4">
                     <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setIsOpen(false)}>

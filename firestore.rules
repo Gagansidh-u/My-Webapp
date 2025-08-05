@@ -1,56 +1,36 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isAdmin() {
-      // In a real app, you would check a custom claim or a document in a separate 'admins' collection.
-      // For this example, we'll assume an admin can be identified in some way.
-      // Since we have a simple session-based admin login, we can't check server-side.
-      // We will allow all reads/writes for admins on their designated collections for now.
-      // A more secure implementation would use Firebase Auth custom claims.
-      return true; // Placeholder for real admin logic
+      return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     match /orders/{orderId} {
-      // Allow logged-in users to read their own orders.
+      // Allow users to create orders for themselves
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      // Allow users to read their own orders
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      // Allow any authenticated user to create an order (payment process).
-      allow create: if request.auth != null;
-      // Allow admins to read/write all orders.
-      allow read, write: if isAdmin();
+      // Allow admins to read, update any order
+      allow read, update: if isAdmin();
     }
     
     match /contacts/{contactId} {
-        // Allow anyone to create a contact message.
+        // Anyone can create a contact message
         allow create: if true;
-        // Allow admins to read/write contact messages.
-        allow read, write: if isAdmin();
+        // Only admins can read or update (e.g., change status)
+        allow read, update, delete: if isAdmin();
     }
-    
-    match /blog_images/{slug} {
-        // Allow public read access to anyone.
-        allow read: if true;
-        // Allow anyone to create/update an image.
-        allow write: if true;
-    }
-    
-    match /chats/{chatId} {
-      // Users can read/update their own chat document.
-      allow read, update: if request.auth.uid == resource.data.userId;
-      // Users can create a chat document for themselves.
-      allow create: if request.auth.uid == request.resource.data.userId;
-      // Admins can access any chat.
-      allow read, write: if isAdmin();
 
-      match /messages/{messageId} {
-        // Users can read messages in their own chat.
-        allow read: if request.auth.uid == get(/databases/$(database)/documents/chats/$(chatId)).data.userId;
-        // Users can create messages in their own chat. Admins can also send messages.
-        allow create: if request.auth.uid == get(/databases/$(database)/documents/chats/$(chatId)).data.userId || request.resource.data.senderId == 'admin';
-        // Admins can read/write any message.
-        allow read, write: if isAdmin();
-      }
+    match /admins/{adminId} {
+      allow read, write: if false; // Should be managed manually
+    }
+    
+    // Default deny all other reads/writes
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

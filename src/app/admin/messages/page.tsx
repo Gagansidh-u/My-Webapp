@@ -3,109 +3,66 @@
 
 import React, { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp, collectionGroup, getDocs, doc } from "firebase/firestore";
-import { Loader2, MessageSquare, Send, Mail } from "lucide-react";
+import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
+import { Loader2, Mail, CheckCircle, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import ChatBubbles from "@/components/chat-bubbles";
-import ChatInput from "@/components/chat-input";
-import { sendMessage } from "@/app/chat/actions";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-interface Chat {
+type ContactMessage = {
     id: string;
-    lastMessage?: {
-        text?: string | null;
-        createdAt: Timestamp;
-    };
-    userEmail: string;
-    userId: string;
-}
-
-interface Message {
-    id: string;
-    text: string | null;
-    imageUrl: string | null;
-    senderId: string;
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    status: 'Read' | 'Unread';
     createdAt: Timestamp;
+};
+
+const statusColors: Record<ContactMessage['status'], string> = {
+    "Read": "bg-green-500/20 text-green-700 border-green-500/30",
+    "Unread": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30"
 }
 
 export default function AdminMessagesPage() {
     const { toast } = useToast();
-    const [chats, setChats] = useState<Chat[]>([]);
-    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [loadingChats, setLoadingChats] = useState(true);
-    const [loadingMessages, setLoadingMessages] = useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [messages, setMessages] = useState<ContactMessage[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const q = query(collection(db, "chats"), orderBy("lastMessage.createdAt", "desc"));
+        const q = query(collection(db, "contacts"), orderBy("createdAt", "desc"));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const chatsData: Chat[] = [];
+            const messagesData: ContactMessage[] = [];
             querySnapshot.forEach((doc) => {
-                chatsData.push({ id: doc.id, ...doc.data() } as Chat);
+                messagesData.push({ id: doc.id, ...doc.data() } as ContactMessage);
             });
-            setChats(chatsData);
-            setLoadingChats(false);
+            setMessages(messagesData);
+            setLoading(false);
         }, (error) => {
-            console.error("Failed to fetch chats:", error);
-            toast({ title: "Error", description: "Failed to load chat sessions.", variant: "destructive" });
-            setLoadingChats(false);
+            console.error("Failed to fetch contacts:", error);
+            toast({ title: "Error", description: "Failed to load messages.", variant: "destructive" });
+            setLoading(false);
         });
 
         return () => unsubscribe();
     }, [toast]);
 
-    useEffect(() => {
-        if (!selectedChat) return;
-
-        setLoadingMessages(true);
-        const messagesQuery = query(
-            collection(db, "chats", selectedChat.id, "messages"),
-            orderBy("createdAt", "asc")
-        );
-
-        const unsubscribe = onSnapshot(messagesQuery, (querySnapshot) => {
-            const messagesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
-            setMessages(messagesData);
-            setLoadingMessages(false);
-        }, (error) => {
-            console.error("Failed to fetch messages:", error);
-            setLoadingMessages(false);
-        });
-
-        return () => unsubscribe();
-    }, [selectedChat]);
-
-    const handleSendMessage = async (content: { text?: string; imageUrl?: string }) => {
-        if (!selectedChat || (!content.text && !content.imageUrl)) return;
-
-        const result = await sendMessage({
-            chatId: selectedChat.id,
-            senderId: "admin",
-            ...content,
-        });
-
-        if (result.error) {
-            toast({ title: "Error", description: result.error, variant: "destructive" });
+    const handleStatusChange = async (id: string, currentStatus: ContactMessage['status']) => {
+        const newStatus = currentStatus === 'Unread' ? 'Read' : 'Unread';
+        const contactRef = doc(db, "contacts", id);
+        try {
+            await updateDoc(contactRef, { status: newStatus });
+            toast({ title: "Success", description: `Message marked as ${newStatus}.` });
+        } catch (error) {
+            console.error("Failed to update status:", error);
+            toast({ title: "Error", description: "Failed to update message status.", variant: "destructive" });
         }
     };
     
-    const openChatDialog = (chat: Chat) => {
-        setSelectedChat(chat);
-        setIsChatOpen(true);
-    }
-    
-    const getUserInitials = (email: string | null | undefined) => {
-      if (!email) return 'U';
-      return email.substring(0, 2).toUpperCase();
-    }
-    
-    if (loadingChats) {
+    if (loading) {
         return (
             <div className="flex h-[calc(100vh-8rem)] items-center justify-center bg-background">
                 <Loader2 className="animate-spin text-primary" size={48} />
@@ -116,44 +73,56 @@ export default function AdminMessagesPage() {
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-center gap-2">
+                 <div className="flex items-center gap-2">
                     <Mail className="h-6 w-6"/>
-                    <CardTitle className="text-2xl font-headline">User Messages</CardTitle>
+                    <CardTitle className="text-2xl font-headline">Contact Messages</CardTitle>
                 </div>
-                <CardDescription>A list of all conversations initiated by users.</CardDescription>
+                <CardDescription>Messages submitted through the contact form.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="border rounded-lg">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[300px]">Customer</TableHead>
-                                <TableHead>Last Message</TableHead>
+                                <TableHead>From</TableHead>
+                                <TableHead>Subject</TableHead>
+                                <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {chats.map(chat => (
-                                <TableRow key={chat.id} className="hover:bg-accent/50 cursor-pointer" onClick={() => openChatDialog(chat)}>
+                            {messages.map(message => (
+                                <TableRow key={message.id}>
                                     <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarFallback>{getUserInitials(chat.userEmail)}</AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <div className="font-medium">{chat.userEmail}</div>
-                                                <div className="text-xs text-muted-foreground">
-                                                     {chat.lastMessage?.createdAt?.toDate().toLocaleString()}
+                                        <div className="font-medium">{message.name}</div>
+                                        <div className="text-xs text-muted-foreground">{message.email}</div>
+                                    </TableCell>
+                                    <TableCell>{message.subject}</TableCell>
+                                    <TableCell><Badge variant="outline" className={statusColors[message.status]}>{message.status}</Badge></TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm">View Message</Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>{message.subject}</DialogTitle>
+                                                </DialogHeader>
+                                                <div className="py-4">
+                                                    <p className="text-sm text-muted-foreground">
+                                                        From: {message.name} ({message.email})
+                                                    </p>
+                                                    <p className="mt-4">{message.message}</p>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="font-medium truncate max-w-sm">{chat.lastMessage?.text || 'Image Sent'}</div>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="outline" size="sm">
-                                            View Chat
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            onClick={() => handleStatusChange(message.id, message.status)}
+                                        >
+                                            {message.status === 'Unread' ? <CheckCircle className="mr-2 h-4 w-4"/> : <XCircle className="mr-2 h-4 w-4"/>}
+                                            Mark as {message.status === 'Unread' ? 'Read' : 'Unread'}
                                         </Button>
                                     </TableCell>
                                 </TableRow>
@@ -161,36 +130,13 @@ export default function AdminMessagesPage() {
                         </TableBody>
                     </Table>
                 </div>
-                {chats.length === 0 && !loadingChats && (
+                {messages.length === 0 && !loading && (
                     <div className="text-center py-20 text-muted-foreground">
-                        <MessageSquare className="mx-auto h-12 w-12" />
-                        <h3 className="mt-4 text-lg font-semibold">No conversations found.</h3>
-                        <p className="mt-1 text-sm">When users start a chat, it will appear here.</p>
+                        <Mail className="mx-auto h-12 w-12" />
+                        <h3 className="mt-4 text-lg font-semibold">No messages yet.</h3>
+                        <p className="mt-1 text-sm">When users send a message, it will appear here.</p>
                     </div>
                 )}
-                 <Dialog open={isChatOpen} onOpenChange={setIsChatOpen}>
-                    <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0">
-                         {selectedChat && (
-                            <>
-                                <DialogHeader className="p-4 border-b">
-                                    <DialogTitle>Chat with {selectedChat.userEmail}</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex-grow overflow-y-auto p-4">
-                                    {loadingMessages ? (
-                                        <div className="flex items-center justify-center h-full">
-                                            <Loader2 className="animate-spin text-primary" size={32} />
-                                        </div>
-                                    ) : (
-                                        <ChatBubbles messages={messages} currentUserId="admin" />
-                                    )}
-                                </div>
-                                <div className="border-t p-4 bg-background">
-                                    <ChatInput onSendMessage={handleSendMessage} />
-                                </div>
-                            </>
-                         )}
-                    </DialogContent>
-                </Dialog>
             </CardContent>
         </Card>
     );

@@ -4,7 +4,7 @@ import BlogImageGenerator from "@/components/blog-image-generator";
 export const metadata: Metadata = {
   title: 'The Value of Managed Hosting | Grock Technologies',
   description: 'Grock provides managed hosting with automated maintenance and expert support to save you time. Low prices are just the beginning when you get started with us. We provide managed wordpress, get started today!',
-  keywords: ['managed hosting value', 'what is managed hosting', 'is managed hosting worth it', 'Grock Technologies Company', 'grock.fun', 'Grock', 'automated wordpress updates', 'website maintenance', 'hosting support', 'we provide', 'get started', 'managed wordpress'],
+  keywords: ['managed hosting value', 'what is managed hosting', 'is managed hosting worth it', 'Grock Technologies Company', 'www.grock.fun', 'Grock', 'automated wordpress updates', 'website maintenance', 'hosting support', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {

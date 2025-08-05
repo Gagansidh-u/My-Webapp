@@ -5,7 +5,7 @@ import BlogImageGenerator from "@/components/blog-image-generator";
 export const metadata: Metadata = {
   title: 'NVMe vs. SSD Hosting: A Guide | Grock Technologies',
   description: 'Understand the benefits of NVMe vs. SSD storage for hosting. See why our Grock Tech company provides NVMe to deliver superior speed and performance for your website. We provide managed wordpress, get started today!',
-  keywords: ['NVMe hosting', 'SSD hosting', 'NVMe vs SSD', 'fast web hosting', 'Grock Technologies', 'grock.fun', 'Grock Tech', 'storage performance', 'website speed', 'e-commerce hosting', 'we provide', 'get started', 'managed wordpress'],
+  keywords: ['NVMe hosting', 'SSD hosting', 'NVMe vs SSD', 'fast web hosting', 'Grock Technologies', 'www.grock.fun', 'Grock Tech', 'storage performance', 'website speed', 'e-commerce hosting', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {

@@ -4,7 +4,7 @@ import BlogImageGenerator from "@/components/blog-image-generator";
 export const metadata: Metadata = {
   title: 'Scaling on a Budget: Hosting Tiers | Grock Technologies',
   description: 'Your hosting should grow with you. Our guide explains the affordable hosting tiers from Grock, so you can start small and scale up your website seamlessly. Get started today!',
-  keywords: ['scalable hosting', 'hosting plans', 'business growth', 'Grock Technologies', 'grock.fun', 'Grock', 'hosting tiers', 'upgrade hosting plan', 'budget hosting', 'small business hosting', 'get started'],
+  keywords: ['scalable hosting', 'hosting plans', 'business growth', 'Grock Technologies', 'www.grock.fun', 'Grock', 'hosting tiers', 'upgrade hosting plan', 'budget hosting', 'small business hosting', 'get started'],
 };
 
 export default function BlogPost() {

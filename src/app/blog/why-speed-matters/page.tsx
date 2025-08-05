@@ -4,7 +4,7 @@ import BlogImageGenerator from "@/components/blog-image-generator";
 export const metadata: Metadata = {
   title: 'Why Website Speed Matters | Grock Technologies',
   description: 'A deep dive into why website speed is critical for user experience, conversions, and SEO. Learn how Grock Fun provides NVMe hosting for a competitive advantage. We provide managed wordpress, get started today!',
-  keywords: ['website speed', 'page load time', 'conversion rate optimization', 'Grock Technologies', 'grock.fun', 'Grock Fun', 'SEO ranking factor', 'user experience', 'NVMe hosting', 'LiteSpeed server', 'fast hosting', 'we provide', 'get started', 'managed wordpress'],
+  keywords: ['website speed', 'page load time', 'conversion rate optimization', 'Grock Technologies', 'www.grock.fun', 'Grock Fun', 'SEO ranking factor', 'user experience', 'NVMe hosting', 'LiteSpeed server', 'fast hosting', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {

@@ -4,7 +4,7 @@ import BlogImageGenerator from "@/components/blog-image-generator";
 export const metadata: Metadata = {
   title: 'Websites for Small Business | Grock Technologies Company',
   description: 'Learn how a fast, secure website from the Grock Technologies Company can transform your small business. We provide Grock Website Building to help you grow. Get started today!',
-  keywords: ['small business website', 'professional website', 'online presence', 'Grock Technologies Company', 'grock.fun', 'Grock Website Building', 'website for business', 'grow my business', 'customer credibility', 'we provide', 'get started'],
+  keywords: ['small business website', 'professional website', 'online presence', 'Grock Technologies Company', 'www.grock.fun', 'Grock Website Building', 'website for business', 'grow my business', 'customer credibility', 'we provide', 'get started'],
 };
 
 export default function BlogPost() {

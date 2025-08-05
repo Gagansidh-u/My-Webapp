@@ -1,3 +1,4 @@
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -8,35 +9,33 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Helper function to check if the user is the owner of the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
     // Rules for the 'orders' collection
     match /orders/{orderId} {
-      // Allow any authenticated user to list, read, update, and delete orders.
-      // This is required for the admin panel to function correctly.
-      allow read, update, delete: if isAuthenticated();
-
-      // Allow any authenticated user to create an order.
-      // The user-specific check below for 'get' will protect their data on the client-side.
+      // Allow any authenticated user to create an order
       allow create: if isAuthenticated();
-    }
-    
-    // This second rule for 'orders' ensures that on the user-facing pages (like /account/orders),
-    // a user can only fetch their OWN order, even though the admin has broader permissions.
-    // This is a more specific rule that Firestore will enforce for direct 'get' requests.
-    match /orders/{orderId} {
-       allow get: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      
+      // Allow a user to read their own order
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+
+      // Allow any authenticated user (for the admin panel) to list, update, and delete orders
+      allow list, update, delete: if isAuthenticated();
     }
 
     // Rules for the 'contacts' collection
     match /contacts/{contactId} {
-      // Allow anyone (authenticated or not) to create a contact message
+      // Allow anyone to create a contact message (from the contact form)
       allow create: if true;
-
-      // Allow any authenticated user to read, update, and delete contacts.
-      // This is required for the admin messages page to work.
+      
+      // Allow any authenticated user (for the admin panel) to manage all contact messages
       allow read, update, delete: if isAuthenticated();
     }
-
-    // Default deny all other access
+    
+    // Default deny all other collections/paths
     match /{document=**} {
       allow read, write: if false;
     }

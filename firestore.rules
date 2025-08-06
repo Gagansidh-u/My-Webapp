@@ -1,39 +1,39 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper function to check for admin user
+    // Helper function to check for Admin
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == "helpdesk.grock@outlook.com";
+      return request.auth.token.email == 'helpdesk.grock@outlook.com';
     }
 
-    // Rules for the 'orders' collection
-    match /orders/{orderId} {
-      // Admins can perform any action on any order
-      // Other users can create orders, and read/write their own
-      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
-      allow create: if request.auth != null;
-    }
-    
-    // Admins need collection-level read access for the admin panel query
-    match /orders/{document=**} {
-        allow read: if isAdmin();
-    }
-
-    // Rules for the 'contacts' collection
     match /contacts/{contactId} {
-      // Admins can read/write any contact message
-      // Logged-in users can read their own inquiries
-      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
-      
-      // Anyone can create a contact message (for the public contact form)
-      allow create: if true;
+      // ANYONE can create a contact message (for the contact form)
+      allow create;
+
+      // Users can read/delete their own messages.
+      // Admin can read/delete ANY message.
+      allow read, delete: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+
+      // Only Admin can update a message's status
+      allow update: if isAdmin();
     }
-    
-    // Admins need collection-level read access for the admin panel query
-    match /contacts/{document=**} {
-        allow read: if isAdmin();
+
+    match /orders/{orderId} {
+      // Logged-in users can create orders
+      allow create: if request.auth != null;
+
+      // Users can read their own orders.
+      // Admin can read ANY order.
+      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+      
+      // Only Admin can update an order's status
+      allow update: if isAdmin();
+
+      // No one can delete orders for now
+      allow delete: if false;
     }
   }
 }

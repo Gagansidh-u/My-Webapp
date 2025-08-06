@@ -1,39 +1,39 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper function to check if the user is an admin
+    // Helper function to check for admin user
     function isAdmin() {
-      return request.auth.token.email == "helpdesk.grock@outlook.com";
+      return request.auth != null && request.auth.token.email == "helpdesk.grock@outlook.com";
     }
 
     // Rules for the 'orders' collection
     match /orders/{orderId} {
-      // Admins can read, write, create, and delete any order
-      allow read, write, create, delete: if isAdmin();
-      
-      // Logged-in users can read and create their own orders
-      allow read, create: if request.auth != null && request.auth.uid == request.resource.data.userId;
-      
-      // Users cannot update or delete their orders directly
-      allow update, delete: if false;
+      // Admins can perform any action on any order
+      // Other users can create orders, and read/write their own
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
+      allow create: if request.auth != null;
+    }
+    
+    // Admins need collection-level read access for the admin panel query
+    match /orders/{document=**} {
+        allow read: if isAdmin();
     }
 
     // Rules for the 'contacts' collection
     match /contacts/{contactId} {
-        // Admins can read, write, create, and delete any contact message
-        allow read, write, create, delete: if isAdmin();
-
-        // Any user (logged in or not) can create a contact message
-        allow create: if true;
-
-        // Logged-in users can read and delete their own messages
-        allow read, delete: if request.auth != null && request.auth.uid == resource.data.userId;
-
-        // Users cannot update their messages
-        allow update: if false;
+      // Admins can read/write any contact message
+      // Logged-in users can read their own inquiries
+      allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
+      
+      // Anyone can create a contact message (for the public contact form)
+      allow create: if true;
+    }
+    
+    // Admins need collection-level read access for the admin panel query
+    match /contacts/{document=**} {
+        allow read: if isAdmin();
     }
   }
 }

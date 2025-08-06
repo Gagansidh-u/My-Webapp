@@ -4,7 +4,7 @@ import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAak40wl54A2kaSyxfFN5xiOShY3oPg6Ns",
-  authDomain: "grock-fun-63159.firebaseapp.com",
+  authDomain: "grock.fun",
   projectId: "grock-fun-63159",
   storageBucket: "grock-fun-63159.firebasestorage.app",
   messagingSenderId: "513451391473",

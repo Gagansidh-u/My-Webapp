@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
  
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.grock.fun';
+  const baseUrl = 'https://grock.fun';
 
   // Define blog posts for the sitemap
   const blogPosts = [

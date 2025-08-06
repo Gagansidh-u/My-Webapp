@@ -10,14 +10,14 @@ import { ThemeProvider } from '@/components/theme-provider';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.grock.fun'),
+  metadataBase: new URL('https://grock.fun'),
   title: {
     default: 'Grock: Fast NVMe Hosting & Web Services',
     template: `%s | Grock Technologies`,
   },
   description: 'Elevate your online presence with Grock Technologies. We provide blazing-fast, secure, and reliable web hosting with NVMe storage. Get started today!',
   keywords: ['Grock Technologies', 'Grok', 'Grock tech', 'Grock Company', 'Grock Technologies Company', 'Grock', 'Grock Fun', 'Grock website Building', 'web hosting', 'website development', 'fast hosting', 'secure hosting', 'WordPress hosting', 'small business website', 'professional website', 'online presence', 'NVMe hosting', 'LiteSpeed server', 'managed WordPress', 'e-commerce hosting', '99.9% uptime', 'free SSL', 'affordable web hosting', 'business hosting', 'developer hosting'],
-  authors: [{ name: 'Grock Technologies', url: 'https://www.grock.fun' }],
+  authors: [{ name: 'Grock Technologies', url: 'https://grock.fun' }],
   creator: 'Grock Technologies',
   publisher: 'Grock Technologies',
   robots: {
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Grock Technologies: Fast, Secure & Reliable Web Solutions',
     description: 'Launch your professional website in minutes with our high-performance NVMe hosting and 99.9% uptime guarantee. Get started with Grock today.',
-    url: 'https://www.grock.fun',
+    url: 'https://grock.fun',
     siteName: 'Grock Technologies',
     images: [
       {

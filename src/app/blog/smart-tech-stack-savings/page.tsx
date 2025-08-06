@@ -4,7 +4,7 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: 'Our Tech Stack: How We Provide Value | Grock Tech',
   description: 'Learn how our Grock Tech company uses LiteSpeed and NVMe SSDs to boost performance, creating efficiencies that make our hosting plans more affordable for you. We provide managed wordpress, get started today!',
-  keywords: ['hosting tech stack', 'litespeed vs apache', 'nvme vs ssd', 'Grock Tech', 'www.grock.fun', 'hosting performance', 'affordable hosting', 'hosting technology', 'website optimization', 'we provide', 'get started', 'managed wordpress'],
+  keywords: ['hosting tech stack', 'litespeed vs apache', 'nvme vs ssd', 'Grock Tech', 'grock.fun', 'hosting performance', 'affordable hosting', 'hosting technology', 'website optimization', 'we provide', 'get started', 'managed wordpress'],
 };
 
 export default function BlogPost() {

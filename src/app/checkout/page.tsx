@@ -215,10 +215,11 @@ function CheckoutPage() {
                         createdAt: serverTimestamp()
                     };
                     
-                    // Atomically add a new order to the "orders" array field.
-                    await updateDoc(userDocRef, {
+                    // Use setDoc with merge:true to create or update the document
+                    // and add the new order to the "orders" array field.
+                    await setDoc(userDocRef, {
                         orders: arrayUnion(newOrder)
-                    });
+                    }, { merge: true });
 
 
                     setInvoiceDetails({

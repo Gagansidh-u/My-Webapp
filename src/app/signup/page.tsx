@@ -10,8 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { auth, db } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, User } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import React from "react";
@@ -60,13 +60,18 @@ export default function SignupPage() {
     },
   });
 
-  const createUserDocument = async (user: any) => {
+  const createUserDocument = async (user: User) => {
     const userRef = doc(db, "users", user.uid);
-    await setDoc(userRef, {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-    });
+    const docSnap = await getDoc(userRef);
+    // Only create document if it doesn't exist
+    if (!docSnap.exists()) {
+        await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            createdAt: new Date(),
+        });
+    }
   }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -75,7 +80,12 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
       await updateProfile(user, { displayName: values.name });
-      await createUserDocument({ ...user, displayName: values.name }); // Pass updated user
+      // We need to reload the user to get the updated displayName
+      await user.reload(); 
+      const updatedUser = auth.currentUser;
+      if (updatedUser) {
+        await createUserDocument(updatedUser);
+      }
       
       toast({ title: "Success", description: "Account created successfully." });
       router.push("/");

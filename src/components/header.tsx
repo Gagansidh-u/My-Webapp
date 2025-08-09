@@ -13,6 +13,8 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
+import { LoginForm } from './login-form';
 
 const Header = () => {
   const { user, loading } = useAuth();
@@ -110,9 +112,14 @@ const Header = () => {
                     </DropdownMenuContent>
                 </DropdownMenu>
             ) : (
-                <Button asChild className="btn">
-                <Link href="/login">Login</Link>
-                </Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                       <Button className="btn">Login</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                        <LoginForm />
+                    </DialogContent>
+                </Dialog>
             )}
            </div>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -146,9 +153,14 @@ const Header = () => {
                         ) : user ? (
                             <Button onClick={() => {handleLogout(); setIsOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
                         ) : (
-                            <Button asChild className="w-full btn">
-                            <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
-                            </Button>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                <Button className="w-full btn">Login</Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-md">
+                                    <LoginForm onLogin={() => setIsOpen(false)} />
+                                </DialogContent>
+                            </Dialog>
                         )}
                     </div>
                 </div>

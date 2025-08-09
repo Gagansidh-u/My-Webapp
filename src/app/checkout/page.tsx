@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, doc, getDoc, setDoc, updateDoc, serverTimestamp, query, getDocs, limit, arrayUnion } from "firebase/firestore";
+import { collection, doc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Invoice } from "@/components/invoice";
 import html2canvas from 'html2canvas';
@@ -62,6 +62,8 @@ function CheckoutPage() {
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [invoiceDetails, setInvoiceDetails] = useState<OrderDetailsForInvoice | null>(null);
     const [downloadFormat, setDownloadFormat] = useState("pdf");
+    const [hasPreviousOrders, setHasPreviousOrders] = useState(false);
+
 
     const invoiceRef = useRef<HTMLDivElement>(null);
 
@@ -97,18 +99,20 @@ function CheckoutPage() {
         if (authLoading || !user) return;
 
         const checkForPreviousOrders = async () => {
-            const userDocRef = doc(db, `users/${user.uid}`);
-            const userDoc = await getDoc(userDocRef);
-
-            if (userDoc.exists() && userDoc.data()?.orders?.length > 0) {
-                setBuildingCharge(0);
-            } else {
-                setBuildingCharge(initialBuildingCharge);
-            }
+            // This check can be simplified or removed if we rely on the buildingCharge state
+            // But can be kept for UI logic if needed
         };
 
         checkForPreviousOrders();
     }, [user, authLoading, initialBuildingCharge]);
+
+    useEffect(() => {
+         if (hasPreviousOrders) {
+             setBuildingCharge(0);
+         } else {
+             setBuildingCharge(initialBuildingCharge);
+         }
+    }, [hasPreviousOrders, initialBuildingCharge])
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -125,12 +129,12 @@ function CheckoutPage() {
     
     const getTotalPrice = () => {
         const durationValue = parseInt(selectedDuration.value);
-        let hostingPrice;
+        let hostingPrice = monthlyPrice * durationValue;
+
         if (durationValue === 1 && planId !== 'trying') {
-            hostingPrice = monthlyPrice * 2;
-        } else {
-            hostingPrice = monthlyPrice * durationValue;
+             hostingPrice = monthlyPrice * 2;
         }
+
         return hostingPrice + buildingCharge;
     }
 
@@ -199,16 +203,16 @@ function CheckoutPage() {
             order_id: order.id,
             handler: async function (response: any) {
                 try {
-                    const userDocRef = doc(db, "users", user.uid);
-                    
                     const finalWebsiteDetails = planId === 'trying' 
                         ? { description: "", colors: "", style: "" }
                         : websiteDetails;
-
-                    const newOrder = {
+                    
+                    // Add order to 'orders' collection
+                    await addDoc(collection(db, "orders"), {
                         id: order.id,
                         userId: user.uid,
                         userEmail: user.email,
+                        userName: user.displayName,
                         plan: plan,
                         price: totalPrice,
                         duration: parseInt(selectedDuration.value),
@@ -217,15 +221,15 @@ function CheckoutPage() {
                         orderId: order.id,
                         status: "Paid",
                         createdAt: serverTimestamp()
-                    };
+                    });
                     
-                    await setDoc(userDocRef, { 
-                        orders: arrayUnion(newOrder),
+                    // Create user document if it doesn't exist
+                    const userDocRef = doc(db, "users", user.uid);
+                    await setDoc(userDocRef, {
                         uid: user.uid,
                         email: user.email,
                         displayName: user.displayName,
-                     }, { merge: true });
-
+                    }, { merge: true });
 
                     setInvoiceDetails({
                         orderId: order.id,
@@ -399,3 +403,5 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
+
+    

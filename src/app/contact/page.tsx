@@ -64,8 +64,8 @@ export default function ContactPage() {
 
         setLoading(true);
         try {
-            // Save contact message to the user's subcollection
-            await addDoc(collection(db, `users/${user.uid}/contacts`), {
+            await addDoc(collection(db, `contacts`), {
+                userId: user.uid,
                 name: formData.name,
                 email: formData.email,
                 subject: formData.subject,
@@ -177,3 +177,5 @@ export default function ContactPage() {
         </div>
     );
 }
+
+    

@@ -1,18 +1,42 @@
 
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Helper function to check for admin role
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'helpdesk.grock@outlook.com';
+    }
+
+    // Rules for the 'users' collection
     match /users/{userId} {
+      // Users can read and write to their own document
       allow read, write: if request.auth != null && request.auth.uid == userId;
-
-      match /orders/{orderId} {
-        allow read, create: if request.auth != null && request.auth.uid == userId;
-      }
-
-      match /contacts/{contactId} {
-        allow read, create: if request.auth != null && request.auth.uid == userId;
-        allow delete: if request.auth != null && request.auth.uid == userId;
-      }
+      // Admins can read any user document
+      allow get: if isAdmin();
+    }
+    
+    // Rules for the 'orders' collection
+    match /orders/{orderId} {
+        // Users can create their own orders
+        allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+        // Users can read their own orders
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        // Admins can read and update any order
+        allow read, update: if isAdmin();
+    }
+    
+    // Rules for the 'contacts' collection
+    match /contacts/{contactId} {
+        // Logged-in users can create contact messages
+        allow create: if request.auth != null;
+        // Users can read their own messages
+        allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+        // Admins can read, update, and delete any contact message
+        allow read, update, delete: if isAdmin();
     }
   }
 }
+
+    

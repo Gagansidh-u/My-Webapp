@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -176,11 +176,11 @@ export function SignupForm({ onSignup }: SignupFormProps) {
 
   return (
     <>
-        <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-headline">Create an Account</CardTitle>
-            <CardDescription>Get started with our services</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <DialogHeader className="text-center">
+            <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
+            <DialogDescription>Get started with our services</DialogDescription>
+        </DialogHeader>
+        <CardContent className="pt-6">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
@@ -271,7 +271,7 @@ export function SignupForm({ onSignup }: SignupFormProps) {
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...googleForm}>
-                    <form onSubmit={googleForm.handleSubmit(onGoogleDetailsSubmit)} className="space-y-4">
+                    <form onSubmit={googleForm.handleSubmit(onGoogleDetailsSubmit)} className="space-y-4 pt-4">
                         <FormField
                             control={googleForm.control}
                             name="name"

@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDoc, doc } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Invoice } from "@/components/invoice";
 import html2canvas from 'html2canvas';
@@ -44,6 +44,7 @@ type OrderDetailsForInvoice = {
     duration: number;
     userEmail: string | null;
     userName: string | null;
+    userMobile: string | null;
     buildingCharge: number;
     monthlyPrice: number;
 };
@@ -64,6 +65,7 @@ function CheckoutPage() {
     const [invoiceDetails, setInvoiceDetails] = useState<OrderDetailsForInvoice | null>(null);
     const [downloadFormat, setDownloadFormat] = useState("pdf");
     const [hasPreviousOrders, setHasPreviousOrders] = useState(false);
+    const [userMobile, setUserMobile] = useState<string | null>(null);
 
 
     const invoiceRef = useRef<HTMLDivElement>(null);
@@ -98,6 +100,17 @@ function CheckoutPage() {
 
     useEffect(() => {
         if (authLoading || !user) return;
+
+        const fetchUserData = async () => {
+            if (user) {
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
+                if (docSnap.exists()) {
+                    setUserMobile(docSnap.data().mobile || null);
+                }
+            }
+        };
+        fetchUserData();
 
         const checkForPreviousOrders = async () => {
             // This check can be simplified or removed if we rely on the buildingCharge state
@@ -181,22 +194,27 @@ function CheckoutPage() {
 
         setLoading(true);
         const totalPrice = getTotalPrice();
+        const commonOrderDetails = {
+            userId: user.uid,
+            userEmail: user.email,
+            userMobile: userMobile,
+            plan: plan,
+            duration: parseInt(selectedDuration.value),
+            websiteDetails: planId === 'trying' ? { description: "", colors: "", style: "" } : websiteDetails,
+            status: "Paid",
+            createdAt: serverTimestamp()
+        };
+
 
         // If price is 0, handle free order directly
         if (totalPrice === 0) {
             try {
                 const orderId = `grock_${new Date().getTime()}`;
                 await addDoc(collection(db, "orders"), {
-                    userId: user.uid,
-                    userEmail: user.email,
-                    plan: plan,
+                    ...commonOrderDetails,
                     price: 0,
-                    duration: parseInt(selectedDuration.value),
-                    websiteDetails: { description: "", colors: "", style: "" },
                     razorpayPaymentId: "free_plan",
                     orderId: orderId,
-                    status: "Paid",
-                    createdAt: serverTimestamp()
                 });
 
                 setInvoiceDetails({
@@ -206,6 +224,7 @@ function CheckoutPage() {
                     duration: parseInt(selectedDuration.value),
                     userEmail: user.email,
                     userName: user.displayName,
+                    userMobile: userMobile,
                     buildingCharge: 0,
                     monthlyPrice: 0,
                 });
@@ -247,21 +266,11 @@ function CheckoutPage() {
             order_id: order.id,
             handler: async function (response: any) {
                 try {
-                    const finalWebsiteDetails = planId === 'trying' 
-                        ? { description: "", colors: "", style: "" }
-                        : websiteDetails;
-                    
                     await addDoc(collection(db, "orders"), {
-                        userId: user.uid,
-                        userEmail: user.email,
-                        plan: plan,
+                       ...commonOrderDetails,
                         price: totalPrice,
-                        duration: parseInt(selectedDuration.value),
-                        websiteDetails: finalWebsiteDetails,
                         razorpayPaymentId: response.razorpay_payment_id,
                         orderId: order.id,
-                        status: "Paid",
-                        createdAt: serverTimestamp()
                     });
 
                     setInvoiceDetails({
@@ -271,6 +280,7 @@ function CheckoutPage() {
                         duration: parseInt(selectedDuration.value),
                         userEmail: user.email,
                         userName: user.displayName,
+                        userMobile: userMobile,
                         buildingCharge: buildingCharge,
                         monthlyPrice: monthlyPrice
                     });
@@ -288,7 +298,7 @@ function CheckoutPage() {
             prefill: {
                 name: user.displayName || "Customer",
                 email: user.email || "",
-                contact: "",
+                contact: userMobile,
             },
             notes: {
                 plan: plan,

@@ -22,6 +22,7 @@ const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required."}),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  mobile: z.string().min(10, { message: "Mobile number must be at least 10 digits."}),
 });
 
 const GoogleIcon = () => (
@@ -57,10 +58,11 @@ export default function SignupPage() {
       name: "",
       email: "",
       password: "",
+      mobile: "",
     },
   });
 
-  const createUserDocument = async (user: User) => {
+  const createUserDocument = async (user: User, mobile: string | null = null) => {
     const userRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(userRef);
     // Only create document if it doesn't exist
@@ -69,6 +71,7 @@ export default function SignupPage() {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName,
+            mobile: mobile,
             createdAt: new Date(),
         });
     }
@@ -84,7 +87,7 @@ export default function SignupPage() {
       await user.reload(); 
       const updatedUser = auth.currentUser;
       if (updatedUser) {
-        await createUserDocument(updatedUser);
+        await createUserDocument(updatedUser, values.mobile);
       }
       
       toast({ title: "Success", description: "Account created successfully." });
@@ -150,6 +153,19 @@ export default function SignupPage() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input placeholder="name@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="mobile"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mobile Number</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="9876543210" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

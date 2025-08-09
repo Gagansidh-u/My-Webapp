@@ -14,6 +14,7 @@ interface OrderDetails {
     duration: number;
     userEmail: string | null;
     userName: string | null;
+    userMobile: string | null;
     buildingCharge: number;
     monthlyPrice: number;
 }
@@ -57,6 +58,7 @@ export const Invoice: React.FC<InvoiceProps> = ({ details }) => {
                         <h4 className="font-semibold text-muted-foreground">BILLED TO</h4>
                         <p className="font-medium">{details.userName || 'Valued Customer'}</p>
                         <p className="text-muted-foreground truncate">{details.userEmail}</p>
+                        {details.userMobile && <p className="text-muted-foreground">{details.userMobile}</p>}
                     </div>
                     <div className="space-y-1 sm:text-center">
                         <h4 className="font-semibold text-muted-foreground">INVOICE DATE</h4>

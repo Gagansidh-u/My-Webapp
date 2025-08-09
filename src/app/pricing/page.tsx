@@ -13,6 +13,20 @@ import { db } from "@/lib/firebase";
 
 const plans = [
   {
+    title: 'Trying Plan',
+    monthlyPrice: 1.00,
+    buildingCharge: 0.00,
+    description: 'Perfect for securing your domain name',
+    features: [
+      '1 Domain Name',
+      'Easy DNS Management',
+      'Domain Forwarding',
+      '24/7 Customer Support',
+    ],
+    planId: 'trying',
+    discount: 'Limited Time'
+  },
+  {
     title: 'Single Website',
     monthlyPrice: 149.00,
     buildingCharge: 999.00,
@@ -122,7 +136,7 @@ export default function PricingPage() {
         <p className="text-lg text-muted-foreground mt-2">Choose the perfect plan for your needs. Simple, transparent, and powerful.</p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start md:grid-cols-2">
         {plans.map((plan, index) => {
           const isPlanActive = activePlans.includes(plan.title);
           
@@ -146,11 +160,13 @@ export default function PricingPage() {
                   <div className="text-center mb-6">
                     <div className="flex items-baseline justify-center">
                         <span className="text-4xl font-bold font-headline">₹{plan.monthlyPrice.toFixed(2)}</span>
-                        <span className="text-muted-foreground">/mo</span>
+                        {plan.planId !== 'trying' && <span className="text-muted-foreground">/mo</span>}
                     </div>
-                     <p className="text-sm text-muted-foreground mt-1">
-                        + ₹{plan.buildingCharge.toFixed(2)} One-Time Building Fee
-                     </p>
+                     {plan.buildingCharge > 0 && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                            + ₹{plan.buildingCharge.toFixed(2)} One-Time Building Fee
+                        </p>
+                     )}
                      <p className="text-xs text-muted-foreground">
                         + Taxes
                      </p>

@@ -14,7 +14,7 @@ import { db } from "@/lib/firebase";
 const plans = [
   {
     title: 'Trying Plan',
-    monthlyPrice: 1.00,
+    monthlyPrice: 0.00,
     buildingCharge: 0.00,
     description: 'Perfect for securing your domain name',
     features: [
@@ -24,7 +24,7 @@ const plans = [
       '24/7 Customer Support',
     ],
     planId: 'trying',
-    discount: 'Limited Time'
+    discount: 'Free!'
   },
   {
     title: 'Single Website',
@@ -104,7 +104,7 @@ export default function PricingPage() {
 
     const fetchUserOrders = async () => {
         try {
-            const ordersQuery = query(collection(db, `users/${user.uid}/orders`), where("userId", "==", user.uid));
+            const ordersQuery = query(collection(db, "orders"), where("userId", "==", user.uid));
             const querySnapshot = await getDocs(ordersQuery);
             const userOrders = querySnapshot.docs.map(doc => doc.data() as Order);
             
@@ -146,7 +146,7 @@ export default function PricingPage() {
                 {plan.popular && <Badge variant="default" className="absolute top-0 right-4 -mt-3 px-4 py-1 text-sm font-bold">Most Popular</Badge>}
                  {plan.discount && (
                     <Badge 
-                      variant="destructive" 
+                      variant={plan.planId === 'trying' ? 'default' : 'destructive'}
                       className="absolute top-4 left-4 -rotate-12 text-base font-bold"
                     >
                       {plan.discount}

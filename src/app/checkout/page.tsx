@@ -179,8 +179,50 @@ function CheckoutPage() {
         }
 
         setLoading(true);
-
         const totalPrice = getTotalPrice();
+
+        // If price is 0, handle free order directly
+        if (totalPrice === 0) {
+            try {
+                const orderId = `grock_${new Date().getTime()}`;
+                await addDoc(collection(db, "orders"), {
+                    userId: user.uid,
+                    userEmail: user.email,
+                    plan: plan,
+                    price: 0,
+                    duration: parseInt(selectedDuration.value),
+                    websiteDetails: { description: "", colors: "", style: "" },
+                    razorpayPaymentId: "free_plan",
+                    orderId: orderId,
+                    status: "Paid",
+                    createdAt: serverTimestamp()
+                });
+
+                setInvoiceDetails({
+                    orderId: orderId,
+                    plan: plan,
+                    price: 0,
+                    duration: parseInt(selectedDuration.value),
+                    userEmail: user.email,
+                    userName: user.displayName,
+                    buildingCharge: 0,
+                    monthlyPrice: 0,
+                });
+                setShowSuccessDialog(true);
+            } catch (error) {
+                console.error("Error writing document for free order: ", error);
+                toast({
+                    title: "Order Error",
+                    description: "Failed to save your order details. Please contact support.",
+                    variant: "destructive",
+                });
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
+
+
         const result = await createOrder({ amount: totalPrice });
 
         if (result.error || !result.order) {
@@ -343,9 +385,9 @@ function CheckoutPage() {
                             Please <Link href="/login" className="font-bold underline">log in</Link> to complete your purchase.
                             </div>
                         )}
-                        <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading || !totalPrice}>
+                        <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading}>
                             {loading ? <Loader2 className="animate-spin mr-2" /> : null}
-                            {loading ? 'Processing...' : `Pay ₹${totalPrice > 0 ? totalPrice.toFixed(2) : '0.00'}`}
+                            {loading ? 'Processing...' : (totalPrice > 0 ? `Pay ₹${totalPrice.toFixed(2)}` : 'Get Now')}
                         </Button>
                     </CardFooter>
                 </Card>

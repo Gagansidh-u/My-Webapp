@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, query, where, getDocs, limit } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
@@ -75,8 +75,7 @@ function CheckoutPage() {
 
         const checkForPreviousOrders = async () => {
             const ordersQuery = query(
-                collection(db, "orders"),
-                where("userId", "==", user.uid),
+                collection(db, `users/${user.uid}/orders`),
                 limit(1)
             );
             const querySnapshot = await getDocs(ordersQuery);
@@ -161,8 +160,8 @@ function CheckoutPage() {
             order_id: order.id,
             handler: async function (response: any) {
                 try {
-                    // Save order details to Firestore
-                    await addDoc(collection(db, "orders"), {
+                    // Save order details to Firestore user's subcollection
+                    await addDoc(collection(db, `users/${user.uid}/orders`), {
                         userId: user.uid,
                         userEmail: user.email,
                         plan: plan,

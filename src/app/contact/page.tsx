@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "@/components/auth-provider";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 export default function ContactPage() {
     const { toast } = useToast();
@@ -42,6 +44,15 @@ export default function ContactPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
+        if (!user) {
+             toast({
+                title: "Login Required",
+                description: "You must be logged in to send a message.",
+                variant: "destructive"
+            });
+            return;
+        }
+
         if (!formData.name || !formData.email || !formData.subject || !formData.message) {
             toast({
                 title: "Error",
@@ -53,20 +64,20 @@ export default function ContactPage() {
 
         setLoading(true);
         try {
-            await addDoc(collection(db, "contacts"), {
+            // Save contact message to the user's subcollection
+            await addDoc(collection(db, `users/${user.uid}/contacts`), {
                 name: formData.name,
                 email: formData.email,
                 subject: formData.subject,
                 message: formData.message,
                 status: 'Unread',
                 createdAt: serverTimestamp(),
-                userId: user ? user.uid : null // Add userId if user is logged in
             });
             toast({
                 title: "Success",
                 description: "Your message has been sent successfully."
             });
-            // Reset form but keep user details if logged in
+            // Reset form but keep user details
             setFormData({ 
                 name: user?.displayName || '', 
                 email: user?.email || '', 
@@ -127,26 +138,35 @@ export default function ContactPage() {
                         <CardTitle className="font-headline text-2xl">Send us a Message</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                         {!user && (
+                            <Alert>
+                                <Info className="h-4 w-4" />
+                                <AlertTitle>Heads up!</AlertTitle>
+                                <AlertDescription>
+                                    Please log in to send a message through the contact form.
+                                </AlertDescription>
+                            </Alert>
+                         )}
+                        <form onSubmit={handleSubmit} className={`space-y-4 ${!user ? 'mt-4' : ''}`}>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Name</Label>
-                                    <Input id="name" placeholder="Your Name" value={formData.name} onChange={handleInputChange} disabled={!!user?.displayName} />
+                                    <Input id="name" placeholder="Your Name" value={formData.name} onChange={handleInputChange} disabled={!user || !!user?.displayName} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleInputChange} disabled={!!user} />
+                                    <Input id="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleInputChange} disabled={!user} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="subject">Subject</Label>
-                                <Input id="subject" placeholder="Message Subject" value={formData.subject} onChange={handleInputChange} />
+                                <Input id="subject" placeholder="Message Subject" value={formData.subject} onChange={handleInputChange} disabled={!user} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="message">Message</Label>
-                                <Textarea id="message" placeholder="Your message..." rows={6} value={formData.message} onChange={handleInputChange} />
+                                <Textarea id="message" placeholder="Your message..." rows={6} value={formData.message} onChange={handleInputChange} disabled={!user} />
                             </div>
-                            <Button type="submit" className="w-full font-bold" size="lg" disabled={loading}>
+                            <Button type="submit" className="w-full font-bold" size="lg" disabled={loading || !user}>
                                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Send Message
                             </Button>

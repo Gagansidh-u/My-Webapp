@@ -57,8 +57,7 @@ export default function MyOrdersPage() {
         const fetchOrders = async () => {
             try {
                 const ordersQuery = query(
-                    collection(db, "orders"), 
-                    where("userId", "==", user.uid),
+                    collection(db, `users/${user.uid}/orders`), 
                     orderBy("createdAt", "desc")
                 );
                 const ordersSnapshot = await getDocs(ordersQuery);

@@ -53,8 +53,7 @@ export default function MyInquiriesPage() {
         }
 
         const inquiriesQuery = query(
-            collection(db, "contacts"), 
-            where("userId", "==", user.uid),
+            collection(db, `users/${user.uid}/contacts`), 
             orderBy("createdAt", "desc")
         );
         
@@ -72,7 +71,8 @@ export default function MyInquiriesPage() {
     }, [user, authLoading, router, toast]);
 
     const handleDelete = async (id: string) => {
-        const inquiryRef = doc(db, "contacts", id);
+        if (!user) return;
+        const inquiryRef = doc(db, `users/${user.uid}/contacts`, id);
         try {
             await deleteDoc(inquiryRef);
             toast({ title: "Success", description: "Your inquiry has been deleted." });

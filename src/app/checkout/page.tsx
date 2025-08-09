@@ -201,6 +201,11 @@ function CheckoutPage() {
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     
+                    // Ensure websiteDetails are empty for "Trying Plan" for consistency
+                    const finalWebsiteDetails = planId === 'trying' 
+                        ? { description: "", colors: "", style: "" }
+                        : websiteDetails;
+
                     const newOrder = {
                         id: order.id, // Using razorpay order id as unique id
                         userId: user.uid,
@@ -208,19 +213,27 @@ function CheckoutPage() {
                         plan: plan,
                         price: totalPrice,
                         duration: parseInt(selectedDuration.value),
-                        websiteDetails: websiteDetails,
+                        websiteDetails: finalWebsiteDetails,
                         razorpayPaymentId: response.razorpay_payment_id,
                         orderId: order.id,
                         status: "Paid",
                         createdAt: serverTimestamp()
                     };
                     
-                    // Use setDoc with merge:true to create or update the document
-                    // and add the new order to the "orders" array field.
-                    await setDoc(userDocRef, {
-                        orders: arrayUnion(newOrder)
-                    }, { merge: true });
-
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (!userDocSnap.exists()) {
+                        await setDoc(userDocRef, {
+                            uid: user.uid,
+                            email: user.email,
+                            displayName: user.displayName,
+                            createdAt: serverTimestamp(),
+                            orders: [newOrder]
+                        });
+                    } else {
+                        await updateDoc(userDocRef, {
+                            orders: arrayUnion(newOrder)
+                        });
+                    }
 
                     setInvoiceDetails({
                         orderId: order.id,

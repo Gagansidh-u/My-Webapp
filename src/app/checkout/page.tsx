@@ -52,6 +52,7 @@ function CheckoutPage() {
     const { user, loading: authLoading } = useAuth();
     const { toast } = useToast();
     const [plan, setPlan] = useState("");
+    const [planId, setPlanId] = useState("");
     const [monthlyPrice, setMonthlyPrice] = useState(0);
     const [buildingCharge, setBuildingCharge] = useState(0);
     const [initialBuildingCharge, setInitialBuildingCharge] = useState(0);
@@ -71,12 +72,16 @@ function CheckoutPage() {
     });
 
     useEffect(() => {
-        const planId = searchParams.get('plan');
+        const currentPlanId = searchParams.get('plan');
         const priceStr = searchParams.get('price');
         const buildingChargeStr = searchParams.get('buildingCharge');
         
-        if (planId) {
-            setPlan(planId.charAt(0).toUpperCase() + planId.slice(1));
+        if (currentPlanId) {
+            setPlanId(currentPlanId);
+            setPlan(currentPlanId.charAt(0).toUpperCase() + currentPlanId.slice(1));
+            if (currentPlanId === 'trying') {
+                setSelectedDuration(durationOptions[0]); // Set duration to 1 month for trying plan
+            }
         }
         if (priceStr) {
             setMonthlyPrice(parseFloat(priceStr));
@@ -123,7 +128,7 @@ function CheckoutPage() {
     const getTotalPrice = () => {
         const durationValue = parseInt(selectedDuration.value);
         let hostingPrice;
-        if (durationValue === 1) {
+        if (durationValue === 1 && planId !== 'trying') {
             hostingPrice = monthlyPrice * 2;
         } else {
             hostingPrice = monthlyPrice * durationValue;
@@ -161,7 +166,7 @@ function CheckoutPage() {
             return;
         }
 
-        if (!websiteDetails.description.trim() || !websiteDetails.colors.trim() || !websiteDetails.style.trim()) {
+        if (planId !== 'trying' && (!websiteDetails.description.trim() || !websiteDetails.colors.trim() || !websiteDetails.style.trim())) {
             toast({
                 title: "Website Details Required",
                 description: "Please fill out all the fields about your website requirements.",
@@ -265,6 +270,8 @@ function CheckoutPage() {
 
     const totalPrice = getTotalPrice();
 
+    const isTryingPlan = planId === 'trying';
+
     return (
         <>
             <div className="container mx-auto py-12 flex justify-center">
@@ -283,7 +290,7 @@ function CheckoutPage() {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</Label>
-                                    <Select value={selectedDuration.value} onValueChange={handleDurationChange}>
+                                    <Select value={selectedDuration.value} onValueChange={handleDurationChange} disabled={isTryingPlan}>
                                         <SelectTrigger className="w-[180px]" id="duration-select">
                                             <SelectValue placeholder="Select duration" />
                                         </SelectTrigger>
@@ -305,21 +312,23 @@ function CheckoutPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                             <h3 className="font-bold text-lg">Website Requirements</h3>
-                             <div className="space-y-2">
-                                 <Label htmlFor="description">Brief description of your website</Label>
-                                 <Textarea id="description" placeholder="e.g., A portfolio website to showcase my photography." rows={4} value={websiteDetails.description} onChange={handleInputChange} />
-                             </div>
-                             <div className="space-y-2">
-                                 <Label htmlFor="colors">Preferred Colors</Label>
-                                 <Input id="colors" placeholder="e.g., Blue, white, and a touch of gold" value={websiteDetails.colors} onChange={handleInputChange} />
-                             </div>
-                             <div className="space-y-2">
-                                 <Label htmlFor="style">Style/Vibe</Label>
-                                 <Input id="style" placeholder="e.g., Modern, minimalist, professional" value={websiteDetails.style} onChange={handleInputChange} />
-                             </div>
-                        </div>
+                        {!isTryingPlan && (
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-lg">Website Requirements</h3>
+                                <div className="space-y-2">
+                                    <Label htmlFor="description">Brief description of your website</Label>
+                                    <Textarea id="description" placeholder="e.g., A portfolio website to showcase my photography." rows={4} value={websiteDetails.description} onChange={handleInputChange} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="colors">Preferred Colors</Label>
+                                    <Input id="colors" placeholder="e.g., Blue, white, and a touch of gold" value={websiteDetails.colors} onChange={handleInputChange} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="style">Style/Vibe</Label>
+                                    <Input id="style" placeholder="e.g., Modern, minimalist, professional" value={websiteDetails.style} onChange={handleInputChange} />
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                     <CardFooter className="flex-col items-stretch gap-4">
                         {!user && (
@@ -377,3 +386,5 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
+
+    

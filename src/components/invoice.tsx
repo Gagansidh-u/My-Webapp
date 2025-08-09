@@ -4,6 +4,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { Gem } from 'lucide-react';
 
 interface OrderDetails {
@@ -31,72 +32,88 @@ const getDurationText = (duration: number) => {
 export const Invoice: React.FC<InvoiceProps> = ({ details }) => {
     const durationText = getDurationText(details.duration);
     const hostingPrice = details.price - details.buildingCharge;
+    const invoiceDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
 
     return (
-        <Card className="w-full max-w-2xl mx-auto shadow-lg border-primary/20">
-            <CardHeader className="bg-muted/30 p-6 rounded-t-lg">
-                <div className="flex items-center justify-between">
+        <Card className="w-full max-w-3xl mx-auto shadow-lg border-primary/20 bg-background overflow-hidden">
+            <header className="p-6 bg-muted/30">
+                 <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <Gem className="w-8 h-8 text-primary" />
                         <div>
-                            <CardTitle className="font-headline text-2xl text-primary">Invoice</CardTitle>
-                            <CardDescription>Order ID: {details.orderId}</CardDescription>
+                            <h1 className="text-2xl font-bold font-headline text-primary">Grock Technologies</h1>
+                            <p className="text-sm text-muted-foreground">helpdesk.grock@outlook.com</p>
                         </div>
                     </div>
-                    <div className='text-right'>
-                        <p className="font-bold text-lg">Grock Technologies</p>
-                        <p className="text-sm text-muted-foreground">helpdesk.grock@outlook.com</p>
+                    <div className="text-left sm:text-right w-full sm:w-auto">
+                        <h2 className="text-3xl font-bold font-headline text-foreground">INVOICE</h2>
+                        <p className="text-muted-foreground text-sm"># {details.orderId}</p>
                     </div>
                 </div>
-            </CardHeader>
-            <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-8 mb-6">
-                    <div>
-                        <h4 className="font-semibold mb-2">Billed To:</h4>
-                        <p className="text-muted-foreground">{details.userName || 'Valued Customer'}</p>
-                        <p className="text-muted-foreground">{details.userEmail}</p>
+            </header>
+            <CardContent className="p-6 space-y-8">
+                <div className="grid sm:grid-cols-3 gap-6">
+                    <div className="space-y-1">
+                        <h4 className="font-semibold text-sm text-muted-foreground">BILLED TO</h4>
+                        <p className="font-medium">{details.userName || 'Valued Customer'}</p>
+                        <p className="text-sm text-muted-foreground">{details.userEmail}</p>
                     </div>
-                    <div className="text-right">
-                        <h4 className="font-semibold mb-1">Invoice Date:</h4>
-                        <p className="text-muted-foreground">{new Date().toLocaleDateString()}</p>
+                    <div className="space-y-1 sm:text-center">
+                        <h4 className="font-semibold text-sm text-muted-foreground">INVOICE DATE</h4>
+                        <p className="font-medium">{invoiceDate}</p>
+                    </div>
+                    <div className="space-y-1 sm:text-right">
+                        <h4 className="font-semibold text-sm text-muted-foreground">STATUS</h4>
+                        <Badge variant="default" className="bg-green-500/20 text-green-700 border-green-500/30 hover:bg-green-500/30">Paid</Badge>
                     </div>
                 </div>
 
-                <Separator className="my-4" />
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b">
+                                <th className="text-left font-semibold p-2">DESCRIPTION</th>
+                                <th className="text-right font-semibold p-2">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="border-b">
+                                <td className="p-2">
+                                    <p className="font-medium">{details.plan} Plan Hosting</p>
+                                    <p className="text-xs text-muted-foreground">({durationText})</p>
+                                </td>
+                                <td className="text-right p-2">₹{hostingPrice.toFixed(2)}</td>
+                            </tr>
+                             {details.buildingCharge > 0 && (
+                                <tr className="border-b">
+                                    <td className="p-2">One-Time Building Fee</td>
+                                    <td className="text-right p-2">₹{details.buildingCharge.toFixed(2)}</td>
+                                </tr>
+                             )}
+                        </tbody>
+                    </table>
+                </div>
 
-                <div>
-                    <h4 className="font-semibold mb-4">Order Summary</h4>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <p className="text-muted-foreground">{details.plan} Plan Hosting ({durationText})</p>
-                            <p className="font-medium">₹{hostingPrice.toFixed(2)}</p>
+                <div className="flex justify-end">
+                    <div className="grid w-full max-w-sm gap-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground">Subtotal</span>
+                            <span>₹{details.price.toFixed(2)}</span>
                         </div>
-                        {details.buildingCharge > 0 && (
-                            <div className="flex justify-between items-center">
-                                <p className="text-muted-foreground">One-Time Building Fee</p>
-                                <p className="font-medium">₹{details.buildingCharge.toFixed(2)}</p>
-                            </div>
-                        )}
-                         <div className="flex justify-between items-center">
-                            <p className="text-muted-foreground">Taxes</p>
-                            <p className="font-medium">Included</p>
+                         <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground">Taxes</span>
+                            <span>Included</span>
+                        </div>
+                        <Separator className="my-2" />
+                        <div className="flex items-center justify-between font-bold text-lg bg-primary/10 p-3 rounded-lg">
+                            <span className="text-primary">Total</span>
+                            <span className="text-primary">₹{details.price.toFixed(2)}</span>
                         </div>
                     </div>
-                </div>
-
-                <Separator className="my-4" />
-                
-                <div className="flex justify-between items-center mt-4">
-                    <p className="text-lg font-bold">Total Amount</p>
-                    <p className="text-2xl font-bold font-headline text-primary">₹{details.price.toFixed(2)}</p>
-                </div>
-                
-                 <div className="text-center mt-6">
-                    <p className="text-sm text-muted-foreground">Thank you for your business!</p>
                 </div>
             </CardContent>
-            <CardFooter className="bg-muted/30 p-4 text-center text-xs text-muted-foreground rounded-b-lg">
-                <p>If you have any questions, please contact our support team.</p>
+            <CardFooter className="bg-muted/30 p-4 text-center text-xs text-muted-foreground">
+                <p>Thank you for your business! If you have any questions, please contact support.</p>
             </CardFooter>
         </Card>
     );

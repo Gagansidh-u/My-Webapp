@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query, Timestamp, where } from "firebase/firestore";
+import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { Loader2, FileText, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,13 +56,16 @@ export default function MyOrdersPage() {
 
         const fetchOrders = async () => {
             try {
-                const ordersQuery = query(
-                    collection(db, `users/${user.uid}/orders`), 
-                    orderBy("createdAt", "desc")
-                );
-                const ordersSnapshot = await getDocs(ordersQuery);
-                const ordersData = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-                setOrders(ordersData);
+                const userDocRef = doc(db, `users/${user.uid}`);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    const userOrders = userData.orders || [];
+                    // Sort orders by createdAt timestamp descending
+                    userOrders.sort((a: Order, b: Order) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                    setOrders(userOrders);
+                }
             } catch (error) {
                 console.error("Failed to fetch user orders:", error);
             } finally {

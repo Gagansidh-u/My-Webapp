@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, query, getDocs, limit } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc, serverTimestamp, query, getDocs, limit, arrayUnion } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Invoice } from "@/components/invoice";
 import html2canvas from 'html2canvas';
@@ -97,12 +97,10 @@ function CheckoutPage() {
         if (authLoading || !user) return;
 
         const checkForPreviousOrders = async () => {
-            const ordersQuery = query(
-                collection(db, `users/${user.uid}/orders`),
-                limit(1)
-            );
-            const querySnapshot = await getDocs(ordersQuery);
-            if (!querySnapshot.empty) {
+            const userDocRef = doc(db, `users/${user.uid}`);
+            const userDoc = await getDoc(userDocRef);
+
+            if (userDoc.exists() && userDoc.data()?.orders?.length > 0) {
                 setBuildingCharge(0);
             } else {
                 setBuildingCharge(initialBuildingCharge);
@@ -201,7 +199,10 @@ function CheckoutPage() {
             order_id: order.id,
             handler: async function (response: any) {
                 try {
-                    await addDoc(collection(db, `users/${user.uid}/orders`), {
+                    const userDocRef = doc(db, "users", user.uid);
+                    
+                    const newOrder = {
+                        id: order.id, // Using razorpay order id as unique id
                         userId: user.uid,
                         userEmail: user.email,
                         plan: plan,
@@ -212,7 +213,13 @@ function CheckoutPage() {
                         orderId: order.id,
                         status: "Paid",
                         createdAt: serverTimestamp()
+                    };
+                    
+                    // Atomically add a new order to the "orders" array field.
+                    await updateDoc(userDocRef, {
+                        orders: arrayUnion(newOrder)
                     });
+
 
                     setInvoiceDetails({
                         orderId: order.id,
@@ -386,5 +393,3 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
-
-    

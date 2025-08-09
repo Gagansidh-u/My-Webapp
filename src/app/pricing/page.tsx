@@ -104,7 +104,7 @@ export default function PricingPage() {
 
     const fetchUserOrders = async () => {
         try {
-            const ordersQuery = query(collection(db, "orders"), where("userId", "==", user.uid));
+            const ordersQuery = query(collection(db, `users/${user.uid}/orders`), where("userId", "==", user.uid));
             const querySnapshot = await getDocs(ordersQuery);
             const userOrders = querySnapshot.docs.map(doc => doc.data() as Order);
             

@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, doc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Invoice } from "@/components/invoice";
 import html2canvas from 'html2canvas';
@@ -131,6 +131,7 @@ function CheckoutPage() {
         const durationValue = parseInt(selectedDuration.value);
         let hostingPrice = monthlyPrice * durationValue;
 
+        // Doubling logic for 1-month plan should not apply to the 'trying' plan
         if (durationValue === 1 && planId !== 'trying') {
              hostingPrice = monthlyPrice * 2;
         }
@@ -207,12 +208,9 @@ function CheckoutPage() {
                         ? { description: "", colors: "", style: "" }
                         : websiteDetails;
                     
-                    // Add order to 'orders' collection
                     await addDoc(collection(db, "orders"), {
-                        id: order.id,
                         userId: user.uid,
                         userEmail: user.email,
-                        userName: user.displayName,
                         plan: plan,
                         price: totalPrice,
                         duration: parseInt(selectedDuration.value),
@@ -222,14 +220,6 @@ function CheckoutPage() {
                         status: "Paid",
                         createdAt: serverTimestamp()
                     });
-                    
-                    // Create user document if it doesn't exist
-                    const userDocRef = doc(db, "users", user.uid);
-                    await setDoc(userDocRef, {
-                        uid: user.uid,
-                        email: user.email,
-                        displayName: user.displayName,
-                    }, { merge: true });
 
                     setInvoiceDetails({
                         orderId: order.id,
@@ -313,7 +303,7 @@ function CheckoutPage() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {durationOptions.map(option => (
-                                                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                                <SelectItem key={option.value} value={option.value} disabled={isTryingPlan && option.value !== "1"}>{option.label}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -403,5 +393,3 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
-
-    

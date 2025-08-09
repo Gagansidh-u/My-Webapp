@@ -2,7 +2,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -46,9 +45,10 @@ const GoogleIcon = () => (
 
 interface LoginFormProps {
     onLogin?: () => void;
+    onSwitchToSignup?: () => void;
 }
 
-export function LoginForm({ onLogin }: LoginFormProps) {
+export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
@@ -105,11 +105,6 @@ export function LoginForm({ onLogin }: LoginFormProps) {
   };
 
   return (
-    <>
-        <DialogHeader className="text-center">
-            <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
-            <DialogDescription>Sign in to access your account</DialogDescription>
-        </DialogHeader>
         <CardContent className="pt-6">
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -160,11 +155,16 @@ export function LoginForm({ onLogin }: LoginFormProps) {
 
             <div className="mt-6 text-center text-sm">
             Don't have an account?{' '}
-            <Link href="/signup" className="underline">
-                Sign up
-            </Link>
+            {onSwitchToSignup ? (
+                <button type="button" onClick={onSwitchToSignup} className="underline">
+                    Sign up
+                </button>
+            ) : (
+                <Link href="/signup" className="underline">
+                    Sign up
+                </Link>
+            )}
             </div>
         </CardContent>
-    </>
   );
 }

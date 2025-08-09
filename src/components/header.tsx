@@ -20,8 +20,10 @@ import { SignupForm } from './signup-form';
 const Header = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { theme, setTheme } = useTheme()
+  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
+  const [isSignupOpen, setIsSignupOpen] = React.useState(false);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -44,6 +46,16 @@ const Header = () => {
   const getUserInitials = (email: string | null | undefined) => {
       if (!email) return 'U';
       return email.substring(0, 2).toUpperCase();
+  }
+
+  const openSignupFromLogin = () => {
+      setIsLoginOpen(false);
+      setIsSignupOpen(true);
+  }
+
+  const openLoginFromSignup = () => {
+      setIsSignupOpen(false);
+      setIsLoginOpen(true);
   }
 
   return (
@@ -114,7 +126,7 @@ const Header = () => {
                 </DropdownMenu>
             ) : (
                 <>
-                    <Dialog>
+                    <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                         <DialogTrigger asChild>
                            <Button variant="ghost">Login</Button>
                         </DialogTrigger>
@@ -123,10 +135,10 @@ const Header = () => {
                                 <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
                                 <DialogDescription>Sign in to access your account</DialogDescription>
                             </DialogHeader>
-                            <LoginForm />
+                            <LoginForm onLogin={() => setIsLoginOpen(false)} onSwitchToSignup={openSignupFromLogin}/>
                         </DialogContent>
                     </Dialog>
-                    <Dialog>
+                    <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
                         <DialogTrigger asChild>
                            <Button>Sign Up</Button>
                         </DialogTrigger>
@@ -135,13 +147,13 @@ const Header = () => {
                                 <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
                                 <DialogDescription>Get started with our services</DialogDescription>
                             </DialogHeader>
-                            <SignupForm />
+                            <SignupForm onSignup={() => setIsSignupOpen(false)} onSwitchToLogin={openLoginFromSignup}/>
                         </DialogContent>
                     </Dialog>
                 </>
             )}
            </div>
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild className="md:hidden">
                 <Button variant="ghost" size="icon"><Menu/></Button>
             </SheetTrigger>
@@ -150,18 +162,18 @@ const Header = () => {
                     <SheetTitle>Menu</SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col space-y-4">
-                    <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setIsOpen(false)}>
+                    <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
                         <Gem className="h-6 w-6 text-primary" />
                         <span className="font-bold font-headline">Grock Technologies</span>
                     </Link>
                     <nav className="flex flex-col space-y-2">
                         {navLinks.map(link => (
-                            <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsOpen(false)}>
+                            <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                                 {link.icon} {link.label}
                             </Link>
                         ))}
                          {user && userNavLinks.map(link => (
-                            <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsOpen(false)}>
+                            <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                                 {link.icon} {link.label}
                             </Link>
                         ))}
@@ -170,7 +182,7 @@ const Header = () => {
                         {loading ? (
                             <div className="h-9 w-20 rounded-md bg-muted animate-pulse" />
                         ) : user ? (
-                            <Button onClick={() => {handleLogout(); setIsOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
+                            <Button onClick={() => {handleLogout(); setIsMobileMenuOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
                         ) : (
                             <div className="space-y-2">
                                 <Dialog>
@@ -178,7 +190,11 @@ const Header = () => {
                                     <Button className="w-full btn">Login</Button>
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-md">
-                                        <LoginForm onLogin={() => setIsOpen(false)} />
+                                        <DialogHeader className="text-center">
+                                            <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
+                                            <DialogDescription>Sign in to access your account</DialogDescription>
+                                        </DialogHeader>
+                                        <LoginForm onLogin={() => setIsMobileMenuOpen(false)} />
                                     </DialogContent>
                                 </Dialog>
                                  <Dialog>
@@ -186,7 +202,11 @@ const Header = () => {
                                     <Button variant="outline" className="w-full">Sign Up</Button>
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-md">
-                                        <SignupForm onSignup={() => setIsOpen(false)}/>
+                                        <DialogHeader className="text-center">
+                                            <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
+                                            <DialogDescription>Get started with our services</DialogDescription>
+                                        </DialogHeader>
+                                        <SignupForm onSignup={() => setIsMobileMenuOpen(false)}/>
                                     </DialogContent>
                                 </Dialog>
                             </div>

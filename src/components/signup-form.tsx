@@ -55,9 +55,10 @@ const GoogleIcon = () => (
 
 interface SignupFormProps {
     onSignup?: () => void;
+    onSwitchToLogin?: () => void;
 }
 
-export function SignupForm({ onSignup }: SignupFormProps) {
+export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
@@ -252,9 +253,15 @@ export function SignupForm({ onSignup }: SignupFormProps) {
 
             <div className="mt-6 text-center text-sm">
                 Already have an account?{' '}
-                <Link href="/login" className="underline">
-                Log in
-                </Link>
+                {onSwitchToLogin ? (
+                    <button type="button" onClick={onSwitchToLogin} className="underline">
+                        Log in
+                    </button>
+                ) : (
+                    <Link href="/login" className="underline">
+                        Log in
+                    </Link>
+                )}
             </div>
         </CardContent>
 

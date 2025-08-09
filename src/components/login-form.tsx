@@ -2,7 +2,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -105,11 +106,11 @@ export function LoginForm({ onLogin }: LoginFormProps) {
 
   return (
     <>
-        <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
-            <CardDescription>Sign in to access your account</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <DialogHeader className="text-center">
+            <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
+            <DialogDescription>Sign in to access your account</DialogDescription>
+        </DialogHeader>
+        <CardContent className="pt-6">
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField

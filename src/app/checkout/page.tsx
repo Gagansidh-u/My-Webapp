@@ -201,13 +201,12 @@ function CheckoutPage() {
                 try {
                     const userDocRef = doc(db, "users", user.uid);
                     
-                    // Ensure websiteDetails are empty for "Trying Plan" for consistency
                     const finalWebsiteDetails = planId === 'trying' 
                         ? { description: "", colors: "", style: "" }
                         : websiteDetails;
 
                     const newOrder = {
-                        id: order.id, // Using razorpay order id as unique id
+                        id: order.id,
                         userId: user.uid,
                         userEmail: user.email,
                         plan: plan,
@@ -220,20 +219,13 @@ function CheckoutPage() {
                         createdAt: serverTimestamp()
                     };
                     
-                    const userDocSnap = await getDoc(userDocRef);
-                    if (!userDocSnap.exists()) {
-                        await setDoc(userDocRef, {
-                            uid: user.uid,
-                            email: user.email,
-                            displayName: user.displayName,
-                            createdAt: serverTimestamp(),
-                            orders: [newOrder]
-                        });
-                    } else {
-                        await updateDoc(userDocRef, {
-                            orders: arrayUnion(newOrder)
-                        });
-                    }
+                    await setDoc(userDocRef, { 
+                        orders: arrayUnion(newOrder),
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                     }, { merge: true });
+
 
                     setInvoiceDetails({
                         orderId: order.id,

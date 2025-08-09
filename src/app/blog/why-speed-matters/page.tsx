@@ -72,9 +72,6 @@ export default function BlogPost() {
                 </p>
 
                 <h2 className="font-headline text-2xl text-foreground">How Grock Technologies Delivers Uncompromising Speed</h2>
-                <p>
-                   Understanding the critical importance of speed, we've engineered our hosting platform to excel in this area. We don't just offer "fast hosting"; we provide a specific technology stack designed for performance:
-                </ol>
                 <ol>
                     <li><strong>NVMe Storage:</strong> All our plans use enterprise-grade NVMe (Non-Volatile Memory Express) storage. This is a quantum leap beyond traditional SSDs, offering drastically higher read/write speeds and lower latency. This means your website files and databases are accessed at lightning speed.</li>
                     <li><strong>LiteSpeed Web Server:</strong> We use LiteSpeed, a high-performance web server that is significantly faster than traditional Apache or Nginx servers. It's built to handle high traffic and dynamic content efficiently.</li>

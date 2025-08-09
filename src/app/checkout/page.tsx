@@ -21,6 +21,7 @@ import { Invoice } from "@/components/invoice";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 declare global {
   interface Window {
@@ -393,35 +394,46 @@ function CheckoutPage() {
                 </Card>
             </div>
             <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-                <DialogContent className="max-w-3xl">
-                    <DialogHeader>
+                <DialogContent className="max-w-3xl p-0">
+                    <DialogHeader className="p-6 pb-0">
                         <DialogTitle className="text-3xl font-bold font-headline text-center">Order Successful!</DialogTitle>
                         <DialogDescription className="text-center">
                            Thank you for your purchase. Here is your invoice.
                         </DialogDescription>
                     </DialogHeader>
-                    <div ref={invoiceRef}>
-                        {invoiceDetails && <Invoice details={invoiceDetails} />}
-                    </div>
-                    <DialogFooter className="mt-4 sm:justify-between items-center gap-4">
-                         <div className="flex items-center gap-4">
-                           <Label>Format:</Label>
-                            <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4">
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="pdf" id="r-pdf" />
-                                    <Label htmlFor="r-pdf">PDF</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="jpg" id="r-jpg" />
-                                    <Label htmlFor="r-jpg">JPG</Label>
-                                </div>
-                            </RadioGroup>
+                    <div className="relative p-6">
+                        <div ref={invoiceRef}>
+                            {invoiceDetails && <Invoice details={invoiceDetails} />}
                         </div>
-                        <Button onClick={handleDownloadInvoice}>
-                            <Download className="mr-2 h-4 w-4"/>
-                            Download Invoice
-                        </Button>
-                    </DialogFooter>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button size="icon" className="absolute bottom-10 right-10 rounded-full h-14 w-14 shadow-2xl">
+                                    <Download className="h-6 w-6" />
+                                    <span className="sr-only">Download Invoice</span>
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto">
+                                <div className="space-y-4">
+                                    <div>
+                                        <Label className="font-semibold">Download format</Label>
+                                        <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4 mt-2">
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="pdf" id="r-pdf" />
+                                                <Label htmlFor="r-pdf">PDF</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="jpg" id="r-jpg" />
+                                                <Label htmlFor="r-jpg">JPG</Label>
+                                            </div>
+                                        </RadioGroup>
+                                    </div>
+                                    <Button onClick={handleDownloadInvoice} className="w-full">
+                                        Download
+                                    </Button>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                 </DialogContent>
             </Dialog>
         </>
@@ -435,3 +447,5 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
+
+    

@@ -405,35 +405,58 @@ function CheckoutPage() {
                         <div ref={invoiceRef}>
                             {invoiceDetails && <Invoice details={invoiceDetails} />}
                         </div>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button size="icon" className="absolute bottom-10 right-10 rounded-full h-14 w-14 shadow-2xl">
-                                    <Download className="h-6 w-6" />
-                                    <span className="sr-only">Download Invoice</span>
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto">
-                                <div className="space-y-4">
-                                    <div>
-                                        <Label className="font-semibold">Download format</Label>
-                                        <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4 mt-2">
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="pdf" id="r-pdf" />
-                                                <Label htmlFor="r-pdf">PDF</Label>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <RadioGroupItem value="jpg" id="r-jpg" />
-                                                <Label htmlFor="r-jpg">JPG</Label>
-                                            </div>
-                                        </RadioGroup>
-                                    </div>
-                                    <Button onClick={handleDownloadInvoice} className="w-full">
-                                        Download
+                        {/* Mobile floating button */}
+                        <div className="sm:hidden">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button size="icon" className="absolute bottom-10 right-10 rounded-full h-14 w-14 shadow-2xl">
+                                        <Download className="h-6 w-6" />
+                                        <span className="sr-only">Download Invoice</span>
                                     </Button>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto">
+                                    <div className="space-y-4">
+                                        <div>
+                                            <Label className="font-semibold">Download format</Label>
+                                            <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4 mt-2">
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="pdf" id="r-pdf-mobile" />
+                                                    <Label htmlFor="r-pdf-mobile">PDF</Label>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="jpg" id="r-jpg-mobile" />
+                                                    <Label htmlFor="r-jpg-mobile">JPG</Label>
+                                                </div>
+                                            </RadioGroup>
+                                        </div>
+                                        <Button onClick={handleDownloadInvoice} className="w-full">
+                                            Download
+                                        </Button>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
                     </div>
+                     {/* Desktop footer */}
+                    <DialogFooter className="hidden sm:flex p-6 pt-0 bg-muted/50 justify-between items-center">
+                        <div className="flex items-center gap-4">
+                             <Label className="font-semibold">Download format:</Label>
+                             <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="pdf" id="r-pdf-desktop" />
+                                    <Label htmlFor="r-pdf-desktop">PDF</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="jpg" id="r-jpg-desktop" />
+                                    <Label htmlFor="r-jpg-desktop">JPG</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <Button onClick={handleDownloadInvoice}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Download Invoice
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </>
@@ -447,5 +470,3 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
-
-    

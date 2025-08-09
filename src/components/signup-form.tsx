@@ -176,10 +176,6 @@ export function SignupForm({ onSignup }: SignupFormProps) {
 
   return (
     <>
-        <DialogHeader className="text-center">
-            <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
-            <DialogDescription>Get started with our services</DialogDescription>
-        </DialogHeader>
         <CardContent className="pt-6">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

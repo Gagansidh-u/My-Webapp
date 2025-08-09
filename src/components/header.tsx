@@ -13,7 +13,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { LoginForm } from './login-form';
 import { SignupForm } from './signup-form';
 
@@ -119,6 +119,10 @@ const Header = () => {
                            <Button variant="ghost">Login</Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
+                            <DialogHeader className="text-center">
+                                <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
+                                <DialogDescription>Sign in to access your account</DialogDescription>
+                            </DialogHeader>
                             <LoginForm />
                         </DialogContent>
                     </Dialog>
@@ -127,6 +131,10 @@ const Header = () => {
                            <Button>Sign Up</Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
+                            <DialogHeader className="text-center">
+                                <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
+                                <DialogDescription>Get started with our services</DialogDescription>
+                            </DialogHeader>
                             <SignupForm />
                         </DialogContent>
                     </Dialog>

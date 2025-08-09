@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import { LoginForm } from './login-form';
+import { SignupForm } from './signup-form';
 
 const Header = () => {
   const { user, loading } = useAuth();
@@ -112,14 +113,24 @@ const Header = () => {
                     </DropdownMenuContent>
                 </DropdownMenu>
             ) : (
-                <Dialog>
-                    <DialogTrigger asChild>
-                       <Button className="btn">Login</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                        <LoginForm />
-                    </DialogContent>
-                </Dialog>
+                <>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                           <Button variant="ghost">Login</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                            <LoginForm />
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                           <Button>Sign Up</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                            <SignupForm />
+                        </DialogContent>
+                    </Dialog>
+                </>
             )}
            </div>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -153,14 +164,24 @@ const Header = () => {
                         ) : user ? (
                             <Button onClick={() => {handleLogout(); setIsOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
                         ) : (
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                <Button className="w-full btn">Login</Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md">
-                                    <LoginForm onLogin={() => setIsOpen(false)} />
-                                </DialogContent>
-                            </Dialog>
+                            <div className="space-y-2">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                    <Button className="w-full btn">Login</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-md">
+                                        <LoginForm onLogin={() => setIsOpen(false)} />
+                                    </DialogContent>
+                                </Dialog>
+                                 <Dialog>
+                                    <DialogTrigger asChild>
+                                    <Button variant="outline" className="w-full">Sign Up</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-md">
+                                        <SignupForm onSignup={() => setIsOpen(false)}/>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
                         )}
                     </div>
                 </div>

@@ -2,22 +2,25 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState, lazy } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/components/auth-provider";
 import { createOrder } from "./actions";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, getDocs, limit } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { Invoice } from "@/components/invoice";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 declare global {
   interface Window {
@@ -33,6 +36,17 @@ const durationOptions = [
     { value: "36", label: "3 Years" },
 ]
 
+type OrderDetailsForInvoice = {
+    orderId: string;
+    plan: string;
+    price: number;
+    duration: number;
+    userEmail: string | null;
+    userName: string | null;
+    buildingCharge: number;
+    monthlyPrice: number;
+};
+
 function CheckoutPage() {
     const searchParams = useSearchParams();
     const { user, loading: authLoading } = useAuth();
@@ -45,6 +59,10 @@ function CheckoutPage() {
     
     const [loading, setLoading] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const [invoiceDetails, setInvoiceDetails] = useState<OrderDetailsForInvoice | null>(null);
+    const [downloadFormat, setDownloadFormat] = useState("pdf");
+
+    const invoiceRef = useRef<HTMLDivElement>(null);
 
     const [websiteDetails, setWebsiteDetails] = useState({
         description: "",
@@ -80,10 +98,8 @@ function CheckoutPage() {
             );
             const querySnapshot = await getDocs(ordersQuery);
             if (!querySnapshot.empty) {
-                // User has previous orders, waive the building charge
                 setBuildingCharge(0);
             } else {
-                // First-time user, keep the initial building charge
                 setBuildingCharge(initialBuildingCharge);
             }
         };
@@ -114,6 +130,26 @@ function CheckoutPage() {
         }
         return hostingPrice + buildingCharge;
     }
+
+    const handleDownloadInvoice = async () => {
+        if (!invoiceRef.current) return;
+
+        const canvas = await html2canvas(invoiceRef.current, { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
+
+        if (downloadFormat === 'pdf') {
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`invoice-${invoiceDetails?.orderId}.pdf`);
+        } else {
+             const link = document.createElement('a');
+             link.href = imgData;
+             link.download = `invoice-${invoiceDetails?.orderId}.jpg`;
+             link.click();
+        }
+    };
 
     const handlePayment = async () => {
         if (!user) {
@@ -160,7 +196,6 @@ function CheckoutPage() {
             order_id: order.id,
             handler: async function (response: any) {
                 try {
-                    // Save order details to Firestore user's subcollection
                     await addDoc(collection(db, `users/${user.uid}/orders`), {
                         userId: user.uid,
                         userEmail: user.email,
@@ -173,6 +208,18 @@ function CheckoutPage() {
                         status: "Paid",
                         createdAt: serverTimestamp()
                     });
+
+                    setInvoiceDetails({
+                        orderId: order.id,
+                        plan: plan,
+                        price: totalPrice,
+                        duration: parseInt(selectedDuration.value),
+                        userEmail: user.email,
+                        userName: user.displayName,
+                        buildingCharge: buildingCharge,
+                        monthlyPrice: monthlyPrice
+                    });
+
                     setShowSuccessDialog(true);
                 } catch (error) {
                     console.error("Error writing document: ", error);
@@ -288,13 +335,35 @@ function CheckoutPage() {
                 </Card>
             </div>
             <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-                <DialogContent className="sm:max-w-md text-center">
+                <DialogContent className="max-w-3xl">
                     <DialogHeader>
                         <DialogTitle className="text-3xl font-bold font-headline text-center">Order Successful!</DialogTitle>
+                        <DialogDescription className="text-center">
+                           Thank you for your purchase. Here is your invoice.
+                        </DialogDescription>
                     </DialogHeader>
-                    <DialogDescription className="text-base mt-4">
-                        We will contact you in 3-4 hours.
-                    </DialogDescription>
+                    <div ref={invoiceRef}>
+                        {invoiceDetails && <Invoice details={invoiceDetails} />}
+                    </div>
+                    <DialogFooter className="mt-4 sm:justify-between items-center gap-4">
+                         <div className="flex items-center gap-4">
+                           <Label>Format:</Label>
+                            <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4">
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="pdf" id="r-pdf" />
+                                    <Label htmlFor="r-pdf">PDF</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="jpg" id="r-jpg" />
+                                    <Label htmlFor="r-jpg">JPG</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <Button onClick={handleDownloadInvoice}>
+                            <Download className="mr-2 h-4 w-4"/>
+                            Download Invoice
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </>

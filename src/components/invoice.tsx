@@ -36,34 +36,34 @@ export const Invoice: React.FC<InvoiceProps> = ({ details }) => {
 
     return (
         <Card className="w-full max-w-3xl mx-auto shadow-lg border-primary/20 bg-background overflow-hidden">
-            <header className="p-6 bg-muted/30">
+            <header className="p-4 sm:p-6 bg-muted/30">
                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <Gem className="w-8 h-8 text-primary" />
                         <div>
-                            <h1 className="text-2xl font-bold font-headline text-primary">Grock Technologies</h1>
-                            <p className="text-sm text-muted-foreground">helpdesk.grock@outlook.com</p>
+                            <h1 className="text-xl sm:text-2xl font-bold font-headline text-primary">Grock Technologies</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground">helpdesk.grock@outlook.com</p>
                         </div>
                     </div>
                     <div className="text-left sm:text-right w-full sm:w-auto">
-                        <h2 className="text-3xl font-bold font-headline text-foreground">INVOICE</h2>
-                        <p className="text-muted-foreground text-sm"># {details.orderId}</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold font-headline text-foreground">INVOICE</h2>
+                        <p className="text-muted-foreground text-sm truncate"># {details.orderId}</p>
                     </div>
                 </div>
             </header>
-            <CardContent className="p-6 space-y-8">
-                <div className="grid sm:grid-cols-3 gap-6">
+            <CardContent className="p-4 sm:p-6 space-y-8">
+                <div className="grid sm:grid-cols-3 gap-6 text-sm">
                     <div className="space-y-1">
-                        <h4 className="font-semibold text-sm text-muted-foreground">BILLED TO</h4>
+                        <h4 className="font-semibold text-muted-foreground">BILLED TO</h4>
                         <p className="font-medium">{details.userName || 'Valued Customer'}</p>
-                        <p className="text-sm text-muted-foreground">{details.userEmail}</p>
+                        <p className="text-muted-foreground truncate">{details.userEmail}</p>
                     </div>
                     <div className="space-y-1 sm:text-center">
-                        <h4 className="font-semibold text-sm text-muted-foreground">INVOICE DATE</h4>
+                        <h4 className="font-semibold text-muted-foreground">INVOICE DATE</h4>
                         <p className="font-medium">{invoiceDate}</p>
                     </div>
-                    <div className="space-y-1 sm:text-right">
-                        <h4 className="font-semibold text-sm text-muted-foreground">STATUS</h4>
+                    <div className="space-y-1 flex flex-col items-start sm:items-end">
+                        <h4 className="font-semibold text-muted-foreground">STATUS</h4>
                         <Badge variant="default" className="bg-green-500/20 text-green-700 border-green-500/30 hover:bg-green-500/30">Paid</Badge>
                     </div>
                 </div>

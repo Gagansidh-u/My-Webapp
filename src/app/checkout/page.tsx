@@ -84,9 +84,6 @@ function CheckoutPage() {
         if (currentPlanId) {
             setPlanId(currentPlanId);
             setPlan(currentPlanId.charAt(0).toUpperCase() + currentPlanId.slice(1));
-            if (currentPlanId === 'trying') {
-                setSelectedDuration(durationOptions[0]); // Set duration to 1 month for trying plan
-            }
         }
         if (priceStr) {
             setMonthlyPrice(parseFloat(priceStr));
@@ -145,8 +142,8 @@ function CheckoutPage() {
         const durationValue = parseInt(selectedDuration.value);
         let hostingPrice = monthlyPrice * durationValue;
 
-        // Doubling logic for 1-month plan should not apply to the 'trying' plan
-        if (durationValue === 1 && planId !== 'trying') {
+        // Doubling logic for 1-month plan
+        if (durationValue === 1) {
              hostingPrice = monthlyPrice * 2;
         }
 
@@ -183,7 +180,7 @@ function CheckoutPage() {
             return;
         }
 
-        if (planId !== 'trying' && (!websiteDetails.description.trim() || !websiteDetails.colors.trim() || !websiteDetails.style.trim())) {
+        if (!websiteDetails.description.trim() || !websiteDetails.colors.trim() || !websiteDetails.style.trim()) {
             toast({
                 title: "Website Details Required",
                 description: "Please fill out all the fields about your website requirements.",
@@ -200,47 +197,10 @@ function CheckoutPage() {
             userMobile: userMobile,
             plan: plan,
             duration: parseInt(selectedDuration.value),
-            websiteDetails: planId === 'trying' ? { description: "", colors: "", style: "" } : websiteDetails,
+            websiteDetails: websiteDetails,
             status: "Paid",
             createdAt: serverTimestamp()
         };
-
-
-        // If price is 0, handle free order directly
-        if (totalPrice === 0) {
-            try {
-                const orderId = `grock_${new Date().getTime()}`;
-                await addDoc(collection(db, "orders"), {
-                    ...commonOrderDetails,
-                    price: 0,
-                    razorpayPaymentId: "free_plan",
-                    orderId: orderId,
-                });
-
-                setInvoiceDetails({
-                    orderId: orderId,
-                    plan: plan,
-                    price: 0,
-                    duration: parseInt(selectedDuration.value),
-                    userEmail: user.email,
-                    userName: user.displayName,
-                    userMobile: userMobile,
-                    buildingCharge: 0,
-                    monthlyPrice: 0,
-                });
-                setShowSuccessDialog(true);
-            } catch (error) {
-                console.error("Error writing document for free order: ", error);
-                toast({
-                    title: "Order Error",
-                    description: "Failed to save your order details. Please contact support.",
-                    variant: "destructive",
-                });
-            } finally {
-                setLoading(false);
-            }
-            return;
-        }
 
 
         const result = await createOrder({ amount: totalPrice });
@@ -330,8 +290,6 @@ function CheckoutPage() {
 
     const totalPrice = getTotalPrice();
 
-    const isTryingPlan = planId === 'trying';
-
     return (
         <>
             <div className="container mx-auto py-12 flex justify-center">
@@ -350,13 +308,13 @@ function CheckoutPage() {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</Label>
-                                    <Select value={selectedDuration.value} onValueChange={handleDurationChange} disabled={isTryingPlan}>
+                                    <Select value={selectedDuration.value} onValueChange={handleDurationChange}>
                                         <SelectTrigger className="w-[180px]" id="duration-select">
                                             <SelectValue placeholder="Select duration" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {durationOptions.map(option => (
-                                                <SelectItem key={option.value} value={option.value} disabled={isTryingPlan && option.value !== "1"}>{option.label}</SelectItem>
+                                                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
@@ -372,23 +330,21 @@ function CheckoutPage() {
                             </div>
                         </div>
 
-                        {!isTryingPlan && (
-                            <div className="space-y-4">
-                                <h3 className="font-bold text-lg">Website Requirements</h3>
-                                <div className="space-y-2">
-                                    <Label htmlFor="description">Brief description of your website</Label>
-                                    <Textarea id="description" placeholder="e.g., A portfolio website to showcase my photography." rows={4} value={websiteDetails.description} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="colors">Preferred Colors</Label>
-                                    <Input id="colors" placeholder="e.g., Blue, white, and a touch of gold" value={websiteDetails.colors} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="style">Style/Vibe</Label>
-                                    <Input id="style" placeholder="e.g., Modern, minimalist, professional" value={websiteDetails.style} onChange={handleInputChange} />
-                                </div>
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-lg">Website Requirements</h3>
+                            <div className="space-y-2">
+                                <Label htmlFor="description">Brief description of your website</Label>
+                                <Textarea id="description" placeholder="e.g., A portfolio website to showcase my photography." rows={4} value={websiteDetails.description} onChange={handleInputChange} />
                             </div>
-                        )}
+                            <div className="space-y-2">
+                                <Label htmlFor="colors">Preferred Colors</Label>
+                                <Input id="colors" placeholder="e.g., Blue, white, and a touch of gold" value={websiteDetails.colors} onChange={handleInputChange} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="style">Style/Vibe</Label>
+                                <Input id="style" placeholder="e.g., Modern, minimalist, professional" value={websiteDetails.style} onChange={handleInputChange} />
+                            </div>
+                        </div>
                     </CardContent>
                     <CardFooter className="flex-col items-stretch gap-4">
                         {!user && (

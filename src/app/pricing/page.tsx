@@ -13,20 +13,6 @@ import { db } from "@/lib/firebase";
 
 const plans = [
   {
-    title: 'Trying Plan',
-    monthlyPrice: 0.00,
-    buildingCharge: 0.00,
-    description: 'Perfect for securing your domain name',
-    features: [
-      '1 Domain Name',
-      'Easy DNS Management',
-      'Domain Forwarding',
-      '24/7 Customer Support',
-    ],
-    planId: 'trying',
-    discount: 'Free!'
-  },
-  {
     title: 'Single Website',
     monthlyPrice: 149.00,
     buildingCharge: 999.00,
@@ -136,7 +122,7 @@ export default function PricingPage() {
         <p className="text-lg text-muted-foreground mt-2">Choose the perfect plan for your needs. Simple, transparent, and powerful.</p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start md:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
         {plans.map((plan, index) => {
           const isPlanActive = activePlans.includes(plan.title);
           

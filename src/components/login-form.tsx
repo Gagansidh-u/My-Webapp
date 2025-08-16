@@ -103,7 +103,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
   };
 
   return (
-        <Card className="w-full shadow-2xl bg-card/80 dark:bg-card/60 backdrop-blur-xl">
+        <Card className="w-full shadow-2xl bg-card/30 dark:bg-card/20 backdrop-blur-xl">
             <CardHeader className="text-center">
                 <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Welcome Back</CardTitle>
                 <CardDescription className="text-muted-foreground dark:text-white/90">Sign in to access your account</CardDescription>

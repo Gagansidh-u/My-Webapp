@@ -8,6 +8,7 @@ import Footer from "@/components/footer";
 import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from '@/components/theme-provider';
 import Script from 'next/script';
+import PageTransitionLoader from '@/components/page-transition-loader';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://grock.fun'),
@@ -82,6 +83,7 @@ export default function RootLayout({
               <Footer />
             </div>
             <Toaster />
+            <PageTransitionLoader />
           </AuthProvider>
         </ThemeProvider>
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-1QNEL9F4Z9"></Script>

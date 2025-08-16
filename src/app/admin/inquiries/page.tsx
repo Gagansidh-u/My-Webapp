@@ -150,7 +150,7 @@ export default function AdminInquiriesPage() {
                                                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                                 <AlertDialogDescription>
                                                     This action cannot be undone. This will permanently delete this message.
-                                                </Description>
+                                                </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -201,7 +201,7 @@ export default function AdminInquiriesPage() {
                                                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                                 <AlertDialogDescription>
                                                     This action cannot be undone. This will permanently delete this message.
-                                                </Description>
+                                                </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>

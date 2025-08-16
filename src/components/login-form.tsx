@@ -105,8 +105,8 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
   return (
         <>
             <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-headline text-white">Welcome Back</CardTitle>
-                <CardDescription className="text-white">Sign in to access your account</CardDescription>
+                <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Welcome Back</CardTitle>
+                <CardDescription className="text-muted-foreground dark:text-white">Sign in to access your account</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -116,7 +116,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel className="text-white/80">Email</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/80">Email</FormLabel>
                         <FormControl>
                             <Input placeholder="name@example.com" {...field} />
                         </FormControl>
@@ -129,7 +129,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel className="text-white/80">Password</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/80">Password</FormLabel>
                         <FormControl>
                             <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
@@ -145,9 +145,9 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 </Form>
 
                 <div className="my-6 flex items-center gap-4">
-                    <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/30 to-white/30"></div>
-                    <span className="text-xs text-white whitespace-nowrap">OR CONTINUE WITH</span>
-                    <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-white/30 to-white/30"></div>
+                    <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
+                    <span className="text-xs text-muted-foreground dark:text-white whitespace-nowrap">OR CONTINUE WITH</span>
+                    <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
                 </div>
                 
                 <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
@@ -155,9 +155,9 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 Sign in with Google
                 </Button>
 
-                <div className="mt-6 text-center text-sm text-white/80">
+                <div className="mt-6 text-center text-sm text-muted-foreground dark:text-white/80">
                 Don&apos;t have an account?{' '}
-                <button type="button" onClick={onSwitchToSignup} className="underline font-bold text-white">
+                <button type="button" onClick={onSwitchToSignup} className="underline font-bold text-foreground dark:text-white">
                     Sign up
                 </button>
                 </div>

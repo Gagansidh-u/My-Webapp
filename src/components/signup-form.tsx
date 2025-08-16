@@ -176,8 +176,8 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
   return (
     <>
         <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-headline text-white">Create an Account</CardTitle>
-            <CardDescription className="text-white">Get started with our services</CardDescription>
+            <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Create an Account</CardTitle>
+            <CardDescription className="text-muted-foreground dark:text-white">Get started with our services</CardDescription>
         </CardHeader>
         <CardContent>
             <Form {...form}>
@@ -187,7 +187,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="name"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/80">Name</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/80">Name</FormLabel>
                         <FormControl>
                         <Input placeholder="John Doe" {...field} />
                         </FormControl>
@@ -200,7 +200,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/80">Email</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/80">Email</FormLabel>
                         <FormControl>
                         <Input placeholder="name@example.com" {...field} />
                         </FormControl>
@@ -213,7 +213,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="mobile"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/80">Mobile Number</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/80">Mobile Number</FormLabel>
                         <FormControl>
                         <Input type="tel" placeholder="9876543210" {...field} />
                         </FormControl>
@@ -226,7 +226,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/80">Password</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/80">Password</FormLabel>
                         <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
@@ -242,9 +242,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             </Form>
 
             <div className="my-6 flex items-center gap-4">
-                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/30 to-white/30"></div>
-                <span className="text-xs text-white whitespace-nowrap">OR CONTINUE WITH</span>
-                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-white/30 to-white/30"></div>
+                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
+                <span className="text-xs text-muted-foreground dark:text-white whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
@@ -252,9 +252,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                 Sign up with Google
             </Button>
 
-            <div className="mt-6 text-center text-sm text-white/80">
+            <div className="mt-6 text-center text-sm text-muted-foreground dark:text-white/80">
                 Already have an account?{' '}
-                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-white">
+                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-foreground dark:text-white">
                     Log in
                 </button>
             </div>

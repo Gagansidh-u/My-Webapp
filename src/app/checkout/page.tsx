@@ -372,26 +372,104 @@ function CheckoutPage() {
                                 </div>
                                 {planId !== 'trying' && (
                                      <div className="flex justify-between items-center">
-                                        <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</残酷な天使のように/残酷天使的行动纲领(EVA OP1)：
-                        </section>
-                        <section>
-                            <a href="https://www.bilibili.com/video/BV1Yx411W7Qe/?spm_id_from=333.880.my_history.page.click&vd_source=0090d36a2d8755d32576f304184a2b47">https://www.bilibili.com/video/BV1Yx411W7Qe/?spm_id_from=333.880.my_history.page.click&vd_source=0090d36a2d8755d32576f304184a2b47</a>
-                        </section>
-                    </article>
-                        <article>
-                            
-                        </article>
-                    </main>
-                    <footer>
-                        
-                        
-                    </footer>
-                </body>
-            </html>
-        )
-    }
+                                        <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</Label>
+                                        <Select value={selectedDuration.value} onValueChange={handleDurationChange}>
+                                            <SelectTrigger className="w-[180px]">
+                                                <SelectValue placeholder="Select duration" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {durationOptions.map(option => (
+                                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )}
+                                <Separator />
+                                <div className="space-y-2">
+                                    {planId !== 'trying' && (
+                                        <div className="flex justify-between">
+                                            <span className="text-muted-foreground">Hosting ({selectedDuration.label})</span>
+                                            <span>₹{(monthlyPrice * (parseInt(selectedDuration.value) === 1 ? 2 : parseInt(selectedDuration.value))).toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                    {buildingCharge > 0 && (
+                                        <div className="flex justify-between">
+                                            <span className="text-muted-foreground flex items-center gap-1">
+                                                Building Fee
+                                                <Popover>
+                                                    <PopoverTrigger><Info className="w-4 h-4" /></PopoverTrigger>
+                                                    <PopoverContent className="text-sm">This is a one-time fee for new customers.</PopoverContent>
+                                                </Popover>
+                                            </span>
+                                            <span>₹{buildingCharge.toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <Separator />
+                                <div className="flex justify-between font-bold text-lg">
+                                    <span>Total</span>
+                                    <span>₹{totalPrice.toFixed(2)}</span>
+                                </div>
+                                 <p className="text-xs text-muted-foreground text-center">
+                                    + Taxes
+                                </p>
+                                {!user && (
+                                     <Alert variant="destructive">
+                                        <Info className="h-4 w-4" />
+                                        <AlertTitle>Login Required</AlertTitle>
+                                        <AlertDescription>
+                                            You must be logged in to complete your purchase.
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                            </CardContent>
+                            <CardFooter>
+                                <Button className="w-full font-bold" size="lg" onClick={handlePayment} disabled={loading || !user || authLoading}>
+                                    {loading && <Loader size={20} className="mr-2" />}
+                                    {planId === 'trying' ? 'Submit Request' : 'Proceed to Payment'}
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+
+            <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+                <DialogContent className="max-w-4xl p-0">
+                     <div ref={invoiceRef} className="bg-background">
+                         {invoiceDetails && <Invoice details={invoiceDetails} />}
+                     </div>
+                     <DialogFooter className="p-6 bg-muted/50 border-t flex flex-col-reverse sm:flex-row sm:justify-end gap-4">
+                        <div className="flex items-center gap-2">
+                           <RadioGroup defaultValue="pdf" value={downloadFormat} onValueChange={setDownloadFormat} className="flex">
+                                <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="pdf" id="r-pdf" />
+                                <Label htmlFor="r-pdf">PDF</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="jpg" id="r-jpg" />
+                                <Label htmlFor="r-jpg">JPG</Label>
+                                </div>
+                            </RadioGroup>
+                            <Button onClick={handleDownloadInvoice}>
+                                <Download className="w-4 h-4 mr-2" /> Download
+                            </Button>
+                        </div>
+                        <Button asChild onClick={() => setShowSuccessDialog(false)}>
+                            <Link href="/account/orders">View My Orders</Link>
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
 }
-                    
-                    export default page
-                    
-            
+
+export default function CheckoutPageSuspense() {
+    return (
+        <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><Loader size={64}/></div>}>
+            <CheckoutPage />
+        </Suspense>
+    )
+}

@@ -149,6 +149,10 @@ function CheckoutPage() {
         if (durationValue === 1) {
              hostingPrice = monthlyPrice * 2;
         }
+        
+        if (planId === 'trying') {
+            return 0;
+        }
 
         return hostingPrice + buildingCharge;
     }
@@ -194,6 +198,8 @@ function CheckoutPage() {
 
         setLoading(true);
         const totalPrice = getTotalPrice();
+        const orderId = `order_${new Date().getTime()}`;
+
         const commonOrderDetails = {
             userId: user.uid,
             userEmail: user.email,
@@ -202,9 +208,40 @@ function CheckoutPage() {
             duration: parseInt(selectedDuration.value),
             websiteDetails: websiteDetails,
             status: "Paid",
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            price: totalPrice,
+            orderId: orderId,
         };
 
+        if (totalPrice === 0) {
+            try {
+                await addDoc(collection(db, "orders"), commonOrderDetails);
+                
+                setInvoiceDetails({
+                    orderId: orderId,
+                    plan: plan,
+                    price: totalPrice,
+                    duration: parseInt(selectedDuration.value),
+                    userEmail: user.email,
+                    userName: user.displayName,
+                    userMobile: userMobile,
+                    buildingCharge: buildingCharge,
+                    monthlyPrice: monthlyPrice
+                });
+
+                setShowSuccessDialog(true);
+            } catch (error) {
+                 console.error("Error writing document: ", error);
+                 toast({
+                     title: "Order Error",
+                     description: "We failed to save your order details. Please contact support.",
+                     variant: "destructive",
+                 });
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
 
         const result = await createOrder({ amount: totalPrice });
 
@@ -231,9 +268,8 @@ function CheckoutPage() {
                 try {
                     await addDoc(collection(db, "orders"), {
                        ...commonOrderDetails,
-                        price: totalPrice,
                         razorpayPaymentId: response.razorpay_payment_id,
-                        orderId: order.id,
+                        orderId: order.id, // Overwrite with Razorpay's order ID for paid orders
                     });
 
                     setInvoiceDetails({
@@ -334,124 +370,28 @@ function CheckoutPage() {
                                     <span className="text-muted-foreground">Plan:</span>
                                     <span className="font-semibold text-lg">{plan}</span>
                                 </div>
-                                <div className="flex justify-between items-center">
-                                    <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</Label>
-                                    <Select value={selectedDuration.value} onValueChange={handleDurationChange}>
-                                        <SelectTrigger className="w-[180px]" id="duration-select">
-                                            <SelectValue placeholder="Select duration" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {durationOptions.map(option => (
-                                                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                 <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground">Building Charges (One-Time):</span>
-                                    <span className="font-semibold">₹{buildingCharge.toFixed(2)}</span>
-                                </div>
-                                <Separator />
-                                <div className="flex justify-between items-center text-lg font-bold">
-                                    <span>Total:</span>
-                                    <span className="text-2xl font-headline text-primary">₹{totalPrice.toFixed(2)}</span>
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <p className="text-xs text-muted-foreground">Taxes are included in the total price.</p>
-                            </CardFooter>
-                        </Card>
-                         {!user && (
-                            <Alert variant="destructive">
-                                <Info className="h-4 w-4" />
-                                <AlertTitle>Authentication Required</AlertTitle>
-                                <AlertDescription>
-                                Please <Link href="/login" className="font-bold underline">log in</Link> or <Link href="/signup" className="font-bold underline">sign up</Link> to complete your purchase.
-                                </AlertDescription>
-                            </Alert>
-                         )}
-                         <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading}>
-                            {loading ? <Loader size={20} className="mr-2" /> : null}
-                            {loading ? 'Processing...' : (totalPrice > 0 ? `Pay Securely ₹${totalPrice.toFixed(2)}` : 'Get Now')}
-                        </Button>
-                    </div>
-
-                </div>
-            </div>
-            <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-                <DialogContent className="max-w-3xl p-0">
-                    <DialogHeader className="p-6 pb-0">
-                        <DialogTitle className="text-3xl font-bold font-headline text-center">Order Successful!</DialogTitle>
-                        <DialogDescription className="text-center">
-                           Thank you for your purchase. Here is your invoice.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="relative p-6">
-                        <div ref={invoiceRef}>
-                            {invoiceDetails && <Invoice details={invoiceDetails} />}
-                        </div>
-                        {/* Mobile floating button */}
-                        <div className="sm:hidden">
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button size="icon" className="absolute bottom-10 right-10 rounded-full h-14 w-14 shadow-2xl">
-                                        <Download className="h-6 w-6" />
-                                        <span className="sr-only">Download Invoice</span>
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <Label className="font-semibold">Download format</Label>
-                                            <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4 mt-2">
-                                                <div className="flex items-center space-x-2">
-                                                    <RadioGroupItem value="pdf" id="r-pdf-mobile" />
-                                                    <Label htmlFor="r-pdf-mobile">PDF</Label>
-                                                </div>
-                                                <div className="flex items-center space-x-2">
-                                                    <RadioGroupItem value="jpg" id="r-jpg-mobile" />
-                                                    <Label htmlFor="r-jpg-mobile">JPG</Label>
-                                                </div>
-                                            </RadioGroup>
-                                        </div>
-                                        <Button onClick={handleDownloadInvoice} className="w-full">
-                                            Download
-                                        </Button>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                    </div>
-                     {/* Desktop footer */}
-                    <DialogFooter className="hidden sm:flex p-6 pt-0 bg-muted/50 justify-between items-center">
-                        <div className="flex items-center gap-4">
-                             <Label className="font-semibold">Download format:</Label>
-                             <RadioGroup defaultValue="pdf" onValueChange={setDownloadFormat} className="flex gap-4">
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="pdf" id="r-pdf-desktop" />
-                                    <Label htmlFor="r-pdf-desktop">PDF</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="jpg" id="r-jpg-desktop" />
-                                    <Label htmlFor="r-jpg-desktop">JPG</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                        <Button onClick={handleDownloadInvoice}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Download Invoice
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </>
-    );
+                                {planId !== 'trying' && (
+                                     <div className="flex justify-between items-center">
+                                        <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</残酷な天使のように/残酷天使的行动纲领(EVA OP1)：
+                        </section>
+                        <section>
+                            <a href="https://www.bilibili.com/video/BV1Yx411W7Qe/?spm_id_from=333.880.my_history.page.click&vd_source=0090d36a2d8755d32576f304184a2b47">https://www.bilibili.com/video/BV1Yx411W7Qe/?spm_id_from=333.880.my_history.page.click&vd_source=0090d36a2d8755d32576f304184a2b47</a>
+                        </section>
+                    </article>
+                        <article>
+                            
+                        </article>
+                    </main>
+                    <footer>
+                        
+                        
+                    </footer>
+                </body>
+            </html>
+        )
+    }
 }
-
-export default function CheckoutSuspenseWrapper() {
-  return (
-    <Suspense fallback={<div className="container mx-auto py-12 flex justify-center"><Loader /></div>}>
-      <CheckoutPage />
-    </Suspense>
-  )
-}
+                    
+                    export default page
+                    
+            

@@ -169,7 +169,7 @@ export default function ContactPage() {
                             </div>
                             <Button type="submit" className="w-full font-bold" size="lg" disabled={loading || !user}>
                                 {loading && <Loader size={20} className="mr-2" />}
-                                Send Message
+                                {loading ? "Sending..." : "Send Message"}
                             </Button>
                         </form>
                     </CardContent>

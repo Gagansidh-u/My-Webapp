@@ -44,6 +44,7 @@ export default function MyInquiriesPage() {
     const { toast } = useToast();
     const [inquiries, setInquiries] = useState<Inquiry[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (authLoading) return;
@@ -74,6 +75,7 @@ export default function MyInquiriesPage() {
 
     const handleDelete = async (id: string) => {
         if (!user) return;
+        setDeletingId(id);
         const inquiryRef = doc(db, `contacts`, id);
         try {
             await deleteDoc(inquiryRef);
@@ -81,6 +83,8 @@ export default function MyInquiriesPage() {
         } catch (error) {
             console.error("Failed to delete inquiry:", error);
             toast({ title: "Error", description: "Could not delete the inquiry.", variant: "destructive" });
+        } finally {
+            setDeletingId(null);
         }
     };
 
@@ -118,8 +122,8 @@ export default function MyInquiriesPage() {
                                     <TableCell className="text-right">
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
-                                                <Button variant="destructive" size="icon">
-                                                    <Trash2 className="h-4 w-4" />
+                                                <Button variant="destructive" size="icon" disabled={deletingId === inquiry.id}>
+                                                    {deletingId === inquiry.id ? <Loader size={16} /> : <Trash2 className="h-4 w-4" />}
                                                     <span className="sr-only">Delete Inquiry</span>
                                                 </Button>
                                             </AlertDialogTrigger>

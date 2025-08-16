@@ -305,3 +305,5 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
     </>
   );
 }
+
+    

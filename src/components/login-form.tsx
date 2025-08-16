@@ -153,7 +153,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
             </Button>
 
             <div className="mt-6 text-center text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button type="button" onClick={onSwitchToSignup} className="underline">
                 Sign up
             </button>
@@ -161,3 +161,5 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
         </CardContent>
   );
 }
+
+    

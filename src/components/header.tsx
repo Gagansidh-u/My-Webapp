@@ -185,30 +185,12 @@ const Header = () => {
                             <Button onClick={() => {handleLogout(); setIsMobileMenuOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
                         ) : (
                             <div className="space-y-2">
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                    <Button className="w-full btn">Login</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-md">
-                                        <DialogHeader className="text-center">
-                                            <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
-                                            <DialogDescription>Sign in to access your account</DialogDescription>
-                                        </DialogHeader>
-                                        <LoginForm onLogin={() => setIsMobileMenuOpen(false)} />
-                                    </DialogContent>
-                                </Dialog>
-                                 <Dialog>
-                                    <DialogTrigger asChild>
-                                    <Button variant="outline" className="w-full">Sign Up</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-md">
-                                        <DialogHeader className="text-center">
-                                            <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
-                                            <DialogDescription>Get started with our services</DialogDescription>
-                                        </DialogHeader>
-                                        <SignupForm onSignup={() => setIsMobileMenuOpen(false)}/>
-                                    </DialogContent>
-                                </Dialog>
+                                <Button onClick={() => {setIsLoginOpen(true); setIsMobileMenuOpen(false);}} className="w-full">
+                                    Login
+                                </Button>
+                                <Button onClick={() => {setIsSignupOpen(true); setIsMobileMenuOpen(false);}} variant="outline" className="w-full">
+                                    Sign Up
+                                </Button>
                             </div>
                         )}
                     </div>
@@ -222,3 +204,5 @@ const Header = () => {
 };
 
 export default Header;
+
+    

@@ -141,11 +141,10 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
             </form>
             </Form>
 
-            <div className="relative my-6">
-            <Separator />
-            <div className="absolute inset-0 flex items-center">
-                <span className="bg-card px-2 text-xs text-muted-foreground mx-auto">OR CONTINUE WITH</span>
-            </div>
+            <div className="my-6 flex items-center gap-4">
+                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-muted-foreground/30 to-muted-foreground/30"></div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-muted-foreground/30 to-muted-foreground/30"></div>
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
@@ -155,15 +154,9 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
 
             <div className="mt-6 text-center text-sm">
             Don't have an account?{' '}
-            {onSwitchToSignup ? (
-                <button type="button" onClick={onSwitchToSignup} className="underline">
-                    Sign up
-                </button>
-            ) : (
-                <Link href="/signup" className="underline">
-                    Sign up
-                </Link>
-            )}
+            <button type="button" onClick={onSwitchToSignup} className="underline">
+                Sign up
+            </button>
             </div>
         </CardContent>
   );

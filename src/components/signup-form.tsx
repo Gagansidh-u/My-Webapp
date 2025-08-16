@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -239,11 +239,10 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                 </form>
             </Form>
 
-            <div className="relative my-6">
-                <Separator />
-                <div className="absolute inset-0 flex items-center">
-                <span className="bg-card px-2 text-xs text-muted-foreground mx-auto">OR CONTINUE WITH</span>
-                </div>
+            <div className="my-6 flex items-center gap-4">
+                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-muted-foreground/30 to-muted-foreground/30"></div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-muted-foreground/30 to-muted-foreground/30"></div>
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
@@ -253,15 +252,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
 
             <div className="mt-6 text-center text-sm">
                 Already have an account?{' '}
-                {onSwitchToLogin ? (
-                    <button type="button" onClick={onSwitchToLogin} className="underline">
-                        Log in
-                    </button>
-                ) : (
-                    <Link href="/login" className="underline">
-                        Log in
-                    </Link>
-                )}
+                <button type="button" onClick={onSwitchToLogin} className="underline">
+                    Log in
+                </button>
             </div>
         </CardContent>
 

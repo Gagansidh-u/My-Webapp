@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query, Timestamp, where } from "firebase/firestore";
-import { Loader2, FileText, ShoppingCart } from "lucide-react";
+import { FileText, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
+import { Loader } from "@/components/ui/loader";
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
 
@@ -84,7 +85,7 @@ export default function MyOrdersPage() {
     if (loading || authLoading) {
         return (
             <div className="flex h-[calc(100vh-12rem)] items-center justify-center bg-background">
-                <Loader2 className="animate-spin text-primary" size={48} />
+                <Loader />
             </div>
         );
     }

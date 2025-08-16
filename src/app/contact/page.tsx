@@ -7,13 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "@/components/auth-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import { Loader } from "@/components/ui/loader";
 
 export default function ContactPage() {
     const { toast } = useToast();
@@ -167,7 +168,7 @@ export default function ContactPage() {
                                 <Textarea id="message" placeholder="Your message..." rows={6} value={formData.message} onChange={handleInputChange} disabled={!user} />
                             </div>
                             <Button type="submit" className="w-full font-bold" size="lg" disabled={loading || !user}>
-                                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {loading && <Loader size={20} className="mr-2" />}
                                 Send Message
                             </Button>
                         </form>

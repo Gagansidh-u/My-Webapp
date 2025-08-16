@@ -3,13 +3,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/auth-provider";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { Loader } from "@/components/ui/loader";
 
 const plans = [
   {
@@ -169,7 +170,7 @@ export default function PricingPage() {
                 <CardFooter>
                     {loadingPlans ? (
                         <Button className="w-full font-bold" size="lg" disabled>
-                            <Loader2 className="animate-spin mr-2"/> Loading...
+                            <Loader size={20} className="mr-2" /> Loading...
                         </Button>
                     ) : isPlanActive ? (
                          <Button className="w-full font-bold" size="lg" disabled>

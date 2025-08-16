@@ -14,8 +14,8 @@ import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, User } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import React from "react";
+import { Loader } from "./ui/loader";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required."}),
@@ -235,7 +235,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     )}
                 />
                 <Button type="submit" className="w-full font-bold" disabled={loading || googleLoading}>
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {loading && <Loader size={20} className="mr-2" />}
                     Sign Up
                 </Button>
                 </form>
@@ -248,7 +248,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
-                {googleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+                {googleLoading ? <Loader size={20} className="mr-2" /> : <GoogleIcon />}
                 Sign up with Google
             </Button>
 
@@ -297,7 +297,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                             )}
                         />
                          <Button type="submit" className="w-full font-bold" disabled={loading}>
-                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {loading && <Loader size={20} className="mr-2" />}
                             Save & Continue
                         </Button>
                     </form>

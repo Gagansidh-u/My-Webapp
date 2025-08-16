@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/components/auth-provider";
 import { createOrder } from "./actions";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Loader2 } from "lucide-react";
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Loader } from "@/components/ui/loader";
 
 declare global {
   interface Window {
@@ -285,7 +286,7 @@ function CheckoutPage() {
     };
 
     if (authLoading) {
-        return <div className="container mx-auto py-12 text-center"><Loader2 className="animate-spin mx-auto" /></div>;
+        return <div className="container mx-auto py-12 text-center"><Loader /></div>;
     }
 
     const totalPrice = getTotalPrice();
@@ -353,7 +354,7 @@ function CheckoutPage() {
                             </div>
                         )}
                         <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading}>
-                            {loading ? <Loader2 className="animate-spin mr-2" /> : null}
+                            {loading ? <Loader size={20} className="mr-2" /> : null}
                             {loading ? 'Processing...' : (totalPrice > 0 ? `Pay ₹${totalPrice.toFixed(2)}` : 'Get Now')}
                         </Button>
                     </CardFooter>
@@ -431,7 +432,7 @@ function CheckoutPage() {
 
 export default function CheckoutSuspenseWrapper() {
   return (
-    <Suspense fallback={<div className="container mx-auto py-12 text-center"><Loader2 className="animate-spin mx-auto" /></div>}>
+    <Suspense fallback={<div className="container mx-auto py-12 flex justify-center"><Loader /></div>}>
       <CheckoutPage />
     </Suspense>
   )

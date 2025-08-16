@@ -12,8 +12,8 @@ import * as z from "zod";
 import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import React from "react";
+import { Loader } from "./ui/loader";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -138,7 +138,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                     )}
                     />
                     <Button type="submit" className="w-full font-bold" disabled={loading || googleLoading}>
-                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {loading && <Loader size={20} className="mr-2" />}
                     Sign In
                     </Button>
                 </form>
@@ -151,7 +151,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 </div>
                 
                 <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
-                {googleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+                {googleLoading ? <Loader size={20} className="mr-2" /> : <GoogleIcon />}
                 Sign in with Google
                 </Button>
 

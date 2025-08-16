@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query, Timestamp, where, doc, deleteDoc } from "firebase/firestore";
-import { Loader2, Mail, Trash2 } from "lucide-react";
+import { Mail, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Loader } from "@/components/ui/loader";
 
 type Inquiry = {
     id: string;
@@ -86,7 +87,7 @@ export default function MyInquiriesPage() {
     if (loading || authLoading) {
         return (
             <div className="flex h-[calc(100vh-12rem)] items-center justify-center bg-background">
-                <Loader2 className="animate-spin text-primary" size={48} />
+                <Loader />
             </div>
         );
     }

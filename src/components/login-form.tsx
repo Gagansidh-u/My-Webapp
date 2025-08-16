@@ -142,9 +142,9 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
             </Form>
 
             <div className="my-6 flex items-center gap-4">
-                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-muted-foreground/30 to-muted-foreground/30"></div>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">OR CONTINUE WITH</span>
-                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-muted-foreground/30 to-muted-foreground/30"></div>
+                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-zinc-900/30 dark:via-white/30 to-zinc-900/30 dark:to-white/30"></div>
+                <span className="text-xs text-zinc-900 dark:text-white whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-zinc-900/30 dark:via-white/30 to-zinc-900/30 dark:to-white/30"></div>
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>

@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Mail, Trash2 } from "lucide-react";
+import { Mail, Trash2, User, Calendar, MessageCircle, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,7 +22,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
 
 type InquiryStatus = 'Read' | 'Unread';
 
@@ -103,63 +104,132 @@ export default function AdminInquiriesPage() {
                 <CardDescription>View and manage all user messages.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>From</TableHead>
-                            <TableHead>Subject</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {inquiries.map(inquiry => (
-                            <TableRow key={inquiry.id}>
-                                <TableCell className="font-medium">{inquiry.name} <br/><span className="text-xs text-muted-foreground">{inquiry.email}</span></TableCell>
-                                <TableCell>{inquiry.subject}</TableCell>
-                                <TableCell><Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge></TableCell>
-                                <TableCell>{inquiry.createdAt.toDate().toLocaleDateString()}</TableCell>
-                                <TableCell className="text-right space-x-2">
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" onClick={() => handleMarkAsRead(inquiry.id)}>View Message</Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>{inquiry.subject}</DialogTitle>
-                                                <DialogDescription>From: {inquiry.name} ({inquiry.email})</DialogDescription>
-                                            </DialogHeader>
-                                            <div className="py-4">
-                                                <p className="text-sm text-foreground">{inquiry.message}</p>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
-                                     <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant="destructive" size="icon" disabled={deletingId === inquiry.id}>
-                                                {deletingId === inquiry.id ? <Loader size={16} /> : <Trash2 className="h-4 w-4" />}
-                                                <span className="sr-only">Delete Inquiry</span>
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete this message.
-                                            </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => handleDelete(inquiry.id)}>Continue</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </TableCell>
+                {/* Desktop View */}
+                <div className="hidden md:block">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>From</TableHead>
+                                <TableHead>Subject</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {inquiries.map(inquiry => (
+                                <TableRow key={inquiry.id}>
+                                    <TableCell className="font-medium">{inquiry.name} <br/><span className="text-xs text-muted-foreground">{inquiry.email}</span></TableCell>
+                                    <TableCell>{inquiry.subject}</TableCell>
+                                    <TableCell><Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge></TableCell>
+                                    <TableCell>{inquiry.createdAt.toDate().toLocaleDateString()}</TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" onClick={() => handleMarkAsRead(inquiry.id)}>View Message</Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>{inquiry.subject}</DialogTitle>
+                                                    <DialogDescription>From: {inquiry.name} ({inquiry.email})</DialogDescription>
+                                                </DialogHeader>
+                                                <div className="py-4">
+                                                    <p className="text-sm text-foreground">{inquiry.message}</p>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" size="icon" disabled={deletingId === inquiry.id}>
+                                                    {deletingId === inquiry.id ? <Loader size={16} /> : <Trash2 className="h-4 w-4" />}
+                                                    <span className="sr-only">Delete Inquiry</span>
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete this message.
+                                                </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDelete(inquiry.id)}>Continue</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+
+                {/* Mobile View */}
+                <div className="md:hidden space-y-4">
+                    {inquiries.map(inquiry => (
+                         <Card key={inquiry.id} className="bg-muted/30">
+                              <CardContent className="p-4 space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div className="space-y-1">
+                                        <p className="font-bold flex items-center gap-2"><User className="text-muted-foreground" /> {inquiry.name}</p>
+                                        <p className="text-sm text-muted-foreground truncate max-w-[200px]">{inquiry.email}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" size="sm" onClick={() => handleMarkAsRead(inquiry.id)}>View</Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>{inquiry.subject}</DialogTitle>
+                                                    <DialogDescription>From: {inquiry.name} ({inquiry.email})</DialogDescription>
+                                                </DialogHeader>
+                                                <div className="py-4">
+                                                    <p className="text-sm text-foreground">{inquiry.message}</p>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
+                                         <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" size="icon" disabled={deletingId === inquiry.id}>
+                                                    {deletingId === inquiry.id ? <Loader size={16} /> : <Trash2 className="h-4 w-4" />}
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete this message.
+                                                </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDelete(inquiry.id)}>Continue</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
+                                </div>
+                                <Separator />
+                                <div className="flex items-center justify-between text-sm">
+                                    <p className="text-muted-foreground flex items-center gap-2"><MessageCircle /> Subject</p>
+                                    <p className="font-medium truncate max-w-[150px]">{inquiry.subject}</p>
+                                </div>
+                                 <div className="flex items-center justify-between text-sm">
+                                    <p className="text-muted-foreground flex items-center gap-2"><Calendar /> Date</p>
+                                    <p className="font-medium">{inquiry.createdAt.toDate().toLocaleDateString()}</p>
+                                </div>
+                                <div className="flex items-center justify-between text-sm">
+                                    <p className="text-muted-foreground flex items-center gap-2"><BadgeCheck /> Status</p>
+                                    <Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge>
+                                </div>
+                            </CardContent>
+                         </Card>
+                    ))}
+                </div>
+
+
                  {inquiries.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground">
                         <p>No inquiries found.</p>

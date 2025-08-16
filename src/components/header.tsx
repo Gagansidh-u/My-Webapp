@@ -133,7 +133,7 @@ const Header = () => {
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader className="text-center">
                                 <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
-                                <DialogDescription className="text-zinc-900 dark:text-white">Sign in to access your account</DialogDescription>
+                                <DialogDescription className="text-white">Sign in to access your account</DialogDescription>
                             </DialogHeader>
                             <LoginForm onLogin={() => setIsLoginOpen(false)} onSwitchToSignup={openSignupFromLogin}/>
                         </DialogContent>
@@ -145,7 +145,7 @@ const Header = () => {
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader className="text-center">
                                 <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
-                                <DialogDescription className="text-zinc-900 dark:text-white">Get started with our services</DialogDescription>
+                                <DialogDescription className="text-white">Get started with our services</DialogDescription>
                             </DialogHeader>
                             <SignupForm onSignup={() => setIsSignupOpen(false)} onSwitchToLogin={openLoginFromSignup}/>
                         </DialogContent>

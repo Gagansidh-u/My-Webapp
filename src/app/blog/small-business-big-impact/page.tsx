@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'Websites for Small Business | Grock Technologies Company',
@@ -41,7 +42,7 @@ export default function BlogPost() {
                     Think about your own behavior as a consumer. When you hear about a new business, what's one of the first things you do? You look it up online. If you can't find a website, or if the one you find is slow, outdated, or broken, your perception of that business immediately diminishes.
                 </p>
                 <p>
-                    A clean, modern, and fast-loading website signals that you are a legitimate and professional operation. It shows that you care about your brand and your customer's experience. This initial burst of credibility is crucial for converting a potential lead into a paying customer.
+                    A clean, modern, and <Link href="/blog/why-speed-matters">fast-loading website</Link> signals that you are a legitimate and professional operation. It shows that you care about your brand and your customer's experience. This initial burst of credibility is crucial for converting a potential lead into a paying customer.
                 </p>
                 
                 <h2 className="font-headline text-2xl text-foreground">2. Reach New Customers Beyond Your Locality</h2>
@@ -49,7 +50,7 @@ export default function BlogPost() {
                    A physical storefront is limited by geography. A website gives you a global reach. Search Engine Optimization (SEO) allows people from all over the country—or the world—to find your products and services when they search for relevant terms on Google.
                 </p>
                 <p>
-                   This is where high-quality hosting becomes critical. A fast website, like one powered by Grock's NVMe servers, is favored by search engines, helping you rank higher and attract more organic traffic. Your website works tirelessly to bring new leads to your digital doorstep, even while you sleep.
+                   This is where high-quality hosting becomes critical. A fast website, like one powered by our <Link href="/blog/choosing-the-right-hosting">NVMe servers</Link>, is favored by search engines, helping you rank higher and attract more organic traffic. Your website works tirelessly to bring new leads to your digital doorstep, even while you sleep.
                 </p>
 
                 <h2 className="font-headline text-2xl text-foreground">3. Showcase Your Products and Services in Detail</h2>
@@ -68,7 +69,7 @@ export default function BlogPost() {
                     Your website isn't just a brochure; it's an active business tool. With a well-placed contact form, a newsletter sign-up, or a full-fledged e-commerce store, your website can generate business for you around the clock.
                 </p>
                 <p>
-                    A secure and reliable host is paramount here. When a customer is ready to make a purchase or submit their contact details, your site must be online and functioning perfectly. Our 99.9% uptime guarantee and robust security features ensure that you never miss an opportunity because your site is down or compromised.
+                    A <Link href="/blog/securing-your-digital-presence">secure and reliable host</Link> is paramount here. When a customer is ready to make a purchase or submit their contact details, your site must be online and functioning perfectly. Our 99.9% uptime guarantee and robust security features ensure that you never miss an opportunity because your site is down or compromised.
                 </p>
 
                  <h2 className="font-headline text-2xl text-foreground">5. Provide a Central Hub for Your Marketing</h2>
@@ -84,7 +85,7 @@ export default function BlogPost() {
                         Viewing your website as an expense is a mistake. It is one of the most important investments you can make in the growth and sustainability of your small business. It's your key to building trust, reaching a wider audience, and creating a more efficient, automated business.
                     </p>
                     <p>
-                        At Grock Technologies, we make it easy and affordable to get started. Our hosting plans provide the speed, security, and reliability your professional website needs to make a big impact. Choose a plan today and take the first step toward transforming your small business into a global brand.
+                        At Grock Technologies, we make it easy and <Link href="/blog/how-we-keep-prices-low">affordable to get started</Link>. Our hosting plans provide the speed, security, and reliability your professional website needs to make a big impact. Choose a plan today and take the first step toward transforming your small business into a global brand.
                     </p>
             </div>
         </article>

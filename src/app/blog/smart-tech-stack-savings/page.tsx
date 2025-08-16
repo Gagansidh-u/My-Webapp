@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'Our Tech Stack: How We Provide Value | Grock Tech',
@@ -30,7 +31,7 @@ export default function BlogPost() {
             
             <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground space-y-6">
                 <p className="lead text-xl">
-                    At Grock Technologies, we're obsessed with performance. But we're equally obsessed with providing value. A common misconception is that top-of-the-line technology must always come with a high price tag. We're here to show you that by making smart, strategic choices in our technology stack, we can deliver both elite performance and exceptional affordability.
+                    At Grock Technologies, we're obsessed with performance. But we're equally obsessed with providing value. A common misconception is that top-of-the-line technology must always come with a high price tag. We're here to show you that by making smart, strategic choices in our technology stack, we can deliver both elite performance and <Link href="/blog/how-we-keep-prices-low">exceptional affordability</Link>.
                 </p>
                 <p>
                     Our tech stack isn't just a random collection of software; it's a carefully curated ecosystem where each component is chosen for its efficiency and ability to deliver a superior experience without inflating costs. Let's break down the key components and explain how they directly benefit your website and your wallet.
@@ -49,7 +50,7 @@ export default function BlogPost() {
                 
                 <h2 className="font-headline text-2xl text-foreground">The Foundation: Enterprise NVMe Storage</h2>
                 <p>
-                    Storage is the foundation of your website's speed. While many hosts now offer SSDs (Solid State Drives), not all SSDs are created equal. We use the best available: NVMe (Non-Volatile Memory Express) SSDs.
+                    Storage is the foundation of your <Link href="/blog/why-speed-matters">website's speed</Link>. While many hosts now offer SSDs (Solid State Drives), not all SSDs are created equal. We use the best available: <Link href="/blog/choosing-the-right-hosting">NVMe (Non-Volatile Memory Express) SSDs</Link>.
                 </p>
                 <p>
                     <strong>Why it's faster:</strong> Traditional SSDs use the old SATA interface, which was designed for slow, mechanical hard drives. It's a bottleneck. NVMe drives connect directly to the motherboard's PCIe bus, the same high-speed interface used by graphics cards. This allows for massively higher data throughput and lower latency.

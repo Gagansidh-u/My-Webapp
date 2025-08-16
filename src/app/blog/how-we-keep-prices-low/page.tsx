@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'How We Keep Hosting Prices Low | Grock Technologies',
@@ -38,11 +39,11 @@ export default function BlogPost() {
                 
                 <h2 className="font-headline text-2xl text-foreground">1. Strategic Technology Adoption</h2>
                 <p>
-                    The biggest factor in our pricing is our deliberate choice of technology. We don't just follow trends; we invest in technology that offers the best performance-to-cost ratio.
+                    The biggest factor in our pricing is our <Link href="/blog/smart-tech-stack-savings">deliberate choice of technology</Link>. We don't just follow trends; we invest in technology that offers the best performance-to-cost ratio.
                 </p>
                 <ul>
                     <li><strong>LiteSpeed Web Server:</strong> Instead of using older, free software like Apache, we invest in LiteSpeed. While it's a commercial product, its superior efficiency means it can handle more traffic with less server hardware. This allows us to serve more customers per server without compromising speed, reducing our hardware costs significantly.</li>
-                    <li><strong>Enterprise NVMe Storage:</strong> We exclusively use NVMe SSDs, which are much faster than traditional SATA SSDs. While more expensive upfront, their speed allows for faster data processing, which means our servers complete tasks quicker. This efficiency gain contributes to lower operational costs.</li>
+                    <li><strong>Enterprise NVMe Storage:</strong> We exclusively use <Link href="/blog/choosing-the-right-hosting">NVMe SSDs</Link>, which are much faster than traditional SATA SSDs. While more expensive upfront, their speed allows for faster data processing, which means our servers complete tasks quicker. This efficiency gain contributes to lower operational costs.</li>
                     <li><strong>Focused Service Offering:</strong> We specialize in high-performance web hosting. We don't try to be a jack-of-all-trades by offering dozens of unrelated services. This focus allows us to optimize our infrastructure and support for one thing and do it exceptionally well, leading to greater efficiency.</li>
                 </ul>
 
@@ -75,7 +76,7 @@ export default function BlogPost() {
                     Offering low prices isn't about cutting corners. For us, it's the result of a deliberate, long-term strategy built on efficiency, modern technology, and customer-centric values. We've engineered our entire business to provide the maximum amount of value and performance for the lowest possible cost.
                 </p>
                 <p>
-                    When you choose Grock Technologies, you're not just getting an affordable hosting plan. You're benefiting from a business model designed from the ground up to make high-quality web hosting accessible to everyone.
+                    When you choose Grock Technologies, you're not just getting an <Link href="/pricing">affordable hosting plan</Link>. You're benefiting from a business model designed from the ground up to make high-quality web hosting accessible to everyone.
                 </p>
             </div>
         </article>

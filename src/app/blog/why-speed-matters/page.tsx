@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'Why Website Speed Matters | Grock Technologies',
@@ -73,8 +74,8 @@ export default function BlogPost() {
 
                 <h2 className="font-headline text-2xl text-foreground">How Grock Technologies Delivers Uncompromising Speed</h2>
                 <ol>
-                    <li><strong>NVMe Storage:</strong> All our plans use enterprise-grade NVMe (Non-Volatile Memory Express) storage. This is a quantum leap beyond traditional SSDs, offering drastically higher read/write speeds and lower latency. This means your website files and databases are accessed at lightning speed.</li>
-                    <li><strong>LiteSpeed Web Server:</strong> We use LiteSpeed, a high-performance web server that is significantly faster than traditional Apache or Nginx servers. It's built to handle high traffic and dynamic content efficiently.</li>
+                    <li><strong><Link href="/blog/choosing-the-right-hosting">NVMe Storage</Link>:</strong> All our plans use enterprise-grade NVMe (Non-Volatile Memory Express) storage. This is a quantum leap beyond traditional SSDs, offering drastically higher read/write speeds and lower latency. This means your website files and databases are accessed at lightning speed.</li>
+                    <li><strong><Link href="/blog/smart-tech-stack-savings">LiteSpeed Web Server</Link>:</strong> We use LiteSpeed, a high-performance web server that is significantly faster than traditional Apache or Nginx servers. It's built to handle high traffic and dynamic content efficiently.</li>
                     <li><strong>Server-Level Caching (LSCache):</strong> LiteSpeed comes with a powerful, integrated caching engine. LSCache intelligently stores copies of your pages and serves them directly from memory, reducing the need to regenerate pages for every visitor. This dramatically reduces server processing time and delivers content almost instantly.</li>
                 </ol>
 

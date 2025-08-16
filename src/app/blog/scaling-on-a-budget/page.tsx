@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'Scaling on a Budget: Hosting Tiers | Grock Technologies',
@@ -33,12 +34,12 @@ export default function BlogPost() {
                     Every business dreams of growth. But as your website's traffic increases, so do the demands on your hosting. The last thing you want is for your success to be punished by a slow website or a hosting bill that suddenly balloons out of control. A key part of our business strategy at Grock Technologies is to provide a clear, affordable, and painless growth path for our customers.
                 </p>
                 <p>
-                    Your hosting shouldn't hold you back. It should be a flexible foundation that supports your growth at every stage. In this post, we'll walk you through our hosting tiers, explaining the logic behind them and how they're designed to help you scale your business on a budget.
+                    Your hosting shouldn't hold you back. It should be a flexible foundation that supports your growth at every stage. In this post, we'll walk you through our <Link href="/pricing">hosting tiers</Link>, explaining the logic behind them and how they're designed to help you scale your business on a budget.
                 </p>
                 
                 <h2 className="font-headline text-2xl text-foreground">The Starting Point: "Single Website" Plan</h2>
                 <p>
-                    Our entry-level plan is designed for those who are just starting out: a personal blog, a portfolio site, or a brand-new small business website.
+                    Our entry-level plan is designed for those who are just starting out: a personal blog, a portfolio site, or a brand-new <Link href="/blog/small-business-big-impact">small business website</Link>.
                 </p>
                 <ul>
                     <li><strong>What it offers:</strong> This plan gives you everything you need for one successful website, including a generous 50 GB of super-fast NVMe storage, unlimited bandwidth, and a free email account.</li>
@@ -53,7 +54,7 @@ export default function BlogPost() {
                     <strong>What it offers:</strong> The "Web Starter" plan is a significant step up. You can host up to 100 websites and get 100 GB of NVMe storage. The most crucial upgrade, however, is the inclusion of free daily backups.
                 </p>
                 <p>
-                    <strong>Why it's the smart choice for growth:</strong> As your website becomes more important to your business, the risk of data loss becomes more severe. Daily backups are an essential insurance policy. This plan allows you to experiment with new ideas—a new marketing site, a separate blog, a landing page for a campaign—without needing to buy a new hosting plan for each one. It provides the flexibility to grow your digital footprint at a very low incremental cost.
+                    <strong>Why it's the smart choice for growth:</strong> As your website becomes more important to your business, the risk of data loss becomes more severe. <Link href="/blog/securing-your-digital-presence">Daily backups are an essential insurance policy</Link>. This plan allows you to experiment with new ideas—a new marketing site, a separate blog, a landing page for a campaign—without needing to buy a new hosting plan for each one. It provides the flexibility to grow your digital footprint at a very low incremental cost.
                 </p>
 
                 <h2 className="font-headline text-2xl text-foreground">The Powerhouse: "Business Website" Plan</h2>

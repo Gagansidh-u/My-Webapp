@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: '5 Steps to Secure Your Website | Grock Technologies',
@@ -57,7 +58,7 @@ export default function BlogPost() {
 
                 <h2 className="font-headline text-2xl text-foreground">3. Keep Everything Updated</h2>
                 <p>
-                   Software updates don't just add new features; they often contain critical security patches that fix vulnerabilities discovered by developers. This applies to your website's core software (like WordPress), as well as any themes and plugins you have installed.
+                   Software updates don't just add new features; they often contain critical security patches that fix vulnerabilities discovered by developers. This applies to your website's core software (like <Link href="/blog/demystifying-managed-wordpress">WordPress</Link>), as well as any themes and plugins you have installed.
                 </p>
                 <p>
                     <strong>Why it's essential:</strong> Hackers actively scan for websites running outdated software with known vulnerabilities. Delaying updates is like leaving a known weak spot undefended.
@@ -74,7 +75,7 @@ export default function BlogPost() {
                     <strong>What to do:</strong> Don't rely on manual backups that you might forget to perform. Your backup strategy should be automated and stored off-site (not on the same server as your website).
                 </p>
                 <p>
-                    <strong>How Grock helps:</strong> We provide automated backups on our hosting plans. Our Web Starter and Business Website plans include free daily backups, giving you the peace of mind that a recent copy of your site is always available for one-click restoration.
+                    <strong>How Grock helps:</strong> We provide automated backups on our hosting plans. Our <Link href="/pricing">Web Starter and Business Website plans</Link> include free daily backups, giving you the peace of mind that a recent copy of your site is always available for one-click restoration.
                 </p>
 
                 <h2 className="font-headline text-2xl text-foreground">5. Choose a Host with Proactive Security Features</h2>

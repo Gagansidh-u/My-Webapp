@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'Is "Unlimited" Hosting a Myth? | Grock Technologies',
@@ -44,12 +45,12 @@ export default function BlogPost() {
                     "Unlimited" hosting operates on a simple premise: the vast majority of users will only use a tiny fraction of the server's resources. The host over-sells the server's capacity, betting that most customers will stay within a reasonable, unstated limit.
                 </p>
                 <p>
-                    The problem arises when your website becomes successful. If your site starts using a significant amount of storage or bandwidth, you'll suddenly get a warning that you've violated the "Fair Use Policy." Your site might be slowed down, or you could even be forced to upgrade to a much more expensive plan with little notice. "Unlimited" is only unlimited until you actually start to use it.
+                    The problem arises when your website becomes successful. If your site starts using a significant amount of storage or bandwidth, you'll suddenly get a warning that you've violated the "Fair Use Policy." Your site might be slowed down, or you could even be forced to <Link href="/blog/scaling-on-a-budget">upgrade to a much more expensive plan</Link> with little notice. "Unlimited" is only unlimited until you actually start to use it.
                 </p>
                 
                 <h2 className="font-headline text-2xl text-foreground">The Grock Approach: Generous, Defined Limits</h2>
                 <p>
-                    We believe it's better to be honest and upfront. Let's look at our "Single Website" plan as an example. We offer 50 GB of NVMe storage.
+                    We believe it's better to be honest and upfront. Let's look at our <Link href="/pricing">"Single Website" plan</Link> as an example. We offer 50 GB of NVMe storage.
                 </p>
                 <ul>
                     <li><strong>It's a huge amount of space:</strong> For perspective, a typical WordPress website with hundreds of pages and images might only use 1-2 GB. A 50 GB allocation is more than enough for the vast majority of websites to grow for years.</li>
@@ -64,7 +65,7 @@ export default function BlogPost() {
                  <ol>
                     <li><strong>Predictability and Budgeting:</strong> You know exactly what your plan includes and what it will cost. You can make informed decisions about when to upgrade based on your actual usage, not on a host's arbitrary say-so. This makes budgeting predictable and puts you in control.</li>
                     <li><strong>Trust and Partnership:</strong> We want to be your partner, not your adversary. Honest pricing and clear resource limits build a relationship based on trust. We're not trying to trick you; we're trying to provide you with a stable, reliable platform for your business.</li>
-                    <li><strong>Guaranteed Performance:</strong> Because we don't drastically over-sell our servers based on an "unlimited" gimmick, we can better manage our resources to ensure that every customer gets the high-speed performance they pay for. We're not risking server stability for a marketing trick.</li>
+                    <li><strong>Guaranteed Performance:</strong> Because we don't drastically over-sell our servers based on an "unlimited" gimmick, we can better manage our resources to ensure that every customer gets the <Link href="/blog/why-speed-matters">high-speed performance</Link> they pay for. We're not risking server stability for a marketing trick.</li>
                 </ol>
 
                 <h2 className="font-headline text-2xl text-foreground">Conclusion: Choose Honesty Over Hype</h2>

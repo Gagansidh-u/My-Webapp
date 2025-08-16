@@ -124,9 +124,9 @@ export default function AdminInquiriesPage() {
                                     <TableCell><Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge></TableCell>
                                     <TableCell>{inquiry.createdAt.toDate().toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
-                                        <Dialog>
+                                        <Dialog onOpenChange={(open) => { if(open) handleMarkAsRead(inquiry.id)}}>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" onClick={() => handleMarkAsRead(inquiry.id)}>View Message</Button>
+                                                <Button variant="outline">View Message</Button>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
@@ -150,7 +150,7 @@ export default function AdminInquiriesPage() {
                                                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                                 <AlertDialogDescription>
                                                     This action cannot be undone. This will permanently delete this message.
-                                                </AlertDialogDescription>
+                                                </Description>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -176,9 +176,9 @@ export default function AdminInquiriesPage() {
                                         <p className="text-sm text-muted-foreground truncate max-w-[200px]">{inquiry.email}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Dialog>
+                                        <Dialog onOpenChange={(open) => { if(open) handleMarkAsRead(inquiry.id)}}>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" size="sm" onClick={() => handleMarkAsRead(inquiry.id)}>View</Button>
+                                                <Button variant="outline" size="sm">View</Button>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
@@ -201,7 +201,7 @@ export default function AdminInquiriesPage() {
                                                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                                 <AlertDialogDescription>
                                                     This action cannot be undone. This will permanently delete this message.
-                                                </AlertDialogDescription>
+                                                </Description>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Package, MessageSquare, Users, BarChart } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
-import { collection, getCountFromServer } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Loader } from "@/components/ui/loader";
@@ -31,24 +31,44 @@ export default function AdminDashboardPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const ordersSnap = await getCountFromServer(collection(db, "orders"));
-                const inquiriesSnap = await getCountFromServer(collection(db, "contacts"));
-                const usersSnap = await getCountFromServer(collection(db, "users"));
-                setStats({
-                    orders: ordersSnap.data().count,
-                    inquiries: inquiriesSnap.data().count,
-                    users: usersSnap.data().count,
-                });
-            } catch (error) {
-                console.error("Failed to fetch stats:", error);
-            } finally {
+        const unsubscribes: (() => void)[] = [];
+        let loadedStats = 0;
+
+        const handleLoad = () => {
+            loadedStats++;
+            if (loadedStats === 3) {
                 setLoading(false);
             }
         };
-        fetchStats();
-    }, []);
+
+        try {
+            const ordersUnsub = onSnapshot(collection(db, "orders"), (snapshot) => {
+                setStats(prev => ({ ...prev, orders: snapshot.size }));
+                if(loading) handleLoad();
+            });
+            unsubscribes.push(ordersUnsub);
+
+            const inquiriesUnsub = onSnapshot(collection(db, "contacts"), (snapshot) => {
+                setStats(prev => ({ ...prev, inquiries: snapshot.size }));
+                 if(loading) handleLoad();
+            });
+            unsubscribes.push(inquiriesUnsub);
+
+            const usersUnsub = onSnapshot(collection(db, "users"), (snapshot) => {
+                setStats(prev => ({ ...prev, users: snapshot.size }));
+                 if(loading) handleLoad();
+            });
+            unsubscribes.push(usersUnsub);
+
+        } catch (error) {
+            console.error("Failed to fetch real-time stats:", error);
+            setLoading(false);
+        }
+
+        return () => {
+            unsubscribes.forEach(unsub => unsub());
+        };
+    }, [loading]);
 
     if (loading) {
         return (

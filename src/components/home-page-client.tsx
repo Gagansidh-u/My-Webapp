@@ -32,8 +32,8 @@ export default function HomePageClient() {
     offset: ["start start", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 0.8], [1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.8], [1, 0.9]);
+  const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.6], [1, 0.9]);
 
   return (
     <div ref={targetRef} className="relative">

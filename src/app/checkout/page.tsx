@@ -437,7 +437,13 @@ function CheckoutPage() {
 
             <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
                 <DialogContent className="max-w-4xl p-0">
-                     <div ref={invoiceRef} className="bg-background">
+                    <DialogHeader className="p-6 pb-0">
+                        <DialogTitle>Order Successful!</DialogTitle>
+                        <DialogDescription>
+                            Your order has been placed successfully. Here is your invoice.
+                        </DialogDescription>
+                    </DialogHeader>
+                     <div ref={invoiceRef} className="bg-background px-6">
                          {invoiceDetails && <Invoice details={invoiceDetails} />}
                      </div>
                      <DialogFooter className="p-6 bg-muted/50 border-t flex flex-col-reverse sm:flex-row sm:justify-end gap-4">

@@ -14,6 +14,21 @@ import { Loader } from "@/components/ui/loader";
 
 const plans = [
   {
+    title: 'Trying',
+    monthlyPrice: 0.00,
+    buildingCharge: 0.00,
+    description: 'Get a taste of our platform',
+    features: [
+      '1 Website',
+      '1 GB NVMe Storage',
+      'Limited Bandwidth',
+      'Free Email Account',
+      'Unlimited Free SSL',
+    ],
+    planId: 'trying',
+    discount: 'Free'
+  },
+  {
     title: 'Single Website',
     monthlyPrice: 149.00,
     buildingCharge: 999.00,
@@ -123,7 +138,7 @@ export default function PricingPage() {
         <p className="text-lg text-muted-foreground mt-2">Choose the perfect plan for your needs. Simple, transparent, and powerful.</p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start md:grid-cols-2">
         {plans.map((plan, index) => {
           const isPlanActive = activePlans.includes(plan.title);
           

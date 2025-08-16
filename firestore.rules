@@ -2,40 +2,42 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
     // Helper function to check if a user is the admin
     function isAdmin() {
       return request.auth.token.email == 'helpdesk.grock@outlook.com';
     }
 
-    // Rules for the 'users' collection
-    match /users/{userId} {
-      // Any authenticated user can create their own user document
-      allow create: if request.auth != null && request.auth.uid == userId;
-      // Users can only read or update their own document
-      allow read, update: if request.auth != null && request.auth.uid == userId;
-      // Allow admin to read any user document
-      allow get, list: if isAdmin();
+    // Default rule: Deny all reads and writes
+    match /{document=**} {
+      allow read, write: if false;
     }
-    
+
     // Rules for the 'orders' collection
     match /orders/{orderId} {
-      // Users can create their own orders
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      // Users can only read their own orders
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      // Admin can perform any action on orders
-      allow read, write, update, delete: if isAdmin();
+      // Admin can perform any action
+      allow read, write: if isAdmin();
+      // Users can create orders for themselves
+      allow create: if request.auth.uid == request.resource.data.userId;
+      // Users can read their own orders
+      allow read: if request.auth.uid == resource.data.userId;
     }
 
     // Rules for the 'contacts' (inquiries) collection
     match /contacts/{contactId} {
-        // Users can create their own inquiries
-        allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-        // Users can only read or delete their own inquiries
-        allow read, delete: if request.auth != null && resource.data.userId == request.auth.uid;
-        // Admin can read, update (e.g., status), and delete any inquiry
+        // Admin can read, update, and delete any inquiry
         allow read, update, delete: if isAdmin();
+        // Users can create inquiries for themselves
+        allow create: if request.auth.uid == request.resource.data.userId;
+        // Users can read and delete their own inquiries
+        allow read, delete: if request.auth.uid == resource.data.userId;
+    }
+    
+    // Rules for the 'users' collection
+    match /users/{userId} {
+        // Admin can read any user document
+        allow read: if isAdmin();
+        // Users can create and read their own document
+        allow create, read: if request.auth.uid == userId;
     }
   }
 }

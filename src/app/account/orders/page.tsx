@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query, Timestamp, where } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, Timestamp, where } from "firebase/firestore";
 import { FileText, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,24 +55,22 @@ export default function MyOrdersPage() {
             return;
         }
 
-        const fetchOrders = async () => {
-            try {
-                const ordersQuery = query(
-                    collection(db, "orders"), 
-                    where("userId", "==", user.uid),
-                    orderBy("createdAt", "desc")
-                );
-                const querySnapshot = await getDocs(ordersQuery);
-                const userOrders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-                setOrders(userOrders);
-            } catch (error) {
-                console.error("Failed to fetch user orders:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        const ordersQuery = query(
+            collection(db, "orders"),
+            where("userId", "==", user.uid),
+            orderBy("createdAt", "desc")
+        );
+        
+        const unsubscribe = onSnapshot(ordersQuery, (querySnapshot) => {
+            const userOrders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+            setOrders(userOrders);
+            setLoading(false);
+        }, (error) => {
+             console.error("Failed to fetch user orders:", error);
+             setLoading(false);
+        });
 
-        fetchOrders();
+        return () => unsubscribe();
     }, [user, authLoading, router]);
 
     const getDurationText = (duration: number) => {

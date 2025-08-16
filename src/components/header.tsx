@@ -7,7 +7,7 @@ import { useAuth } from './auth-provider';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MessageSquare, Tag, Activity, FileText, Contact, Newspaper } from 'lucide-react';
+import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MessageSquare, Tag, Activity, FileText, Contact, Newspaper, Shield } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import React from 'react';
 import { useTheme } from 'next-themes';
@@ -41,11 +41,17 @@ const Header = () => {
       { href: '/account/orders', label: 'My Orders', icon: <ShoppingCart className="mr-2 h-4 w-4" /> },
       { href: '/account/inquiries', label: 'My Inquiries', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
   ]
+  
+  const adminNavLinks = [
+      { href: '/admin', label: 'Admin Panel', icon: <Shield className="mr-2 h-4 w-4" /> },
+  ]
 
   const getUserInitials = (email: string | null | undefined) => {
       if (!email) return 'U';
       return email.substring(0, 2).toUpperCase();
   }
+
+  const isAdmin = user?.email === 'helpdesk.grock@outlook.com';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -63,6 +69,11 @@ const Header = () => {
                     {link.label}
                 </Link>
              ))}
+             {isAdmin && (
+                <Link href="/admin" className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center">
+                   <Shield className="mr-1 h-4 w-4"/> Admin
+                </Link>
+             )}
           </nav>
         </div>
         
@@ -106,6 +117,19 @@ const Header = () => {
                                 </Link>
                              </DropdownMenuItem>
                         ))}
+                        {isAdmin && (
+                            <>
+                               <DropdownMenuSeparator />
+                                {adminNavLinks.map(link => (
+                                     <DropdownMenuItem key={link.href} asChild>
+                                         <Link href={link.href}>
+                                             {link.icon}
+                                             {link.label}
+                                        </Link>
+                                     </DropdownMenuItem>
+                                ))}
+                            </>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout}>
                             <LogOut className="mr-2 h-4 w-4" />
@@ -150,6 +174,11 @@ const Header = () => {
                             </Link>
                         ))}
                          {user && userNavLinks.map(link => (
+                            <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
+                                {link.icon} {link.label}
+                            </Link>
+                        ))}
+                        {isAdmin && adminNavLinks.map(link => (
                             <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                                 {link.icon} {link.label}
                             </Link>

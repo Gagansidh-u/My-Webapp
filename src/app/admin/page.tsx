@@ -64,7 +64,7 @@ export default function AdminDashboardPage() {
                 <h1 className="text-3xl font-bold font-headline">Dashboard</h1>
                 <p className="text-muted-foreground">Welcome to the admin dashboard.</p>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Orders</CardTitle>

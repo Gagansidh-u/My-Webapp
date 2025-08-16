@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { AuthForm } from './auth-form';
+import { motion } from 'framer-motion';
 
 const Header = () => {
   const { user, loading } = useAuth();
@@ -114,10 +115,14 @@ const Header = () => {
                 </DropdownMenu>
             ) : (
                 <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
-                    <div className='flex items-center gap-2'>
+                    <motion.div
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        className='flex items-center gap-2'
+                    >
                          <Button variant="ghost" onClick={() => setIsAuthOpen(true)}>Login</Button>
                          <Button onClick={() => setIsAuthOpen(true)}>Sign Up</Button>
-                    </div>
+                    </motion.div>
                     <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
                         <DialogTitle className="sr-only">Authentication</DialogTitle>
                         <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
@@ -156,14 +161,18 @@ const Header = () => {
                         ) : user ? (
                             <Button onClick={() => {handleLogout(); setIsMobileMenuOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
                         ) : (
-                            <div className="space-y-2">
+                            <motion.div
+                                animate={{ scale: [1, 1.02, 1] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                                className="space-y-2"
+                            >
                                 <Button onClick={() => {setIsAuthOpen(true); setIsMobileMenuOpen(false);}} className="w-full">
                                     Login
                                 </Button>
                                 <Button onClick={() => {setIsAuthOpen(true); setIsMobileMenuOpen(false);}} variant="outline" className="w-full">
                                     Sign Up
                                 </Button>
-                            </div>
+                            </motion.div>
                         )}
                     </div>
                 </div>

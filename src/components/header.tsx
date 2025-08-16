@@ -13,7 +13,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Dialog, DialogContent } from './ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { AuthForm } from './auth-form';
 
 const Header = () => {
@@ -119,6 +119,7 @@ const Header = () => {
                          <Button onClick={() => setIsAuthOpen(true)}>Sign Up</Button>
                     </div>
                     <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
+                        <DialogTitle className="sr-only">Authentication</DialogTitle>
                         <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
                     </DialogContent>
                 </Dialog>

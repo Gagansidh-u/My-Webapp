@@ -13,17 +13,15 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { LoginForm } from './login-form';
-import { SignupForm } from './signup-form';
+import { Dialog, DialogContent } from './ui/dialog';
+import { AuthForm } from './auth-form';
 
 const Header = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { theme, setTheme } = useTheme()
-  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-  const [isSignupOpen, setIsSignupOpen] = React.useState(false);
+  const [isAuthOpen, setIsAuthOpen] = React.useState(false);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -46,16 +44,6 @@ const Header = () => {
   const getUserInitials = (email: string | null | undefined) => {
       if (!email) return 'U';
       return email.substring(0, 2).toUpperCase();
-  }
-
-  const openSignupFromLogin = () => {
-      setIsLoginOpen(false);
-      setIsSignupOpen(true);
-  }
-
-  const openLoginFromSignup = () => {
-      setIsSignupOpen(false);
-      setIsLoginOpen(true);
   }
 
   return (
@@ -125,32 +113,15 @@ const Header = () => {
                     </DropdownMenuContent>
                 </DropdownMenu>
             ) : (
-                <>
-                    <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                        <DialogTrigger asChild>
-                           <Button variant="ghost">Login</Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
-                            <DialogHeader className="text-center">
-                                <DialogTitle className="text-3xl font-headline">Welcome Back</DialogTitle>
-                                <DialogDescription className="text-white">Sign in to access your account</DialogDescription>
-                            </DialogHeader>
-                            <LoginForm onLogin={() => setIsLoginOpen(false)} onSwitchToSignup={openSignupFromLogin}/>
-                        </DialogContent>
-                    </Dialog>
-                    <Dialog open={isSignupOpen} onOpenChange={setIsSignupOpen}>
-                        <DialogTrigger asChild>
-                           <Button>Sign Up</Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
-                            <DialogHeader className="text-center">
-                                <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
-                                <DialogDescription className="text-white">Get started with our services</DialogDescription>
-                            </DialogHeader>
-                            <SignupForm onSignup={() => setIsSignupOpen(false)} onSwitchToLogin={openLoginFromSignup}/>
-                        </DialogContent>
-                    </Dialog>
-                </>
+                <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
+                    <div className='flex items-center gap-2'>
+                         <Button variant="ghost" onClick={() => setIsAuthOpen(true)}>Login</Button>
+                         <Button onClick={() => setIsAuthOpen(true)}>Sign Up</Button>
+                    </div>
+                    <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
+                        <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
+                    </DialogContent>
+                </Dialog>
             )}
            </div>
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -185,10 +156,10 @@ const Header = () => {
                             <Button onClick={() => {handleLogout(); setIsMobileMenuOpen(false);}} variant="secondary" className="w-full btn">Logout</Button>
                         ) : (
                             <div className="space-y-2">
-                                <Button onClick={() => {setIsLoginOpen(true); setIsMobileMenuOpen(false);}} className="w-full">
+                                <Button onClick={() => {setIsAuthOpen(true); setIsMobileMenuOpen(false);}} className="w-full">
                                     Login
                                 </Button>
-                                <Button onClick={() => {setIsSignupOpen(true); setIsMobileMenuOpen(false);}} variant="outline" className="w-full">
+                                <Button onClick={() => {setIsAuthOpen(true); setIsMobileMenuOpen(false);}} variant="outline" className="w-full">
                                     Sign Up
                                 </Button>
                             </div>
@@ -204,5 +175,3 @@ const Header = () => {
 };
 
 export default Header;
-
-    

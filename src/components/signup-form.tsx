@@ -6,7 +6,6 @@ import { CardContent, CardHeader, CardTitle, CardDescription } from "@/component
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,7 +16,6 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import React from "react";
-import Link from "next/link";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required."}),
@@ -177,7 +175,11 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
 
   return (
     <>
-        <CardContent className="pt-6">
+        <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-headline text-white">Create an Account</CardTitle>
+            <CardDescription className="text-white">Get started with our services</CardDescription>
+        </CardHeader>
+        <CardContent>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
@@ -185,7 +187,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="name"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel className="text-white/80">Name</FormLabel>
                         <FormControl>
                         <Input placeholder="John Doe" {...field} />
                         </FormControl>
@@ -198,7 +200,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel className="text-white/80">Email</FormLabel>
                         <FormControl>
                         <Input placeholder="name@example.com" {...field} />
                         </FormControl>
@@ -211,7 +213,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="mobile"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Mobile Number</FormLabel>
+                        <FormLabel className="text-white/80">Mobile Number</FormLabel>
                         <FormControl>
                         <Input type="tel" placeholder="9876543210" {...field} />
                         </FormControl>
@@ -224,7 +226,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel className="text-white/80">Password</FormLabel>
                         <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
@@ -250,9 +252,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                 Sign up with Google
             </Button>
 
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-6 text-center text-sm text-white/80">
                 Already have an account?{' '}
-                <button type="button" onClick={onSwitchToLogin} className="underline">
+                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-white">
                     Log in
                 </button>
             </div>
@@ -305,5 +307,3 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
     </>
   );
 }
-
-    

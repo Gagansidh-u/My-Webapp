@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -14,8 +14,6 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import React from "react";
-import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -105,61 +103,65 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
   };
 
   return (
-        <CardContent className="pt-6">
-            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                        <Input placeholder="name@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <Button type="submit" className="w-full font-bold" disabled={loading || googleLoading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Sign In
+        <>
+            <CardHeader className="text-center">
+                <CardTitle className="text-3xl font-headline text-white">Welcome Back</CardTitle>
+                <CardDescription className="text-white">Sign in to access your account</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="text-white/80">Email</FormLabel>
+                        <FormControl>
+                            <Input placeholder="name@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="text-white/80">Password</FormLabel>
+                        <FormControl>
+                            <Input type="password" placeholder="••••••••" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <Button type="submit" className="w-full font-bold" disabled={loading || googleLoading}>
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Sign In
+                    </Button>
+                </form>
+                </Form>
+
+                <div className="my-6 flex items-center gap-4">
+                    <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/30 to-white/30"></div>
+                    <span className="text-xs text-white whitespace-nowrap">OR CONTINUE WITH</span>
+                    <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-white/30 to-white/30"></div>
+                </div>
+                
+                <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
+                {googleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+                Sign in with Google
                 </Button>
-            </form>
-            </Form>
 
-            <div className="my-6 flex items-center gap-4">
-                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/30 to-white/30"></div>
-                <span className="text-xs text-white whitespace-nowrap">OR CONTINUE WITH</span>
-                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-white/30 to-white/30"></div>
-            </div>
-            
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
-            {googleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-            Sign in with Google
-            </Button>
-
-            <div className="mt-6 text-center text-sm">
-            Don&apos;t have an account?{' '}
-            <button type="button" onClick={onSwitchToSignup} className="underline">
-                Sign up
-            </button>
-            </div>
-        </CardContent>
+                <div className="mt-6 text-center text-sm text-white/80">
+                Don&apos;t have an account?{' '}
+                <button type="button" onClick={onSwitchToSignup} className="underline font-bold text-white">
+                    Sign up
+                </button>
+                </div>
+            </CardContent>
+        </>
   );
 }
-
-    

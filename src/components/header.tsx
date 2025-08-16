@@ -7,7 +7,7 @@ import { useAuth } from './auth-provider';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MessageSquare, Tag, Activity, FileText, Contact, Newspaper, Shield } from 'lucide-react';
+import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MessageSquare, Tag, Activity, FileText, Contact, Newspaper, Shield, Package, Home } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import React from 'react';
 import { useTheme } from 'next-themes';
@@ -43,7 +43,9 @@ const Header = () => {
   ]
   
   const adminNavLinks = [
-      { href: '/admin', label: 'Admin Panel', icon: <Shield className="mr-2 h-4 w-4" /> },
+      { href: '/admin', label: 'Dashboard', icon: <Home className="mr-2 h-4 w-4" /> },
+      { href: '/admin/orders', label: 'Orders', icon: <Package className="mr-2 h-4 w-4" /> },
+      { href: '/admin/inquiries', label: 'Inquiries', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
   ]
 
   const getUserInitials = (email: string | null | undefined) => {
@@ -117,18 +119,14 @@ const Header = () => {
                                 </Link>
                              </DropdownMenuItem>
                         ))}
-                        {isAdmin && (
-                            <>
-                                {adminNavLinks.map(link => (
-                                     <DropdownMenuItem key={link.href} asChild>
-                                         <Link href={link.href}>
-                                             {link.icon}
-                                             {link.label}
-                                        </Link>
-                                     </DropdownMenuItem>
-                                ))}
-                            </>
-                        )}
+                         {isAdmin && (
+                            <DropdownMenuItem asChild>
+                                <Link href="/admin">
+                                    <Shield className="mr-2 h-4 w-4" />
+                                    <span>Admin Panel</span>
+                                </Link>
+                            </DropdownMenuItem>
+                         )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout}>
                             <LogOut className="mr-2 h-4 w-4" />
@@ -172,6 +170,7 @@ const Header = () => {
                                 {link.icon} {link.label}
                             </Link>
                         ))}
+                        <DropdownMenuSeparator />
                          {user && !isAdmin && userNavLinks.map(link => (
                             <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                                 {link.icon} {link.label}

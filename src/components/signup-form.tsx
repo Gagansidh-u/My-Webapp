@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -175,93 +175,91 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
 
   return (
     <>
-        <Card className="w-full shadow-2xl bg-card/30 dark:bg-card/20 backdrop-blur-xl">
-            <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Create an Account</CardTitle>
-                <CardDescription className="text-muted-foreground dark:text-white/90">Get started with our services</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-foreground dark:text-white/90">Name</FormLabel>
-                            <FormControl>
-                            <Input placeholder="John Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-foreground dark:text-white/90">Email</FormLabel>
-                            <FormControl>
-                            <Input placeholder="name@example.com" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="mobile"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-foreground dark:text-white/90">Mobile Number</FormLabel>
-                            <FormControl>
-                            <Input type="tel" placeholder="9876543210" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
-                            <FormControl>
-                            <Input type="password" placeholder="••••••••" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <Button type="submit" className="w-full font-bold" disabled={loading || googleLoading}>
-                        {loading && <Loader size={20} className="mr-2" />}
-                        Sign Up
-                    </Button>
-                    </form>
-                </Form>
-
-                <div className="my-6 flex items-center gap-4">
-                    <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
-                    <span className="text-xs text-muted-foreground dark:text-white whitespace-nowrap">OR CONTINUE WITH</span>
-                    <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
-                </div>
-                
-                <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
-                    {googleLoading ? <Loader size={20} className="mr-2" /> : <GoogleIcon />}
-                    Sign up with Google
+        <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Create an Account</CardTitle>
+            <CardDescription className="text-muted-foreground dark:text-white/90">Get started with our services</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-foreground dark:text-white/90">Name</FormLabel>
+                        <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-foreground dark:text-white/90">Email</FormLabel>
+                        <FormControl>
+                        <Input placeholder="name@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="mobile"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-foreground dark:text-white/90">Mobile Number</FormLabel>
+                        <FormControl>
+                        <Input type="tel" placeholder="9876543210" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
+                        <FormControl>
+                        <Input type="password" placeholder="••••••••" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <Button type="submit" className="w-full font-bold" disabled={loading || googleLoading}>
+                    {loading && <Loader size={20} className="mr-2" />}
+                    Sign Up
                 </Button>
-            </CardContent>
-            <CardFooter className="justify-center">
-                <p className="text-center text-sm text-muted-foreground dark:text-white/90">
-                    Already have an account?{' '}
-                    <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-foreground dark:text-white">
-                        Log in
-                    </button>
-                </p>
-            </CardFooter>
-        </Card>
+                </form>
+            </Form>
+
+            <div className="my-6 flex items-center gap-4">
+                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
+                <span className="text-xs text-muted-foreground dark:text-white whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
+            </div>
+            
+            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
+                {googleLoading ? <Loader size={20} className="mr-2" /> : <GoogleIcon />}
+                Sign up with Google
+            </Button>
+        </CardContent>
+        <CardFooter className="justify-center">
+            <p className="text-center text-sm text-muted-foreground dark:text-white/90">
+                Already have an account?{' '}
+                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-foreground dark:text-white">
+                    Log in
+                </button>
+            </p>
+        </CardFooter>
 
         <Dialog open={showDetailsPopup} onOpenChange={setShowDetailsPopup}>
             <DialogContent>

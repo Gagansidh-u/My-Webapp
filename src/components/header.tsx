@@ -109,7 +109,7 @@ const Header = () => {
                         </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        {userNavLinks.map(link => (
+                        {!isAdmin && userNavLinks.map(link => (
                              <DropdownMenuItem key={link.href} asChild>
                                  <Link href={link.href}>
                                      {link.icon}
@@ -119,7 +119,6 @@ const Header = () => {
                         ))}
                         {isAdmin && (
                             <>
-                               <DropdownMenuSeparator />
                                 {adminNavLinks.map(link => (
                                      <DropdownMenuItem key={link.href} asChild>
                                          <Link href={link.href}>
@@ -173,7 +172,7 @@ const Header = () => {
                                 {link.icon} {link.label}
                             </Link>
                         ))}
-                         {user && userNavLinks.map(link => (
+                         {user && !isAdmin && userNavLinks.map(link => (
                             <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                                 {link.icon} {link.label}
                             </Link>

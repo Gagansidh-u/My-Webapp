@@ -26,9 +26,8 @@ export default function Error({
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
-                duration: 0.8,
-                delay: 0.1,
-                ease: [0, 0.71, 0.2, 1.01]
+                duration: 0.5,
+                ease: "easeOut"
             }}
         >
             <AlertTriangle className="w-24 h-24 text-destructive" />
@@ -38,7 +37,7 @@ export default function Error({
             className="text-3xl md:text-4xl font-bold font-headline mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
         >
             Oops! Something went wrong.
         </motion.h1>
@@ -47,7 +46,7 @@ export default function Error({
             className="text-lg text-muted-foreground mt-2 max-w-md mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
         >
             We've encountered an unexpected error. Please try again.
         </motion.p>
@@ -72,7 +71,7 @@ export default function Error({
              className="flex gap-4 mt-8"
              initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
         >
             <Button onClick={() => reset()} size="lg" className="font-bold">
                 Try Again

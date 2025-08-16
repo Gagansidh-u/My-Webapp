@@ -65,7 +65,7 @@ export default function NotFoundPage() {
                 className="text-3xl md:text-4xl font-bold font-headline mt-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
             >
                 Oops! Page Not Found
             </motion.h1>
@@ -73,14 +73,14 @@ export default function NotFoundPage() {
                 className="text-lg text-muted-foreground mt-2 max-w-md mx-auto"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
             >
                 The page you're looking for doesn't exist. It might have been moved or deleted.
             </motion.p>
             <motion.div
                  initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
+                transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
             >
                 <Button asChild size="lg" className="mt-8 font-bold">
                     <Link href="/">Go Back Home</Link>

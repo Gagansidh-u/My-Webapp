@@ -3,6 +3,7 @@
 
 import { motion } from "framer-motion";
 import { Zap, ShieldCheck, Cloud, Database, TrendingUp, ShoppingCart } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const features = [
     {
@@ -48,7 +49,7 @@ export default function FeaturesSection() {
             <div className="container mx-auto text-center">
                 <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">Why Choose Grock Technologies?</h2>
                 <p className="text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">We provide the best tools and infrastructure to help you succeed online, whether you're a beginner launching your first site or a pro managing multiple projects.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
                     {features.map((feature, index) => (
                         <motion.div
                             key={index}
@@ -57,11 +58,16 @@ export default function FeaturesSection() {
                             whileInView="visible"
                             viewport={{ once: true, amount: 0.5 }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="p-6 rounded-lg text-left space-y-3 bg-background/50 hover:bg-background transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-2"
                         >
-                            <div className="mb-4">{feature.icon}</div>
-                            <h3 className="text-xl font-headline font-semibold">{feature.title}</h3>
-                            <p className="text-muted-foreground">{feature.description}</p>
+                            <Card className="h-full shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                                <CardHeader className="flex flex-row items-center gap-4">
+                                    {feature.icon}
+                                    <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-muted-foreground">{feature.description}</p>
+                                </CardContent>
+                            </Card>
                         </motion.div>
                     ))}
                 </div>

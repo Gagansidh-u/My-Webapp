@@ -80,7 +80,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
       defaultValues: { name: "", mobile: "" },
   });
 
-  const createUserDocument = async (user: User, name?: string, mobile?: string) => {
+  const createUserDocument = async (user: User, name?: string, mobile?: string, authProvider?: string) => {
     const userRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(userRef);
     if (!docSnap.exists()) {
@@ -89,6 +89,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             email: user.email,
             displayName: name || user.displayName || 'Anonymous',
             mobile: mobile,
+            authProvider: authProvider,
             createdAt: serverTimestamp(),
         });
     }
@@ -112,7 +113,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
       await user.reload(); 
       const updatedUser = auth.currentUser;
       if (updatedUser) {
-        await createUserDocument(updatedUser, updatedUser.displayName, values.mobile);
+        await createUserDocument(updatedUser, updatedUser.displayName, values.mobile, "email");
       }
       handleSuccess();
     } catch (error: any) {
@@ -163,7 +164,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
           if (googleUser.displayName !== values.name) {
               await updateProfile(googleUser, { displayName: values.name });
           }
-          await createUserDocument(googleUser, values.name, values.mobile);
+          await createUserDocument(googleUser, values.name, values.mobile, "google");
           setShowDetailsPopup(false);
           handleSuccess();
       } catch (error: any) {

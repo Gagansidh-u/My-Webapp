@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, User } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Loader } from "./ui/loader";
@@ -87,9 +87,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
         await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
-            displayName: name || user.displayName,
+            displayName: name || user.displayName || 'Anonymous',
             mobile: mobile,
-            createdAt: new Date(),
+            createdAt: serverTimestamp(),
         });
     }
   }

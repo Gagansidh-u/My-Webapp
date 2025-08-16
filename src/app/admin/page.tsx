@@ -26,10 +26,11 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         const unsubscribes: (() => void)[] = [];
         let loadedStats = 0;
+        const requiredLoads = 3;
 
         const handleLoad = () => {
             loadedStats++;
-            if (loadedStats === 3) {
+            if (loadedStats === requiredLoads) {
                 setLoading(false);
             }
         };
@@ -46,7 +47,7 @@ export default function AdminDashboardPage() {
 
             snapshot.docs.forEach(doc => {
                 const order = doc.data() as Order;
-                if (order.createdAt) {
+                if (order.createdAt && order.createdAt.toDate) {
                     const createdAtDate = order.createdAt.toDate();
                     if (createdAtDate >= startOfCurrentMonth) {
                         currentMonthRevenue += order.price;
@@ -62,19 +63,30 @@ export default function AdminDashboardPage() {
                 currentMonthRevenue,
                 previousMonthRevenue
             }));
+            if(loading && loadedStats < requiredLoads) handleLoad();
+        }, (error) => {
+            console.error("Error fetching orders:", error);
             if(loading) handleLoad();
         });
         unsubscribes.push(ordersUnsub);
 
-        const inquiriesUnsub = onSnapshot(collection(db, "contacts"), (snapshot) => {
+        const inquiriesQuery = query(collection(db, "contacts"));
+        const inquiriesUnsub = onSnapshot(inquiriesQuery, (snapshot) => {
             setStats(prev => ({ ...prev, inquiries: snapshot.size }));
-             if(loading) handleLoad();
+            if(loading && loadedStats < requiredLoads) handleLoad();
+        }, (error) => {
+            console.error("Error fetching inquiries:", error);
+            if(loading) handleLoad();
         });
         unsubscribes.push(inquiriesUnsub);
 
-        const usersUnsub = onSnapshot(collection(db, "users"), (snapshot) => {
+        const usersQuery = query(collection(db, "users"));
+        const usersUnsub = onSnapshot(usersQuery, (snapshot) => {
             setStats(prev => ({ ...prev, users: snapshot.size }));
-             if(loading) handleLoad();
+            if(loading && loadedStats < requiredLoads) handleLoad();
+        }, (error) => {
+            console.error("Error fetching users:", error);
+            if(loading) handleLoad();
         });
         unsubscribes.push(usersUnsub);
 

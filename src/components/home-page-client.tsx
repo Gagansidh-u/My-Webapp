@@ -4,9 +4,10 @@
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from 'next/dynamic';
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { Loader } from "@/components/ui/loader";
 
 const FeaturesSection = dynamic(() => import('@/components/features-section'), { 
     loading: () => <Skeleton className="h-[400px] w-full" />,
@@ -26,6 +27,7 @@ const ECommerceSection = dynamic(() => import('@/components/e-commerce-section')
 });
 
 export default function HomePageClient() {
+  const [isLoading, setIsLoading] = useState(true);
   const targetRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
@@ -34,6 +36,22 @@ export default function HomePageClient() {
 
   const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.6], [1, 0.9]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setIsLoading(false);
+    }, 1000); // Show loader for 1 second
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+        <div className="fixed inset-0 flex items-center justify-center bg-background z-[100]">
+            <Loader size={80} />
+        </div>
+    );
+  }
 
   return (
     <div ref={targetRef} className="relative">

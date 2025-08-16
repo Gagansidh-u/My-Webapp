@@ -1,9 +1,10 @@
+
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from 'next/dynamic';
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
@@ -25,16 +26,23 @@ const ECommerceSection = dynamic(() => import('@/components/e-commerce-section')
 });
 
 export default function HomePageClient() {
+  const targetRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start start", "end start"],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.5, 0.8], [1, 1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.8], [1, 0.9]);
+
   return (
-    <div className="flex flex-col items-center">
-      <section className="w-full bg-background py-20 md:py-32">
-        <div className="container mx-auto flex items-center">
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6 text-center w-full"
-          >
+    <div ref={targetRef} className="relative">
+      <motion.section 
+        style={{ opacity, scale }}
+        className="w-full bg-background py-20 md:py-32 sticky top-0 h-screen flex items-center"
+      >
+        <div className="container mx-auto">
+          <div className="space-y-6 text-center w-full">
             <h1 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter">
               Build Your High-Speed Digital Presence with <span className="text-primary">Grock</span>
             </h1>
@@ -49,26 +57,27 @@ export default function HomePageClient() {
                 <Link href="/contact">Talk to an Expert</Link>
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </section>
+      </motion.section>
 
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
-        <FeaturesSection />
-      </Suspense>
+      <div className="relative z-10 bg-background">
+        <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
+          <FeaturesSection />
+        </Suspense>
 
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
-          <ECommerceSection />
-      </Suspense>
+        <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
+            <ECommerceSection />
+        </Suspense>
 
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
-        <TestimonialsSection />
-      </Suspense>
-      
-      <Suspense fallback={<Skeleton className="h-80 w-full rounded-none" />}>
-        <CallToActionSection />
-      </Suspense>
-
+        <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
+          <TestimonialsSection />
+        </Suspense>
+        
+        <Suspense fallback={<Skeleton className="h-80 w-full rounded-none" />}>
+          <CallToActionSection />
+        </Suspense>
+      </div>
     </div>
   );
 }

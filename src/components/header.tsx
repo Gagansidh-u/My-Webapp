@@ -118,7 +118,7 @@ const Header = () => {
                          <Button variant="ghost" onClick={() => setIsAuthOpen(true)}>Login</Button>
                          <Button onClick={() => setIsAuthOpen(true)}>Sign Up</Button>
                     </div>
-                    <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
+                    <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
                         <DialogTitle className="sr-only">Authentication</DialogTitle>
                         <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
                     </DialogContent>

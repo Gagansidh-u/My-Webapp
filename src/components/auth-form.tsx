@@ -1,10 +1,11 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { LoginForm } from './login-form';
 import { SignupForm } from './signup-form';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AuthFormProps {
   onAuthSuccess?: () => void;
@@ -12,31 +13,43 @@ interface AuthFormProps {
 
 export function AuthForm({ onAuthSuccess }: AuthFormProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [height, setHeight] = useState<number | 'auto'>('auto');
+  const loginRef = useRef<HTMLDivElement>(null);
+  const signupRef = useRef<HTMLDivElement>(null);
 
-  const handleSwitchToSignup = () => {
-    setIsFlipped(true);
-  };
+  useEffect(() => {
+    // Set initial height based on the login form
+    if (loginRef.current) {
+        setHeight(loginRef.current.offsetHeight);
+    }
+  }, []);
 
-  const handleSwitchToLogin = () => {
-    setIsFlipped(false);
-  };
+  useEffect(() => {
+    // Adjust height when flipping
+    const targetRef = isFlipped ? signupRef : loginRef;
+    if (targetRef.current) {
+      setHeight(targetRef.current.offsetHeight);
+    }
+  }, [isFlipped]);
+
+  const handleSwitchToSignup = () => setIsFlipped(true);
+  const handleSwitchToLogin = () => setIsFlipped(false);
 
   return (
     <div className="perspective-1000">
-      <div
-        className={cn(
-          'transform-style-3d relative w-full h-full transition-transform duration-700',
-          isFlipped ? 'rotate-y-180' : ''
-        )}
-        style={{ minHeight: '580px' }}
+      <motion.div
+        className="relative w-full transform-style-3d transition-transform duration-700"
+        style={{ height }}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.7, ease: 'easeInOut' }}
       >
-        <div className="absolute w-full h-full backface-hidden">
+        <div ref={loginRef} className="absolute w-full h-auto backface-hidden">
           <LoginForm onLogin={onAuthSuccess} onSwitchToSignup={handleSwitchToSignup} />
         </div>
-        <div className="absolute w-full h-full backface-hidden rotate-y-180">
+        <div ref={signupRef} className="absolute w-full h-auto backface-hidden rotate-y-180">
           <SignupForm onSignup={onAuthSuccess} onSwitchToLogin={handleSwitchToLogin} />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

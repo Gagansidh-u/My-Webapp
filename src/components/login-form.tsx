@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -103,10 +103,10 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
   };
 
   return (
-        <>
+        <Card className="w-full shadow-2xl bg-card/80 dark:bg-card/60 backdrop-blur-xl">
             <CardHeader className="text-center">
                 <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Welcome Back</CardTitle>
-                <CardDescription className="text-muted-foreground dark:text-white">Sign in to access your account</CardDescription>
+                <CardDescription className="text-muted-foreground dark:text-white/90">Sign in to access your account</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -116,7 +116,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel className="text-foreground dark:text-white/80">Email</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/90">Email</FormLabel>
                         <FormControl>
                             <Input placeholder="name@example.com" {...field} />
                         </FormControl>
@@ -129,7 +129,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel className="text-foreground dark:text-white/80">Password</FormLabel>
+                        <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
                         <FormControl>
                             <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
@@ -154,14 +154,15 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 {googleLoading ? <Loader size={20} className="mr-2" /> : <GoogleIcon />}
                 Sign in with Google
                 </Button>
-
-                <div className="mt-6 text-center text-sm text-muted-foreground dark:text-white/80">
-                Don&apos;t have an account?{' '}
-                <button type="button" onClick={onSwitchToSignup} className="underline font-bold text-foreground dark:text-white">
-                    Sign up
-                </button>
-                </div>
             </CardContent>
-        </>
+            <CardFooter className="justify-center">
+                 <p className="text-center text-sm text-muted-foreground dark:text-white/90">
+                    Don&apos;t have an account?{' '}
+                    <button type="button" onClick={onSwitchToSignup} className="underline font-bold text-foreground dark:text-white">
+                        Sign up
+                    </button>
+                 </p>
+            </CardFooter>
+        </Card>
   );
 }

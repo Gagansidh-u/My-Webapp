@@ -1,30 +1,12 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Package, MessageSquare, Users, BarChart } from "lucide-react";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Package, MessageSquare, Users } from "lucide-react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Loader } from "@/components/ui/loader";
-
-const chartData = [
-  { month: "January", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "February", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "March", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "April", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "May", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "June", total: Math.floor(Math.random() * 5000) + 1000 },
-]
-
-const chartConfig = {
-  total: {
-    label: "Total",
-    color: "hsl(var(--chart-1))",
-  },
-}
 
 export default function AdminDashboardPage() {
     const [stats, setStats] = useState({ orders: 0, inquiries: 0, users: 0 });
@@ -113,38 +95,6 @@ export default function AdminDashboardPage() {
                     </CardContent>
                 </Card>
             </div>
-
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><BarChart /> Revenue Overview</CardTitle>
-                    <CardDescription>A summary of revenue over the last 6 months.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                      <RechartsBarChart accessibilityLayer data={chartData}>
-                        <XAxis
-                          dataKey="month"
-                          stroke="#888888"
-                          fontSize={12}
-                          tickLine={false}
-                          axisLine={false}
-                        />
-                        <YAxis
-                          stroke="#888888"
-                          fontSize={12}
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(value) => `₹${value / 1000}K`}
-                        />
-                        <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent indicator="dot" />}
-                        />
-                        <Bar dataKey="total" fill="var(--color-total)" radius={4} />
-                      </RechartsBarChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
         </div>
     )
 }

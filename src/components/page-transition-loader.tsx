@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Loader } from './ui/loader';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -12,7 +12,7 @@ function PageLoader() {
   const [loading, setLoading] = useState(false);
 
   // We use a ref to track the previous path to detect when navigation starts.
-  const previousPath = React.useRef(pathname + searchParams.toString());
+  const previousPath = useRef(pathname + searchParams.toString());
 
   useEffect(() => {
     const currentPath = pathname + searchParams.toString();

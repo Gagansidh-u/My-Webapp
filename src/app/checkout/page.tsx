@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/components/auth-provider";
 import { createOrder } from "./actions";
 import { useToast } from "@/hooks/use-toast";
-import { Download } from "lucide-react";
+import { Download, Info } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,8 @@ import jsPDF from 'jspdf';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Loader } from "@/components/ui/loader";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 declare global {
   interface Window {
@@ -293,17 +295,20 @@ function CheckoutPage() {
 
     return (
         <>
-            <div className="container mx-auto py-12 flex justify-center">
-                <Card className="w-full max-w-2xl shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Checkout</CardTitle>
-                        <CardDescription>Review your order and provide details for your new website.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="p-4 border rounded-md">
-                            <h3 className="font-bold text-lg mb-4">Order Summary</h3>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center">
+            <div className="container mx-auto py-12">
+                <div className="text-center mb-12">
+                     <h1 className="text-4xl md:text-5xl font-headline font-bold">Checkout</h1>
+                     <p className="text-lg text-muted-foreground mt-2">Finalize your order and tell us about your project.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    {/* Left Column */}
+                    <div className="space-y-8">
+                        <Card className="shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="font-headline text-2xl">Order Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                               <div className="flex justify-between items-center">
                                     <span className="text-muted-foreground">Plan:</span>
                                     <span className="font-semibold text-lg">{plan}</span>
                                 </div>
@@ -324,15 +329,38 @@ function CheckoutPage() {
                                     <span className="text-muted-foreground">Building Charges (One-Time):</span>
                                     <span className="font-semibold">₹{buildingCharge.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between items-center border-t pt-4 mt-4">
-                                    <span className="text-lg font-bold">Total:</span>
-                                    <span className="text-xl font-bold font-headline text-primary">₹{totalPrice.toFixed(2)}</span>
+                                <Separator />
+                                <div className="flex justify-between items-center text-lg font-bold">
+                                    <span>Total:</span>
+                                    <span className="text-2xl font-headline text-primary">₹{totalPrice.toFixed(2)}</span>
                                 </div>
-                            </div>
-                        </div>
+                            </CardContent>
+                            <CardFooter>
+                                <p className="text-xs text-muted-foreground">Taxes are included in the total price.</p>
+                            </CardFooter>
+                        </Card>
+                         {!user && (
+                            <Alert variant="destructive">
+                                <Info className="h-4 w-4" />
+                                <AlertTitle>Authentication Required</AlertTitle>
+                                <AlertDescription>
+                                Please <Link href="/login" className="font-bold underline">log in</Link> or <Link href="/signup" className="font-bold underline">sign up</Link> to complete your purchase.
+                                </AlertDescription>
+                            </Alert>
+                         )}
+                         <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading}>
+                            {loading ? <Loader size={20} className="mr-2" /> : null}
+                            {loading ? 'Processing...' : (totalPrice > 0 ? `Pay Securely ₹${totalPrice.toFixed(2)}` : 'Get Now')}
+                        </Button>
+                    </div>
 
-                        <div className="space-y-4">
-                            <h3 className="font-bold text-lg">Website Requirements</h3>
+                     {/* Right Column */}
+                    <Card className="shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl">Tell Us About Your Website</CardTitle>
+                            <CardDescription>This information will help us get started on your project.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
                             <div className="space-y-2">
                                 <Label htmlFor="description">Brief description of your website</Label>
                                 <Textarea id="description" placeholder="e.g., A portfolio website to showcase my photography." rows={4} value={websiteDetails.description} onChange={handleInputChange} />
@@ -345,20 +373,9 @@ function CheckoutPage() {
                                 <Label htmlFor="style">Style/Vibe</Label>
                                 <Input id="style" placeholder="e.g., Modern, minimalist, professional" value={websiteDetails.style} onChange={handleInputChange} />
                             </div>
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex-col items-stretch gap-4">
-                        {!user && (
-                            <div className="text-center text-red-500 p-3 bg-red-500/10 rounded-md">
-                            Please <Link href="/login" className="font-bold underline">log in</Link> to complete your purchase.
-                            </div>
-                        )}
-                        <Button onClick={handlePayment} className="w-full font-bold" size="lg" disabled={!user || loading}>
-                            {loading ? <Loader size={20} className="mr-2" /> : null}
-                            {loading ? 'Processing...' : (totalPrice > 0 ? `Pay ₹${totalPrice.toFixed(2)}` : 'Get Now')}
-                        </Button>
-                    </CardFooter>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
             <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
                 <DialogContent className="max-w-3xl p-0">
@@ -437,3 +454,5 @@ export default function CheckoutSuspenseWrapper() {
     </Suspense>
   )
 }
+
+    

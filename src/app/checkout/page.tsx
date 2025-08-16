@@ -300,31 +300,31 @@ function CheckoutPage() {
                      <h1 className="text-4xl md:text-5xl font-headline font-bold">Checkout</h1>
                      <p className="text-lg text-muted-foreground mt-2">Finalize your order and tell us about your project.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                     {/* Left Column -> Details */}
-                     <Card className="shadow-lg md:col-span-2">
-                        <CardHeader>
-                            <CardTitle className="font-headline text-2xl">Tell Us About Your Website</CardTitle>
-                            <CardDescription>This information will help us get started on your project.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="description">Brief description of your website</Label>
-                                <Textarea id="description" placeholder="e.g., A portfolio website to showcase my photography." rows={4} value={websiteDetails.description} onChange={handleInputChange} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="colors">Preferred Colors</Label>
-                                <Input id="colors" placeholder="e.g., Blue, white, and a touch of gold" value={websiteDetails.colors} onChange={handleInputChange} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="style">Style/Vibe</Label>
-                                <Input id="style" placeholder="e.g., Modern, minimalist, professional" value={websiteDetails.style} onChange={handleInputChange} />
-                            </div>
-                        </CardContent>
-                    </Card>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+                    <div className="lg:col-span-2">
+                        <Card className="shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="font-headline text-2xl">Tell Us About Your Website</CardTitle>
+                                <CardDescription>This information will help us get started on your project.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="description">Brief description of your website</Label>
+                                    <Textarea id="description" placeholder="e.g., A portfolio website to showcase my photography." rows={4} value={websiteDetails.description} onChange={handleInputChange} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="colors">Preferred Colors</Label>
+                                    <Input id="colors" placeholder="e.g., Blue, white, and a touch of gold" value={websiteDetails.colors} onChange={handleInputChange} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="style">Style/Vibe</Label>
+                                    <Input id="style" placeholder="e.g., Modern, minimalist, professional" value={websiteDetails.style} onChange={handleInputChange} />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
 
-                    {/* Right Column -> Summary */}
-                    <div className="space-y-8 md:col-span-2">
+                    <div className="lg:col-span-1 space-y-8 lg:sticky lg:top-28">
                         <Card className="shadow-lg">
                             <CardHeader>
                                 <CardTitle className="font-headline text-2xl">Order Summary</CardTitle>

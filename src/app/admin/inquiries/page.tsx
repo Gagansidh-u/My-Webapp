@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Mail, Trash2, User, Calendar as CalendarIcon, MessageCircle, BadgeCheck, Search } from "lucide-react";
+import { Mail, Trash2, User, Calendar as CalendarIcon, MessageCircle, BadgeCheck, Search, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -233,6 +233,11 @@ export default function AdminInquiriesPage() {
                                                 </div>
                                             </DialogContent>
                                         </Dialog>
+                                         <Button variant="secondary" asChild>
+                                            <a href={`mailto:${inquiry.email}?subject=Re: ${inquiry.subject}`}>
+                                                <Send className="mr-2 h-4 w-4" /> Reply
+                                            </a>
+                                        </Button>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <Button variant="destructive" size="icon" disabled={deletingId === inquiry.id}>
@@ -330,6 +335,13 @@ export default function AdminInquiriesPage() {
                                         </SelectContent>
                                     </Select>
                                 </div>
+                                <div className="pt-2">
+                                     <Button variant="secondary" asChild className="w-full">
+                                        <a href={`mailto:${inquiry.email}?subject=Re: ${inquiry.subject}`}>
+                                            <Send className="mr-2 h-4 w-4" /> Reply
+                                        </a>
+                                    </Button>
+                                </div>
                             </CardContent>
                          </Card>
                     ))}
@@ -345,7 +357,3 @@ export default function AdminInquiriesPage() {
         </Card>
     );
 }
-
-    
-
-    

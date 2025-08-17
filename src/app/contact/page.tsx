@@ -128,7 +128,9 @@ export default function ContactPage() {
                                     <MapPin className="w-6 h-6 text-primary" />
                                     <div>
                                         <h3 className="font-semibold">Office</h3>
-                                        <p className="text-muted-foreground">123 Tech Avenue, Silicon Valley, CA 94043</p>
+                                        <a href="https://maps.app.goo.gl/NmjvcNGMUqTgEAyDA" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                                            517,uppli,barnala,punjab,india 148105
+                                        </a>
                                     </div>
                                 </div>
                             </CardContent>

@@ -34,6 +34,12 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
 
   const handleSwitchToSignup = () => setIsFlipped(true);
   const handleSwitchToLogin = () => setIsFlipped(false);
+  
+  const handleAuthSuccess = () => {
+    if (onAuthSuccess) {
+        onAuthSuccess();
+    }
+  }
 
   return (
     <div className="perspective-1000">
@@ -50,7 +56,7 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
         >
             <Card className="w-full shadow-2xl bg-card/30 dark:bg-card/20 backdrop-blur-xl">
                  <div ref={loginRef}>
-                    <LoginForm onLogin={onAuthSuccess} onSwitchToSignup={handleSwitchToSignup} />
+                    <LoginForm onLogin={handleAuthSuccess} onSwitchToSignup={handleSwitchToSignup} />
                 </div>
             </Card>
         </motion.div>
@@ -62,7 +68,7 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
         >
             <Card className="w-full shadow-2xl bg-card/30 dark:bg-card/20 backdrop-blur-xl">
                 <div ref={signupRef}>
-                    <SignupForm onSignup={onAuthSuccess} onSwitchToLogin={handleSwitchToLogin} />
+                    <SignupForm onSignup={handleAuthSuccess} onSwitchToLogin={handleSwitchToLogin} />
                 </div>
             </Card>
         </motion.div>
@@ -93,3 +99,5 @@ if (typeof window !== 'undefined') {
   styleSheet.innerText = globalStyles;
   document.head.appendChild(styleSheet);
 }
+
+    

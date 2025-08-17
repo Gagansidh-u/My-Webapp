@@ -15,6 +15,8 @@ import { useAuth } from "@/components/auth-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { AuthForm } from "@/components/auth-form";
 
 export default function ContactPage() {
     const { toast } = useToast();
@@ -26,6 +28,7 @@ export default function ContactPage() {
         message: ''
     });
     const [loading, setLoading] = useState(false);
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -46,11 +49,7 @@ export default function ContactPage() {
         e.preventDefault();
         
         if (!user) {
-             toast({
-                title: "Login Required",
-                description: "You must be logged in to send a message.",
-                variant: "destructive"
-            });
+            setIsAuthOpen(true);
             return;
         }
 
@@ -98,84 +97,93 @@ export default function ContactPage() {
     }
 
     return (
-        <div className="container mx-auto py-16 md:py-24">
-            <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-headline font-bold">Contact Us</h1>
-                <p className="text-lg text-muted-foreground mt-2">We'd love to hear from you. Here's how you can reach us.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                <div className="space-y-8">
+        <>
+            <div className="container mx-auto py-16 md:py-24">
+                <div className="text-center mb-12">
+                    <h1 className="text-4xl md:text-5xl font-headline font-bold">Contact Us</h1>
+                    <p className="text-lg text-muted-foreground mt-2">We'd love to hear from you. Here's how you can reach us.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                    <div className="space-y-8">
+                        <Card className="shadow-lg">
+                            <CardHeader>
+                                <CardTitle className="font-headline text-2xl">Get in Touch</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <Mail className="w-6 h-6 text-primary" />
+                                    <div>
+                                        <h3 className="font-semibold">Email</h3>
+                                        <a href="mailto:helpdesk.grock@outlook.com" className="text-muted-foreground hover:text-primary">helpdesk.grock@outlook.com</a>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <Phone className="w-6 h-6 text-primary" />
+                                    <div>
+                                        <h3 className="font-semibold">Phone</h3>
+                                        <p className="text-muted-foreground">+917719457081</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <MapPin className="w-6 h-6 text-primary" />
+                                    <div>
+                                        <h3 className="font-semibold">Office</h3>
+                                        <p className="text-muted-foreground">123 Tech Avenue, Silicon Valley, CA 94043</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                     <Card className="shadow-lg">
                         <CardHeader>
-                            <CardTitle className="font-headline text-2xl">Get in Touch</CardTitle>
+                            <CardTitle className="font-headline text-2xl">Send us a Message</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center gap-4">
-                                <Mail className="w-6 h-6 text-primary" />
-                                <div>
-                                    <h3 className="font-semibold">Email</h3>
-                                    <a href="mailto:helpdesk.grock@outlook.com" className="text-muted-foreground hover:text-primary">helpdesk.grock@outlook.com</a>
+                        <CardContent>
+                            {!user && (
+                                <Alert>
+                                    <Info className="h-4 w-4" />
+                                    <AlertTitle>Heads up!</AlertTitle>
+                                    <AlertDescription>
+                                        Please log in or sign up to send a message.
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+                            <form onSubmit={handleSubmit} className={`space-y-4 ${!user ? 'mt-4' : ''}`}>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name">Name</Label>
+                                        <Input id="name" placeholder="Your Name" value={formData.name} onChange={handleInputChange} disabled={!user || !!user?.displayName} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="email">Email</Label>
+                                        <Input id="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleInputChange} disabled={!user || !!user?.email} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <Phone className="w-6 h-6 text-primary" />
-                                <div>
-                                    <h3 className="font-semibold">Phone</h3>
-                                    <p className="text-muted-foreground">+917719457081</p>
+                                <div className="space-y-2">
+                                    <Label htmlFor="subject">Subject</Label>
+                                    <Input id="subject" placeholder="Message Subject" value={formData.subject} onChange={handleInputChange} disabled={!user} />
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <MapPin className="w-6 h-6 text-primary" />
-                                <div>
-                                    <h3 className="font-semibold">Office</h3>
-                                    <p className="text-muted-foreground">123 Tech Avenue, Silicon Valley, CA 94043</p>
+                                <div className="space-y-2">
+                                    <Label htmlFor="message">Message</Label>
+                                    <Textarea id="message" placeholder="Your message..." rows={6} value={formData.message} onChange={handleInputChange} disabled={!user} />
                                 </div>
-                            </div>
+                                <Button type="submit" className="w-full font-bold" size="lg" disabled={loading}>
+                                    {loading && <Loader size={20} className="mr-2" />}
+                                    {loading ? "Sending..." : user ? "Send Message" : "Login to Send"}
+                                </Button>
+                            </form>
                         </CardContent>
                     </Card>
                 </div>
-                <Card className="shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">Send us a Message</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                         {!user && (
-                            <Alert>
-                                <Info className="h-4 w-4" />
-                                <AlertTitle>Heads up!</AlertTitle>
-                                <AlertDescription>
-                                    Please log in to send a message through the contact form.
-                                </AlertDescription>
-                            </Alert>
-                         )}
-                        <form onSubmit={handleSubmit} className={`space-y-4 ${!user ? 'mt-4' : ''}`}>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Name</Label>
-                                    <Input id="name" placeholder="Your Name" value={formData.name} onChange={handleInputChange} disabled={!user || !!user?.displayName} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="Your Email" value={formData.email} onChange={handleInputChange} disabled={!user} />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="subject">Subject</Label>
-                                <Input id="subject" placeholder="Message Subject" value={formData.subject} onChange={handleInputChange} disabled={!user} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="message">Message</Label>
-                                <Textarea id="message" placeholder="Your message..." rows={6} value={formData.message} onChange={handleInputChange} disabled={!user} />
-                            </div>
-                            <Button type="submit" className="w-full font-bold" size="lg" disabled={loading || !user}>
-                                {loading && <Loader size={20} className="mr-2" />}
-                                {loading ? "Sending..." : "Send Message"}
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
             </div>
-        </div>
+
+            <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
+                <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
+                    <DialogTitle className="sr-only">Authentication</DialogTitle>
+                    <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
 

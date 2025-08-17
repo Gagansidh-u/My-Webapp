@@ -25,6 +25,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AuthForm } from "@/components/auth-form";
+
 
 declare global {
   interface Window {
@@ -65,6 +67,7 @@ function CheckoutPage() {
     
     const [loading, setLoading] = useState(false);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [invoiceDetails, setInvoiceDetails] = useState<OrderDetailsForInvoice | null>(null);
     const [downloadFormat, setDownloadFormat] = useState("pdf");
     const [hasPreviousOrders, setHasPreviousOrders] = useState(false);
@@ -176,6 +179,14 @@ function CheckoutPage() {
              link.click();
         }
     };
+
+    const handleCheckoutAction = () => {
+        if (!user) {
+            setIsAuthOpen(true);
+            return;
+        }
+        handlePayment();
+    }
 
     const handlePayment = async () => {
         if (!user) {
@@ -414,7 +425,7 @@ function CheckoutPage() {
                                  <p className="text-xs text-muted-foreground text-center">
                                     + Taxes
                                 </p>
-                                {!user && (
+                                {!user && !authLoading && (
                                      <Alert variant="destructive">
                                         <Info className="h-4 w-4" />
                                         <AlertTitle>Login Required</AlertTitle>
@@ -425,15 +436,22 @@ function CheckoutPage() {
                                 )}
                             </CardContent>
                             <CardFooter>
-                                <Button className="w-full font-bold" size="lg" onClick={handlePayment} disabled={loading || !user || authLoading}>
+                                <Button className="w-full font-bold" size="lg" onClick={handleCheckoutAction} disabled={loading || authLoading}>
                                     {loading && <Loader size={20} className="mr-2" />}
-                                    {planId === 'trying' ? 'Submit Request' : 'Proceed to Payment'}
+                                    {user ? (planId === 'trying' ? 'Submit Request' : 'Proceed to Payment') : 'Login to Continue'}
                                 </Button>
                             </CardFooter>
                         </Card>
                     </div>
                 </div>
             </div>
+
+            <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
+                <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
+                    <DialogTitle className="sr-only">Authentication</DialogTitle>
+                    <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
                 <DialogContent className="max-w-4xl p-0">
@@ -479,3 +497,5 @@ export default function CheckoutPageSuspense() {
         </Suspense>
     )
 }
+
+    

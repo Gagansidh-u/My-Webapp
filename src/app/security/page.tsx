@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, DatabaseZap, Lock, Server } from "lucide-react";
 
@@ -50,7 +51,7 @@ export default function SecurityPage() {
               <CardContent className="p-8">
                 <h3 className="font-headline text-xl font-semibold text-foreground mb-2">Have a security concern?</h3>
                 <p className="text-muted-foreground mb-4">If you've discovered a security vulnerability, please report it to us immediately so we can take action.</p>
-                <a href="mailto:security@grock.dev" className="text-primary font-bold hover:underline">Report a Vulnerability</a>
+                <a href="mailto:helpdesk.grock@outlook.com" className="text-primary font-bold hover:underline">Report a Vulnerability</a>
               </CardContent>
             </Card>
         </div>

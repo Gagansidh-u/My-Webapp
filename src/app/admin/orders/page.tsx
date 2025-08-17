@@ -4,9 +4,9 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
-import { FileText, Package, User, Calendar, Tag, IndianRupee } from "lucide-react";
+import { FileText, Package, User, Calendar, Tag, IndianRupee, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,6 +14,9 @@ import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
 
@@ -44,6 +47,8 @@ export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState<OrderStatus | "All">("All");
 
     useEffect(() => {
         const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
@@ -75,6 +80,14 @@ export default function AdminOrdersPage() {
         const years = duration / 12;
         return `${years} Year${years > 1 ? 's' : ''}`;
     };
+    
+    const filteredOrders = orders.filter(order => {
+        const matchesSearch = searchTerm === "" || 
+                              order.userEmail.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === "All" || order.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
+
 
     if (loading) {
         return (
@@ -89,6 +102,25 @@ export default function AdminOrdersPage() {
             <CardHeader>
                 <CardTitle className="font-headline text-2xl flex items-center gap-2"><Package /> Manage Orders</CardTitle>
                 <CardDescription>View and manage all customer orders.</CardDescription>
+                 <div className="flex items-center justify-between pt-4 gap-4 flex-wrap">
+                    <div className="relative w-full max-w-sm">
+                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                       <Input 
+                           placeholder="Search by email..." 
+                           className="pl-10"
+                           value={searchTerm}
+                           onChange={(e) => setSearchTerm(e.target.value)}
+                       />
+                    </div>
+                     <Tabs value={statusFilter} onValueChange={(value) => setStatusFilter(value as OrderStatus | "All")}>
+                        <TabsList>
+                            <TabsTrigger value="All">All</TabsTrigger>
+                            <TabsTrigger value="Paid">Paid</TabsTrigger>
+                            <TabsTrigger value="In-Progress">In-Progress</TabsTrigger>
+                            <TabsTrigger value="Delivered">Delivered</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
             </CardHeader>
             <CardContent>
                 {/* Desktop View */}
@@ -105,7 +137,7 @@ export default function AdminOrdersPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {orders.map(order => (
+                            {filteredOrders.map(order => (
                                 <TableRow key={order.id}>
                                     <TableCell className="font-medium">{order.userEmail}</TableCell>
                                     <TableCell>{order.plan}</TableCell>
@@ -162,7 +194,7 @@ export default function AdminOrdersPage() {
                 
                 {/* Mobile View */}
                 <div className="md:hidden space-y-4">
-                    {orders.map(order => (
+                    {filteredOrders.map(order => (
                          <Card key={order.id} className="bg-muted/30">
                             <CardContent className="p-4 space-y-3">
                                 <div className="flex justify-between items-start">
@@ -228,7 +260,7 @@ export default function AdminOrdersPage() {
                 </div>
 
 
-                 {orders.length === 0 && (
+                 {filteredOrders.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground">
                         <p>No orders found.</p>
                     </div>
@@ -237,3 +269,5 @@ export default function AdminOrdersPage() {
         </Card>
     );
 }
+
+    

@@ -4,9 +4,9 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Mail, Trash2, User, Calendar, MessageCircle, BadgeCheck } from "lucide-react";
+import { Mail, Trash2, User, Calendar, MessageCircle, BadgeCheck, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -24,8 +24,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-type InquiryStatus = 'Read' | 'Unread';
+
+type InquiryStatus = 'Read' | 'Unread' | 'Resolved';
 
 type Inquiry = {
     id: string;
@@ -39,8 +43,9 @@ type Inquiry = {
 };
 
 const statusColors: Record<InquiryStatus, string> = {
-    "Read": "bg-green-500/20 text-green-700 border-green-500/30",
-    "Unread": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30"
+    "Read": "bg-blue-500/20 text-blue-700 border-blue-500/30",
+    "Unread": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30",
+    "Resolved": "bg-green-500/20 text-green-700 border-green-500/30",
 }
 
 
@@ -49,7 +54,8 @@ export default function AdminInquiriesPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
     const [deletingId, setDeletingId] = useState<string | null>(null);
-
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState<InquiryStatus | "All">("All");
 
     useEffect(() => {
         const inquiriesQuery = query(collection(db, `contacts`), orderBy("createdAt", "desc"));
@@ -65,10 +71,10 @@ export default function AdminInquiriesPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleMarkAsRead = async (id: string) => {
+    const handleStatusChange = async (id: string, status: InquiryStatus) => {
         const inquiryRef = doc(db, `contacts`, id);
         try {
-            await updateDoc(inquiryRef, { status: "Read" });
+            await updateDoc(inquiryRef, { status: status });
         } catch (error) {
             toast({ title: "Error", description: "Could not update status.", variant: "destructive" });
         }
@@ -87,6 +93,14 @@ export default function AdminInquiriesPage() {
             setDeletingId(null);
         }
     };
+    
+     const filteredInquiries = inquiries.filter(inquiry => {
+        const matchesSearch = searchTerm === "" ||
+                              inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              inquiry.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
 
 
     if (loading) {
@@ -102,6 +116,25 @@ export default function AdminInquiriesPage() {
             <CardHeader>
                 <CardTitle className="font-headline text-2xl flex items-center gap-2"><Mail /> Manage Inquiries</CardTitle>
                 <CardDescription>View and manage all user messages.</CardDescription>
+                 <div className="flex items-center justify-between pt-4 gap-4 flex-wrap">
+                    <div className="relative w-full max-w-sm">
+                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                       <Input 
+                           placeholder="Search by name or email..." 
+                           className="pl-10"
+                           value={searchTerm}
+                           onChange={(e) => setSearchTerm(e.target.value)}
+                       />
+                    </div>
+                     <Tabs value={statusFilter} onValueChange={(value) => setStatusFilter(value as InquiryStatus | "All")}>
+                        <TabsList>
+                            <TabsTrigger value="All">All</TabsTrigger>
+                            <TabsTrigger value="Unread">Unread</TabsTrigger>
+                            <TabsTrigger value="Read">Read</TabsTrigger>
+                             <TabsTrigger value="Resolved">Resolved</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
             </CardHeader>
             <CardContent>
                 {/* Desktop View */}
@@ -117,14 +150,27 @@ export default function AdminInquiriesPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {inquiries.map(inquiry => (
+                            {filteredInquiries.map(inquiry => (
                                 <TableRow key={inquiry.id}>
                                     <TableCell className="font-medium">{inquiry.name} <br/><span className="text-xs text-muted-foreground">{inquiry.email}</span></TableCell>
                                     <TableCell>{inquiry.subject}</TableCell>
-                                    <TableCell><Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge></TableCell>
+                                    <TableCell>
+                                        <Select value={inquiry.status} onValueChange={(value) => handleStatusChange(inquiry.id, value as InquiryStatus)}>
+                                            <SelectTrigger className="w-[120px] text-xs h-8">
+                                                <SelectValue>
+                                                    <Badge variant="outline" className={`${statusColors[inquiry.status]} hover:bg-transparent`}>{inquiry.status}</Badge>
+                                                </SelectValue>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {(["Unread", "Read", "Resolved"] as InquiryStatus[]).map(status => (
+                                                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </TableCell>
                                     <TableCell>{inquiry.createdAt.toDate().toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
-                                        <Dialog onOpenChange={(open) => { if(open) handleMarkAsRead(inquiry.id)}}>
+                                        <Dialog onOpenChange={(open) => { if(open && inquiry.status === 'Unread') handleStatusChange(inquiry.id, 'Read')}}>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline">View Message</Button>
                                             </DialogTrigger>
@@ -167,7 +213,7 @@ export default function AdminInquiriesPage() {
 
                 {/* Mobile View */}
                 <div className="md:hidden space-y-4">
-                    {inquiries.map(inquiry => (
+                    {filteredInquiries.map(inquiry => (
                          <Card key={inquiry.id} className="bg-muted/30">
                               <CardContent className="p-4 space-y-3">
                                 <div className="flex justify-between items-start">
@@ -176,7 +222,7 @@ export default function AdminInquiriesPage() {
                                         <p className="text-sm text-muted-foreground truncate max-w-[200px]">{inquiry.email}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Dialog onOpenChange={(open) => { if(open) handleMarkAsRead(inquiry.id)}}>
+                                        <Dialog onOpenChange={(open) => { if(open && inquiry.status === 'Unread') handleStatusChange(inquiry.id, 'Read')}}>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline" size="sm">View</Button>
                                             </DialogTrigger>
@@ -222,7 +268,18 @@ export default function AdminInquiriesPage() {
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
                                     <p className="text-muted-foreground flex items-center gap-2"><BadgeCheck /> Status</p>
-                                    <Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge>
+                                     <Select value={inquiry.status} onValueChange={(value) => handleStatusChange(inquiry.id, value as InquiryStatus)}>
+                                        <SelectTrigger className="w-[120px] text-xs h-8">
+                                            <SelectValue>
+                                                <Badge variant="outline" className={`${statusColors[inquiry.status]} hover:bg-transparent`}>{inquiry.status}</Badge>
+                                            </SelectValue>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {(["Unread", "Read", "Resolved"] as InquiryStatus[]).map(status => (
+                                                <SelectItem key={status} value={status}>{status}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </CardContent>
                          </Card>
@@ -230,12 +287,14 @@ export default function AdminInquiriesPage() {
                 </div>
 
 
-                 {inquiries.length === 0 && (
+                 {filteredInquiries.length === 0 && (
                     <div className="text-center py-12 text-muted-foreground">
                         <p>No inquiries found.</p>
                     </div>
                 )}
             </CardContent>
         </Card>
-    )
+    );
 }
+
+    

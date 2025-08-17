@@ -168,6 +168,9 @@ export default function AdminInquiriesPage() {
                                 selected={dateRange}
                                 onSelect={setDateRange}
                                 numberOfMonths={1}
+                                captionLayout="dropdown-buttons"
+                                fromYear={2023}
+                                toYear={new Date().getFullYear() + 1}
                                 />
                             </PopoverContent>
                         </Popover>

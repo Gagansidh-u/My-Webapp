@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { Mail, Trash2, User, Calendar, MessageCircle, BadgeCheck, Search } from "lucide-react";
+import { Mail, Trash2, User, Calendar as CalendarIcon, MessageCircle, BadgeCheck, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -27,6 +27,10 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 
 type InquiryStatus = 'Read' | 'Unread' | 'Resolved';
@@ -56,6 +60,7 @@ export default function AdminInquiriesPage() {
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<InquiryStatus | "All">("All");
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
     useEffect(() => {
         const inquiriesQuery = query(collection(db, `contacts`), orderBy("createdAt", "desc"));
@@ -99,7 +104,13 @@ export default function AdminInquiriesPage() {
                               inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               inquiry.email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
-        return matchesSearch && matchesStatus;
+        
+        const inquiryDate = inquiry.createdAt.toDate();
+        const matchesDate = !dateRange || 
+                            (!dateRange.from || inquiryDate >= dateRange.from) && 
+                            (!dateRange.to || inquiryDate <= dateRange.to);
+
+        return matchesSearch && matchesStatus && matchesDate;
     });
 
 
@@ -117,14 +128,49 @@ export default function AdminInquiriesPage() {
                 <CardTitle className="font-headline text-2xl flex items-center gap-2"><Mail /> Manage Inquiries</CardTitle>
                 <CardDescription>View and manage all user messages.</CardDescription>
                  <div className="flex items-center justify-between pt-4 gap-4 flex-wrap">
-                    <div className="relative w-full max-w-sm">
-                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                       <Input 
-                           placeholder="Search by name or email..." 
-                           className="pl-10"
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}
-                       />
+                    <div className="flex gap-4 flex-grow flex-wrap">
+                        <div className="relative w-full max-w-sm">
+                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                           <Input 
+                               placeholder="Search by name or email..." 
+                               className="pl-10"
+                               value={searchTerm}
+                               onChange={(e) => setSearchTerm(e.target.value)}
+                           />
+                        </div>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                id="date"
+                                variant={"outline"}
+                                className="w-[300px] justify-start text-left font-normal"
+                                >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dateRange?.from ? (
+                                    dateRange.to ? (
+                                    <>
+                                        {format(dateRange.from, "LLL dd, y")} -{" "}
+                                        {format(dateRange.to, "LLL dd, y")}
+                                    </>
+                                    ) : (
+                                    format(dateRange.from, "LLL dd, y")
+                                    )
+                                ) : (
+                                    <span>Pick a date range</span>
+                                )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                initialFocus
+                                mode="range"
+                                defaultMonth={dateRange?.from}
+                                selected={dateRange}
+                                onSelect={setDateRange}
+                                numberOfMonths={2}
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                      <Tabs value={statusFilter} onValueChange={(value) => setStatusFilter(value as InquiryStatus | "All")}>
                         <TabsList>
@@ -263,7 +309,7 @@ export default function AdminInquiriesPage() {
                                     <p className="font-medium truncate max-w-[150px]">{inquiry.subject}</p>
                                 </div>
                                  <div className="flex items-center justify-between text-sm">
-                                    <p className="text-muted-foreground flex items-center gap-2"><Calendar /> Date</p>
+                                    <p className="text-muted-foreground flex items-center gap-2"><CalendarIcon /> Date</p>
                                     <p className="font-medium">{inquiry.createdAt.toDate().toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">

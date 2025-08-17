@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
-import { FileText, Package, User, Calendar, Tag, IndianRupee, Search } from "lucide-react";
+import { FileText, Package, User, Calendar as CalendarIcon, Tag, IndianRupee, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,6 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
@@ -49,6 +53,7 @@ export default function AdminOrdersPage() {
     const { toast } = useToast();
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<OrderStatus | "All">("All");
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
     useEffect(() => {
         const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
@@ -85,7 +90,13 @@ export default function AdminOrdersPage() {
         const matchesSearch = searchTerm === "" || 
                               order.userEmail.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "All" || order.status === statusFilter;
-        return matchesSearch && matchesStatus;
+
+        const orderDate = order.createdAt.toDate();
+        const matchesDate = !dateRange || 
+                            (!dateRange.from || orderDate >= dateRange.from) && 
+                            (!dateRange.to || orderDate <= dateRange.to);
+
+        return matchesSearch && matchesStatus && matchesDate;
     });
 
 
@@ -103,14 +114,49 @@ export default function AdminOrdersPage() {
                 <CardTitle className="font-headline text-2xl flex items-center gap-2"><Package /> Manage Orders</CardTitle>
                 <CardDescription>View and manage all customer orders.</CardDescription>
                  <div className="flex items-center justify-between pt-4 gap-4 flex-wrap">
-                    <div className="relative w-full max-w-sm">
-                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                       <Input 
-                           placeholder="Search by email..." 
-                           className="pl-10"
-                           value={searchTerm}
-                           onChange={(e) => setSearchTerm(e.target.value)}
-                       />
+                    <div className="flex gap-4 flex-grow flex-wrap">
+                        <div className="relative w-full max-w-sm">
+                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                           <Input 
+                               placeholder="Search by email..." 
+                               className="pl-10"
+                               value={searchTerm}
+                               onChange={(e) => setSearchTerm(e.target.value)}
+                           />
+                        </div>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                id="date"
+                                variant={"outline"}
+                                className="w-[300px] justify-start text-left font-normal"
+                                >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dateRange?.from ? (
+                                    dateRange.to ? (
+                                    <>
+                                        {format(dateRange.from, "LLL dd, y")} -{" "}
+                                        {format(dateRange.to, "LLL dd, y")}
+                                    </>
+                                    ) : (
+                                    format(dateRange.from, "LLL dd, y")
+                                    )
+                                ) : (
+                                    <span>Pick a date range</span>
+                                )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                initialFocus
+                                mode="range"
+                                defaultMonth={dateRange?.from}
+                                selected={dateRange}
+                                onSelect={setDateRange}
+                                numberOfMonths={2}
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                      <Tabs value={statusFilter} onValueChange={(value) => setStatusFilter(value as OrderStatus | "All")}>
                         <TabsList>
@@ -236,7 +282,7 @@ export default function AdminOrdersPage() {
                                     <p className="font-medium">₹{order.price.toFixed(2)}</p>
                                 </div>
                                  <div className="flex items-center justify-between text-sm">
-                                    <p className="text-muted-foreground flex items-center gap-2"><Calendar /> Date</p>
+                                    <p className="text-muted-foreground flex items-center gap-2"><CalendarIcon /> Date</p>
                                     <p className="font-medium">{order.createdAt.toDate().toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">

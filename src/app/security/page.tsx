@@ -1,6 +1,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, DatabaseZap, Lock, Server } from "lucide-react";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Security',
+  description: 'Learn about the robust security measures we have in place to protect your data and website, including DDoS protection, SSL, and regular backups.',
+};
 
 const securityFeatures = [
     {

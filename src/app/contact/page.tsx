@@ -17,6 +17,13 @@ import { Info } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { AuthForm } from "@/components/auth-form";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Get in touch with Grock Technologies. We are here to help with any questions about our web hosting and development services.',
+};
+
 
 export default function ContactPage() {
     const { toast } = useToast();
@@ -188,4 +195,3 @@ export default function ContactPage() {
         </>
     );
 }
-

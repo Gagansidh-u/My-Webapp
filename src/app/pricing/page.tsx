@@ -11,6 +11,12 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader } from "@/components/ui/loader";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Affordable Hosting Plans',
+  description: 'Explore our simple, transparent, and powerful hosting plans. Find the perfect fit for your website, from single-page sites to large business platforms.',
+};
 
 const plans = [
   {

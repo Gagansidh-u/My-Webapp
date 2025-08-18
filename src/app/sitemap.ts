@@ -20,77 +20,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogPostUrls = blogPosts.map(post => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: post.lastModified,
-    changeFrequency: 'yearly' as 'yearly',
+    changeFrequency: 'weekly' as 'weekly',
     priority: 0.7,
   }));
 
+  const staticPages = [
+    { url: '/', priority: 1.0, changeFrequency: 'daily' },
+    { url: '/pricing', priority: 0.9, changeFrequency: 'monthly' },
+    { url: '/blog', priority: 0.9, changeFrequency: 'weekly' },
+    { url: '/contact', priority: 0.8, changeFrequency: 'monthly' },
+    { url: '/documentation', priority: 0.8, changeFrequency: 'monthly' },
+    { url: '/status', priority: 0.7, changeFrequency: 'weekly' },
+    { url: '/security', priority: 0.5, changeFrequency: 'yearly' },
+    { url: '/login', priority: 0.5, changeFrequency: 'yearly' },
+    { url: '/signup', priority: 0.5, changeFrequency: 'yearly' },
+    { url: '/terms-and-conditions', priority: 0.3, changeFrequency: 'yearly' },
+    { url: '/privacy-policy', priority: 0.3, changeFrequency: 'yearly' },
+  ].map(page => ({
+    url: `${baseUrl}${page.url}`,
+    lastModified: new Date(),
+    changeFrequency: page.changeFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
+    priority: page.priority,
+  }));
+
   return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/pricing`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    ...blogPostUrls,
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-     {
-      url: `${baseUrl}/documentation`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-     {
-      url: `${baseUrl}/status`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/signup`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/terms-and-conditions`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/privacy-policy`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/security`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
+    ...staticPages,
+    ...blogPostUrls
   ]
 }

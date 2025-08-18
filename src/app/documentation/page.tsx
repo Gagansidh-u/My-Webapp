@@ -1,4 +1,10 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Documentation & FAQ',
+  description: 'Find answers to frequently asked questions about our hosting plans, payment methods, and getting started with your website.',
+};
 
 const faqs = [
     {

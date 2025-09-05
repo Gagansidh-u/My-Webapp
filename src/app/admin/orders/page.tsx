@@ -22,7 +22,7 @@ import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 
 
-type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered";
+type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered" | "Refund Requested" | "Refunded";
 
 type Order = {
     id: string;
@@ -44,8 +44,12 @@ const orderStatusColors: Record<OrderStatus, string> = {
     "Paid": "bg-blue-500/20 text-blue-700 border-blue-500/30",
     "Pending": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30",
     "In-Progress": "bg-orange-500/20 text-orange-700 border-orange-500/30",
-    "Delivered": "bg-green-500/20 text-green-700 border-green-500/30"
+    "Delivered": "bg-green-500/20 text-green-700 border-green-500/30",
+    "Refund Requested": "bg-purple-500/20 text-purple-700 border-purple-500/30",
+    "Refunded": "bg-gray-500/20 text-gray-700 border-gray-500/30"
 }
+
+const statusOptions: OrderStatus[] = ["Paid", "In-Progress", "Delivered", "Refund Requested", "Refunded"];
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -162,51 +166,98 @@ export default function AdminOrdersPage() {
                         </Popover>
                     </div>
                      <Tabs value={statusFilter} onValueChange={(value) => setStatusFilter(value as OrderStatus | "All")}>
-                        <TabsList>
+                        <TabsList className="h-auto flex-wrap justify-start">
                             <TabsTrigger value="All">All</TabsTrigger>
                             <TabsTrigger value="Paid">Paid</TabsTrigger>
                             <TabsTrigger value="In-Progress">In-Progress</TabsTrigger>
                             <TabsTrigger value="Delivered">Delivered</TabsTrigger>
+                            <TabsTrigger value="Refund Requested">Refund Requested</TabsTrigger>
+                            <TabsTrigger value="Refunded">Refunded</TabsTrigger>
                         </TabsList>
                     </Tabs>
                 </div>
             </CardHeader>
             <CardContent>
-                {/* Desktop View */}
-                <div className="hidden md:block">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Customer</TableHead>
-                                <TableHead>Plan</TableHead>
-                                <TableHead>Price</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Details</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredOrders.map(order => (
-                                <TableRow key={order.id}>
-                                    <TableCell className="font-medium">{order.userEmail}</TableCell>
-                                    <TableCell>{order.plan}</TableCell>
-                                    <TableCell>₹{order.price.toFixed(2)}</TableCell>
-                                    <TableCell>
-                                        <Select value={order.status} onValueChange={(value) => handleStatusChange(order.id, value as OrderStatus)}>
-                                            <SelectTrigger className="w-[140px] text-xs h-8">
-                                                <SelectValue>
-                                                    <Badge variant="outline" className={`${orderStatusColors[order.status]} hover:bg-transparent`}>{order.status}</Badge>
-                                                </SelectValue>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {(["Paid", "In-Progress", "Delivered"] as OrderStatus[]).map(status => (
-                                                    <SelectItem key={status} value={status}>{status}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </TableCell>
-                                    <TableCell>{order.createdAt.toDate().toLocaleDateString()}</TableCell>
-                                    <TableCell>
+                 <div className="overflow-x-auto">
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Customer</TableHead>
+                                    <TableHead>Plan</TableHead>
+                                    <TableHead>Price</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Details</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredOrders.map(order => (
+                                    <TableRow key={order.id}>
+                                        <TableCell className="font-medium">{order.userEmail}</TableCell>
+                                        <TableCell>{order.plan}</TableCell>
+                                        <TableCell>₹{order.price.toFixed(2)}</TableCell>
+                                        <TableCell>
+                                            <Select value={order.status} onValueChange={(value) => handleStatusChange(order.id, value as OrderStatus)}>
+                                                <SelectTrigger className="w-auto min-w-[150px] text-xs h-8">
+                                                    <SelectValue>
+                                                        <Badge variant="outline" className={`${orderStatusColors[order.status]} hover:bg-transparent`}>{order.status}</Badge>
+                                                    </SelectValue>
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {statusOptions.map(status => (
+                                                        <SelectItem key={status} value={status}>{status}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </TableCell>
+                                        <TableCell>{order.createdAt.toDate().toLocaleDateString()}</TableCell>
+                                        <TableCell>
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button variant="outline" size="icon">
+                                                        <FileText className="h-4 w-4" />
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle>Website Details</DialogTitle>
+                                                        <DialogDescription>Plan: {order.plan} ({getDurationText(order.duration)})</DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="space-y-4 py-4">
+                                                        <div>
+                                                            <h4 className="font-semibold">Description</h4>
+                                                            <p className="text-sm text-muted-foreground">{order.websiteDetails.description}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-semibold">Colors</h4>
+                                                            <p className="text-sm text-muted-foreground">{order.websiteDetails.colors}</p>
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-semibold">Style/Vibe</h4>
+                                                            <p className="text-sm text-muted-foreground">{order.websiteDetails.style}</p>
+                                                        </div>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-4">
+                        {filteredOrders.map(order => (
+                             <Card key={order.id} className="bg-muted/30">
+                                <CardContent className="p-4 space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-1">
+                                            <p className="font-bold flex items-center gap-2"><User className="text-muted-foreground" /> {order.userEmail}</p>
+                                            <p className="text-sm text-muted-foreground flex items-center gap-2"><Tag className="text-muted-foreground" /> {order.plan}</p>
+                                        </div>
                                         <Dialog>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline" size="icon">
@@ -234,78 +285,35 @@ export default function AdminOrdersPage() {
                                                 </div>
                                             </DialogContent>
                                         </Dialog>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-                
-                {/* Mobile View */}
-                <div className="md:hidden space-y-4">
-                    {filteredOrders.map(order => (
-                         <Card key={order.id} className="bg-muted/30">
-                            <CardContent className="p-4 space-y-3">
-                                <div className="flex justify-between items-start">
-                                    <div className="space-y-1">
-                                        <p className="font-bold flex items-center gap-2"><User className="text-muted-foreground" /> {order.userEmail}</p>
-                                        <p className="text-sm text-muted-foreground flex items-center gap-2"><Tag className="text-muted-foreground" /> {order.plan}</p>
                                     </div>
-                                    <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" size="icon">
-                                                <FileText className="h-4 w-4" />
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>Website Details</DialogTitle>
-                                                <DialogDescription>Plan: {order.plan} ({getDurationText(order.duration)})</DialogDescription>
-                                            </DialogHeader>
-                                            <div className="space-y-4 py-4">
-                                                <div>
-                                                    <h4 className="font-semibold">Description</h4>
-                                                    <p className="text-sm text-muted-foreground">{order.websiteDetails.description}</p>
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-semibold">Colors</h4>
-                                                    <p className="text-sm text-muted-foreground">{order.websiteDetails.colors}</p>
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-semibold">Style/Vibe</h4>
-                                                    <p className="text-sm text-muted-foreground">{order.websiteDetails.style}</p>
-                                                </div>
-                                            </div>
-                                        </DialogContent>
-                                    </Dialog>
-                                </div>
-                                <Separator />
-                                <div className="flex items-center justify-between text-sm">
-                                    <p className="text-muted-foreground flex items-center gap-2"><IndianRupee /> Price</p>
-                                    <p className="font-medium">₹{order.price.toFixed(2)}</p>
-                                </div>
-                                 <div className="flex items-center justify-between text-sm">
-                                    <p className="text-muted-foreground flex items-center gap-2"><CalendarIcon /> Date</p>
-                                    <p className="font-medium">{order.createdAt.toDate().toLocaleDateString()}</p>
-                                </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <p className="text-muted-foreground">Status</p>
-                                    <Select value={order.status} onValueChange={(value) => handleStatusChange(order.id, value as OrderStatus)}>
-                                        <SelectTrigger className="w-[140px] text-xs h-8">
-                                             <SelectValue>
-                                                <Badge variant="outline" className={`${orderStatusColors[order.status]} hover:bg-transparent`}>{order.status}</Badge>
-                                             </SelectValue>
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {(["Paid", "In-Progress", "Delivered"] as OrderStatus[]).map(status => (
-                                                <SelectItem key={status} value={status}>{status}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
+                                    <Separator />
+                                    <div className="flex items-center justify-between text-sm">
+                                        <p className="text-muted-foreground flex items-center gap-2"><IndianRupee /> Price</p>
+                                        <p className="font-medium">₹{order.price.toFixed(2)}</p>
+                                    </div>
+                                     <div className="flex items-center justify-between text-sm">
+                                        <p className="text-muted-foreground flex items-center gap-2"><CalendarIcon /> Date</p>
+                                        <p className="font-medium">{order.createdAt.toDate().toLocaleDateString()}</p>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <p className="text-muted-foreground">Status</p>
+                                        <Select value={order.status} onValueChange={(value) => handleStatusChange(order.id, value as OrderStatus)}>
+                                            <SelectTrigger className="w-auto min-w-[150px] text-xs h-8">
+                                                 <SelectValue>
+                                                    <Badge variant="outline" className={`${orderStatusColors[order.status]} hover:bg-transparent`}>{order.status}</Badge>
+                                                 </SelectValue>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {statusOptions.map(status => (
+                                                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
                 </div>
 
 
@@ -319,6 +327,3 @@ export default function AdminOrdersPage() {
     );
 }
 
-    
-
-    

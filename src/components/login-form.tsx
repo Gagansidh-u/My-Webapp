@@ -136,15 +136,15 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 name="password"
                 render={({ field }) => (
                     <FormItem>
-                    <div className="flex justify-between items-center">
-                        <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
+                    <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
+                    <FormControl>
+                        <Input type="password" placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <div className="text-right pt-1">
                         <Link href="/forgot-password" passHref>
                            <span className="text-sm text-muted-foreground hover:text-primary underline cursor-pointer">Forgot password?</span>
                         </Link>
                     </div>
-                    <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
                     <FormMessage />
                     </FormItem>
                 )}

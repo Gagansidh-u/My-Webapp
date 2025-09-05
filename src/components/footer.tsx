@@ -22,6 +22,7 @@ const Footer = () => {
             <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
               <Link href="/terms-and-conditions" className="transition-colors hover:text-foreground">Terms</Link>
               <Link href="/privacy-policy" className="transition-colors hover:text-foreground">Privacy</Link>
+              <Link href="/refund-policy" className="transition-colors hover:text-foreground">Refunds</Link>
               <Link href="/security" className="transition-colors hover:text-foreground">Security</Link>
             </nav>
             <div className="flex items-center gap-2">

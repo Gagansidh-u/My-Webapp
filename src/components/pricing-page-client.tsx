@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/auth-provider";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where, Timestamp } from "firebase/firestore";
+import { ref, query, orderByChild, equalTo, onValue } from "firebase/database";
 import { db } from "@/lib/firebase";
 import { Loader } from "@/components/ui/loader";
 
@@ -73,7 +73,7 @@ type Order = {
     userId: string;
     plan: string;
     duration: number; // in months
-    createdAt: Timestamp;
+    createdAt: number;
 };
 
 export default function PricingPageClient() {
@@ -91,21 +91,29 @@ export default function PricingPageClient() {
 
     const fetchUserOrders = async () => {
         try {
-            const ordersQuery = query(collection(db, "orders"), where("userId", "==", user.uid));
-            const querySnapshot = await getDocs(ordersQuery);
-            const userOrders = querySnapshot.docs.map(doc => doc.data() as Order);
+            const ordersRef = ref(db, "orders");
+            const ordersQuery = query(ordersRef, orderByChild("userId"), equalTo(user.uid));
             
-            const currentlyActivePlans = userOrders.filter(order => {
-                const expirationDate = new Date(order.createdAt.seconds * 1000);
-                expirationDate.setMonth(expirationDate.getMonth() + order.duration);
-                return expirationDate > new Date();
-            }).map(order => order.plan);
-            
-            setActivePlans(currentlyActivePlans);
+            onValue(ordersQuery, (snapshot) => {
+                const userOrders: Order[] = [];
+                if (snapshot.exists()) {
+                    snapshot.forEach(childSnapshot => {
+                        userOrders.push(childSnapshot.val());
+                    });
+                }
+                
+                const currentlyActivePlans = userOrders.filter(order => {
+                    const expirationDate = new Date(order.createdAt);
+                    expirationDate.setMonth(expirationDate.getMonth() + order.duration);
+                    return expirationDate > new Date();
+                }).map(order => order.plan);
+                
+                setActivePlans(currentlyActivePlans);
+                setLoadingPlans(false);
+            });
 
         } catch (error) {
             console.error("Failed to fetch user orders:", error);
-        } finally {
             setLoadingPlans(false);
         }
     };

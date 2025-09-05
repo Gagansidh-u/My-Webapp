@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { ref, push, set, serverTimestamp } from "firebase/database";
 import { useAuth } from "@/components/auth-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
@@ -64,20 +64,29 @@ export default function ContactPageClient() {
 
         setLoading(true);
         try {
-            await addDoc(collection(db, `contacts`), {
+            const contactsRef = ref(db, 'contacts');
+            const newContactRef = push(contactsRef);
+
+            const initialMessage = {
+                text: formData.message,
+                senderId: user.uid,
+                senderName: formData.name,
+                createdAt: serverTimestamp()
+            };
+            const initialMessages: { [key: string]: typeof initialMessage } = {};
+            const messageKey = push(ref(db, `contacts/${newContactRef.key}/messages`)).key;
+            initialMessages[messageKey!] = initialMessage;
+
+            await set(newContactRef, {
                 userId: user.uid,
                 name: formData.name,
                 email: formData.email,
                 subject: formData.subject,
-                messages: [{
-                    text: formData.message,
-                    senderId: user.uid,
-                    senderName: formData.name,
-                    createdAt: Timestamp.now()
-                }],
+                messages: initialMessages,
                 status: 'Unread',
                 createdAt: serverTimestamp(),
             });
+
             toast({
                 title: "Success",
                 description: "Your message has been sent successfully."

@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, getDoc, doc } from "firebase/firestore";
+import { ref, set, serverTimestamp, get } from "firebase/database";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Invoice } from "@/components/invoice";
 import html2canvas from 'html2canvas';
@@ -106,10 +106,10 @@ function CheckoutPage() {
 
         const fetchUserData = async () => {
             if (user) {
-                const userRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(userRef);
-                if (docSnap.exists()) {
-                    setUserMobile(docSnap.data().mobile || null);
+                const userRef = ref(db, `users/${user.uid}`);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    setUserMobile(snapshot.val().mobile || null);
                 }
             }
         };
@@ -209,7 +209,7 @@ function CheckoutPage() {
 
         setLoading(true);
         const totalPrice = getTotalPrice();
-        const orderId = `order_${new Date().getTime()}`;
+        const orderKey = `order_${new Date().getTime()}`;
 
         const commonOrderDetails = {
             userId: user.uid,
@@ -221,15 +221,15 @@ function CheckoutPage() {
             status: "Paid",
             createdAt: serverTimestamp(),
             price: totalPrice,
-            orderId: orderId,
+            orderId: orderKey,
         };
 
         if (totalPrice === 0) {
             try {
-                await addDoc(collection(db, "orders"), commonOrderDetails);
+                await set(ref(db, 'orders/' + orderKey), commonOrderDetails);
                 
                 setInvoiceDetails({
-                    orderId: orderId,
+                    orderId: orderKey,
                     plan: plan,
                     price: totalPrice,
                     duration: parseInt(selectedDuration.value),
@@ -267,6 +267,7 @@ function CheckoutPage() {
         }
 
         const order = result.order;
+        const razorpayOrderId = order.id;
 
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -274,17 +275,18 @@ function CheckoutPage() {
             currency: order.currency,
             name: "Grock Technologies",
             description: `Payment for ${plan} Plan (${selectedDuration.label})`,
-            order_id: order.id,
+            order_id: razorpayOrderId,
             handler: async function (response: any) {
                 try {
-                    await addDoc(collection(db, "orders"), {
+                     const finalOrderDetails = {
                        ...commonOrderDetails,
                         razorpayPaymentId: response.razorpay_payment_id,
-                        orderId: order.id, // Overwrite with Razorpay's order ID for paid orders
-                    });
+                        orderId: razorpayOrderId,
+                    };
+                    await set(ref(db, 'orders/' + razorpayOrderId), finalOrderDetails);
 
                     setInvoiceDetails({
-                        orderId: order.id,
+                        orderId: razorpayOrderId,
                         plan: plan,
                         price: totalPrice,
                         duration: parseInt(selectedDuration.value),
@@ -497,5 +499,3 @@ export default function CheckoutPageSuspense() {
         </Suspense>
     )
 }
-
-    

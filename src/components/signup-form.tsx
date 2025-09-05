@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { auth, db } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, User } from "firebase/auth";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { ref, set, get, serverTimestamp } from "firebase/database";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Loader } from "./ui/loader";
@@ -88,10 +88,10 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
   });
 
   const createUserDocument = async (user: User, name?: string, mobile?: string, authProvider?: string) => {
-    const userRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userRef);
-    if (!docSnap.exists()) {
-        await setDoc(userRef, {
+    const userRef = ref(db, `users/${user.uid}`);
+    const snapshot = await get(userRef);
+    if (!snapshot.exists()) {
+        await set(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: name || user.displayName || 'Anonymous',
@@ -141,10 +141,10 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      const userRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(userRef);
+      const userRef = ref(db, `users/${user.uid}`);
+      const snapshot = await get(userRef);
 
-      if (docSnap.exists()) {
+      if (snapshot.exists()) {
          toast({ title: "Success", description: "Logged in successfully with Google." });
          if (onSignup) onSignup();
          else router.push("/");

@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc } from "firebase/firestore";
+import { ref, onValue, query, orderByChild, update } from "firebase/database";
 import { FileText, Package, User, Calendar as CalendarIcon, Tag, IndianRupee, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -32,7 +32,7 @@ type Order = {
     price: number;
     duration: number;
     status: OrderStatus;
-    createdAt: Timestamp;
+    createdAt: number;
     websiteDetails: {
         description: string;
         colors: string;
@@ -60,10 +60,15 @@ export default function AdminOrdersPage() {
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
     useEffect(() => {
-        const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-        const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
-            const ordersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
-            setOrders(ordersData);
+        const ordersQuery = query(ref(db, "orders"), orderByChild("createdAt"));
+        const unsubscribe = onValue(ordersQuery, (snapshot) => {
+            const ordersData: Order[] = [];
+            if(snapshot.exists()) {
+                 snapshot.forEach(doc => {
+                    ordersData.push({ id: doc.key!, ...doc.val() });
+                });
+            }
+            setOrders(ordersData.reverse()); // newest first
             setLoading(false);
         }, (error) => {
             console.error("Failed to fetch orders:", error);
@@ -73,9 +78,9 @@ export default function AdminOrdersPage() {
     }, []);
 
     const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
-        const orderRef = doc(db, "orders", orderId);
+        const orderRef = ref(db, `orders/${orderId}`);
         try {
-            await updateDoc(orderRef, { status: newStatus });
+            await update(orderRef, { status: newStatus });
             toast({ title: "Success", description: "Order status updated." });
         } catch (error) {
             console.error("Failed to update status:", error);
@@ -95,7 +100,7 @@ export default function AdminOrdersPage() {
                               order.userEmail.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "All" || order.status === statusFilter;
 
-        const orderDate = order.createdAt.toDate();
+        const orderDate = new Date(order.createdAt);
         const matchesDate = !dateRange || 
                             (!dateRange.from || orderDate >= dateRange.from) && 
                             (!dateRange.to || orderDate <= dateRange.to);
@@ -212,7 +217,7 @@ export default function AdminOrdersPage() {
                                                 </SelectContent>
                                             </Select>
                                         </TableCell>
-                                        <TableCell>{order.createdAt.toDate().toLocaleDateString()}</TableCell>
+                                        <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                                         <TableCell>
                                             <Dialog>
                                                 <DialogTrigger asChild>
@@ -293,7 +298,7 @@ export default function AdminOrdersPage() {
                                     </div>
                                      <div className="flex items-center justify-between text-sm">
                                         <p className="text-muted-foreground flex items-center gap-2"><CalendarIcon /> Date</p>
-                                        <p className="font-medium">{order.createdAt.toDate().toLocaleDateString()}</p>
+                                        <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
                                     </div>
                                     <div className="flex items-center justify-between text-sm">
                                         <p className="text-muted-foreground">Status</p>
@@ -326,4 +331,3 @@ export default function AdminOrdersPage() {
         </Card>
     );
 }
-

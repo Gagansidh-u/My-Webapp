@@ -3,14 +3,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, MessageSquare, Users, IndianRupee } from "lucide-react";
-import { collection, onSnapshot, query, Timestamp } from "firebase/firestore";
+import { ref, onValue } from "firebase/database";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Loader } from "@/components/ui/loader";
 
 type Order = {
     price: number;
-    createdAt: Timestamp;
+    createdAt: number;
 }
 
 export default function AdminDashboardPage() {
@@ -35,8 +35,8 @@ export default function AdminDashboardPage() {
             }
         };
 
-        const ordersQuery = query(collection(db, "orders"));
-        const ordersUnsub = onSnapshot(ordersQuery, (snapshot) => {
+        const ordersRef = ref(db, "orders");
+        const ordersUnsub = onValue(ordersRef, (snapshot) => {
             const now = new Date();
             const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -44,22 +44,26 @@ export default function AdminDashboardPage() {
 
             let currentMonthRevenue = 0;
             let previousMonthRevenue = 0;
+            let orderCount = 0;
 
-            snapshot.docs.forEach(doc => {
-                const order = doc.data() as Order;
-                if (order.createdAt && order.createdAt.toDate) {
-                    const createdAtDate = order.createdAt.toDate();
-                    if (createdAtDate >= startOfCurrentMonth) {
-                        currentMonthRevenue += order.price;
-                    } else if (createdAtDate >= startOfPreviousMonth && createdAtDate <= endOfPreviousMonth) {
-                        previousMonthRevenue += order.price;
+            if (snapshot.exists()){
+                orderCount = snapshot.size;
+                snapshot.forEach(doc => {
+                    const order = doc.val() as Order;
+                    if (order.createdAt) {
+                        const createdAtDate = new Date(order.createdAt);
+                        if (createdAtDate >= startOfCurrentMonth) {
+                            currentMonthRevenue += order.price;
+                        } else if (createdAtDate >= startOfPreviousMonth && createdAtDate <= endOfPreviousMonth) {
+                            previousMonthRevenue += order.price;
+                        }
                     }
-                }
-            });
+                });
+            }
 
             setStats(prev => ({ 
                 ...prev, 
-                orders: snapshot.size,
+                orders: orderCount,
                 currentMonthRevenue,
                 previousMonthRevenue
             }));
@@ -70,9 +74,9 @@ export default function AdminDashboardPage() {
         });
         unsubscribes.push(ordersUnsub);
 
-        const inquiriesQuery = query(collection(db, "contacts"));
-        const inquiriesUnsub = onSnapshot(inquiriesQuery, (snapshot) => {
-            setStats(prev => ({ ...prev, inquiries: snapshot.size }));
+        const inquiriesRef = ref(db, "contacts");
+        const inquiriesUnsub = onValue(inquiriesRef, (snapshot) => {
+            setStats(prev => ({ ...prev, inquiries: snapshot.exists() ? snapshot.size : 0 }));
             if(loading && loadedStats < requiredLoads) handleLoad();
         }, (error) => {
             console.error("Error fetching inquiries:", error);
@@ -80,9 +84,9 @@ export default function AdminDashboardPage() {
         });
         unsubscribes.push(inquiriesUnsub);
 
-        const usersQuery = query(collection(db, "users"));
-        const usersUnsub = onSnapshot(usersQuery, (snapshot) => {
-            setStats(prev => ({ ...prev, users: snapshot.size }));
+        const usersRef = ref(db, "users");
+        const usersUnsub = onValue(usersRef, (snapshot) => {
+            setStats(prev => ({ ...prev, users: snapshot.exists() ? snapshot.size : 0 }));
             if(loading && loadedStats < requiredLoads) handleLoad();
         }, (error) => {
             console.error("Error fetching users:", error);

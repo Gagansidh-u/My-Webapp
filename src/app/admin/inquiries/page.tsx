@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { db, auth } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc, arrayUnion } from "firebase/firestore";
+import { ref, onValue, query, orderByChild, update, remove, push, serverTimestamp } from "firebase/database";
 import { Mail, Trash2, User, Calendar as CalendarIcon, MessageCircle, BadgeCheck, Search, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -39,7 +39,7 @@ type InquiryMessage = {
     text: string;
     senderId: string;
     senderName: string;
-    createdAt: Timestamp;
+    createdAt: number;
 }
 
 type Inquiry = {
@@ -48,9 +48,9 @@ type Inquiry = {
     name: string;
     email: string;
     subject: string;
-    messages: InquiryMessage[];
+    messages: Record<string, InquiryMessage>;
     status: InquiryStatus;
-    createdAt: Timestamp;
+    createdAt: number;
 };
 
 const statusColors: Record<InquiryStatus, string> = {
@@ -76,10 +76,15 @@ export default function AdminInquiriesPage() {
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
     useEffect(() => {
-        const inquiriesQuery = query(collection(db, `contacts`), orderBy("createdAt", "desc"));
-        const unsubscribe = onSnapshot(inquiriesQuery, (snapshot) => {
-            const inquiriesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Inquiry));
-            setInquiries(inquiriesData);
+        const inquiriesRef = query(ref(db, `contacts`), orderByChild("createdAt"));
+        const unsubscribe = onValue(inquiriesRef, (snapshot) => {
+            const inquiriesData: Inquiry[] = [];
+            if(snapshot.exists()) {
+                snapshot.forEach(childSnapshot => {
+                    inquiriesData.push({ id: childSnapshot.key!, ...childSnapshot.val() });
+                });
+            }
+            setInquiries(inquiriesData.reverse()); // Show newest first
             setLoading(false);
         }, (error) => {
             console.error("Failed to fetch inquiries:", error);
@@ -90,9 +95,9 @@ export default function AdminInquiriesPage() {
     }, []);
 
     const handleStatusChange = async (id: string, status: InquiryStatus) => {
-        const inquiryRef = doc(db, `contacts`, id);
+        const inquiryRef = ref(db, `contacts/${id}`);
         try {
-            await updateDoc(inquiryRef, { status: status });
+            await update(inquiryRef, { status: status });
         } catch (error) {
             toast({ title: "Error", description: "Could not update status.", variant: "destructive" });
         }
@@ -106,9 +111,9 @@ export default function AdminInquiriesPage() {
 
     const handleDelete = async (id: string) => {
         setDeletingId(id);
-        const inquiryRef = doc(db, `contacts`, id);
+        const inquiryRef = ref(db, `contacts/${id}`);
         try {
-            await deleteDoc(inquiryRef);
+            await remove(inquiryRef);
             toast({ title: "Success", description: "Inquiry has been deleted." });
         } catch (error) {
             console.error("Failed to delete inquiry:", error);
@@ -123,19 +128,21 @@ export default function AdminInquiriesPage() {
         if (!currentUser || !replyMessage.trim()) return;
 
         setReplyingTo(inquiryId);
-        const inquiryRef = doc(db, `contacts`, inquiryId);
+        const inquiryRef = ref(db, `contacts/${inquiryId}`);
+        const messagesRef = ref(db, `contacts/${inquiryId}/messages`);
 
-        const newMessage: InquiryMessage = {
+        const newMessage = {
             text: replyMessage,
             senderId: currentUser.uid,
             senderName: "Admin",
-            createdAt: Timestamp.now(),
+            createdAt: serverTimestamp(),
         };
 
         try {
-            await updateDoc(inquiryRef, {
-                messages: arrayUnion(newMessage),
+            const newMessageRef = push(messagesRef);
+            await update(inquiryRef, {
                 status: "Admin Replied",
+                [`messages/${newMessageRef.key}`]: newMessage
             });
             setReplyMessage(""); // Clear the textarea after sending
             toast({title: "Success", description: "Reply sent."})
@@ -153,13 +160,18 @@ export default function AdminInquiriesPage() {
                               inquiry.email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
         
-        const inquiryDate = inquiry.createdAt.toDate();
+        const inquiryDate = new Date(inquiry.createdAt);
         const matchesDate = !dateRange || 
                             (!dateRange.from || inquiryDate >= dateRange.from) && 
                             (!dateRange.to || inquiryDate <= dateRange.to);
 
         return matchesSearch && matchesStatus && matchesDate;
     });
+
+    const getSortedMessages = (messages: Record<string, InquiryMessage> | undefined) => {
+        if (!messages) return [];
+        return Object.values(messages).sort((a, b) => a.createdAt - b.createdAt);
+    }
 
 
     if (loading) {
@@ -267,7 +279,7 @@ export default function AdminInquiriesPage() {
                                             </SelectContent>
                                         </Select>
                                     </TableCell>
-                                    <TableCell>{inquiry.createdAt.toDate().toLocaleDateString()}</TableCell>
+                                    <TableCell>{new Date(inquiry.createdAt).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Dialog onOpenChange={(open) => { if(open) handleViewMessage(inquiry)}}>
                                             <DialogTrigger asChild>
@@ -279,12 +291,12 @@ export default function AdminInquiriesPage() {
                                                     <DialogDescription>From: {inquiry.name} ({inquiry.email})</DialogDescription>
                                                 </DialogHeader>
                                                 <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
-                                                    {inquiry.messages?.map((msg, index) => (
+                                                     {getSortedMessages(inquiry.messages).map((msg, index) => (
                                                         <div key={index} className={`flex flex-col ${msg.senderId === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
                                                             <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === auth.currentUser?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                                                                 <p className="text-sm font-bold">{msg.senderName}</p>
                                                                 <p className="text-sm">{msg.text}</p>
-                                                                <p className="text-xs opacity-70 mt-1">{msg.createdAt.toDate().toLocaleString()}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{new Date(msg.createdAt).toLocaleString()}</p>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -351,12 +363,12 @@ export default function AdminInquiriesPage() {
                                                     <DialogDescription>From: {inquiry.name} ({inquiry.email})</DialogDescription>
                                                 </DialogHeader>
                                                 <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
-                                                    {inquiry.messages?.map((msg, index) => (
+                                                     {getSortedMessages(inquiry.messages).map((msg, index) => (
                                                         <div key={index} className={`flex flex-col ${msg.senderId === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
                                                             <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === auth.currentUser?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                                                                 <p className="text-sm font-bold">{msg.senderName}</p>
                                                                 <p className="text-sm">{msg.text}</p>
-                                                                <p className="text-xs opacity-70 mt-1">{msg.createdAt.toDate().toLocaleString()}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{new Date(msg.createdAt).toLocaleString()}</p>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -403,7 +415,7 @@ export default function AdminInquiriesPage() {
                                 </div>
                                  <div className="flex items-center justify-between text-sm">
                                     <p className="text-muted-foreground flex items-center gap-2"><CalendarIcon /> Date</p>
-                                    <p className="font-medium">{inquiry.createdAt.toDate().toLocaleDateString()}</p>
+                                    <p className="font-medium">{new Date(inquiry.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
                                     <p className="text-muted-foreground flex items-center gap-2"><BadgeCheck /> Status</p>

@@ -4,7 +4,7 @@
 import { useAuth } from "@/components/auth-provider";
 import { Loader } from "@/components/ui/loader";
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarTrigger, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
-import { Home, LogOut, Package, MessageSquare, Landmark, FileText } from "lucide-react";
+import { Home, LogOut, Package, MessageSquare, Landmark } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
@@ -80,7 +80,7 @@ export default function AdminLayout({
                              </SidebarMenuButton>
                          </SidebarMenuItem>
                     ))}
-                    <Collapsible open={isLegalOpen} onOpenChange={setIsLegalOpen}>
+                    <Collapsible asChild open={isLegalOpen} onOpenChange={setIsLegalOpen}>
                         <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
                                 <SidebarMenuButton>
@@ -89,20 +89,20 @@ export default function AdminLayout({
                                     <ChevronRight className={cn("ml-auto h-5 w-5 transition-transform", isLegalOpen && "rotate-90")} />
                                 </SidebarMenuButton>
                             </CollapsibleTrigger>
+                            <CollapsibleContent>
+                               <SidebarMenu className="ml-8">
+                                    {legalItems.map(item => (
+                                        <SidebarMenuItem key={item.href}>
+                                            <SidebarMenuButton asChild isActive={pathname === item.href} variant="ghost" size="sm">
+                                                <Link href={item.href} target="_blank">
+                                                    <span>{item.label}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    ))}
+                               </SidebarMenu>
+                            </CollapsibleContent>
                         </SidebarMenuItem>
-                        <CollapsibleContent>
-                           <SidebarMenu className="ml-8">
-                                {legalItems.map(item => (
-                                    <SidebarMenuItem key={item.href}>
-                                        <SidebarMenuButton asChild isActive={pathname === item.href} variant="ghost" size="sm">
-                                            <Link href={item.href} target="_blank">
-                                                <span>{item.label}</span>
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                           </SidebarMenu>
-                        </CollapsibleContent>
                     </Collapsible>
                  </SidebarMenu>
             </SidebarContent>

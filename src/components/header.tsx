@@ -7,7 +7,7 @@ import { useAuth } from './auth-provider';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MessageSquare, Tag, Activity, FileText, Contact, Newspaper, Shield, Package, Home } from 'lucide-react';
+import { Gem, Menu, Moon, Sun, User, LogOut, ShoppingCart, MessageSquare, Tag, Activity, FileText, Contact, Newspaper, Shield, Package, Home, Landmark, ChevronRight } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import React from 'react';
 import { useTheme } from 'next-themes';
@@ -16,6 +16,8 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { AuthForm } from './auth-form';
 import { motion } from 'framer-motion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const { user, loading } = useAuth();
@@ -23,6 +25,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { theme, setTheme } = useTheme()
   const [isAuthOpen, setIsAuthOpen] = React.useState(false);
+  const [isLegalOpen, setIsLegalOpen] = React.useState(false);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -46,6 +49,12 @@ const Header = () => {
       { href: '/admin', label: 'Dashboard', icon: <Home className="mr-2 h-4 w-4" /> },
       { href: '/admin/orders', label: 'Orders', icon: <Package className="mr-2 h-4 w-4" /> },
       { href: '/admin/inquiries', label: 'Inquiries', icon: <MessageSquare className="mr-2 h-4 w-4" /> },
+  ]
+
+  const legalItems = [
+    { href: '/terms-and-conditions', label: 'Terms' },
+    { href: '/privacy-policy', label: 'Privacy' },
+    { href: '/refund-policy', label: 'Refunds' },
   ]
 
   const getUserInitials = (email: string | null | undefined) => {
@@ -174,6 +183,24 @@ const Header = () => {
                                 {link.icon} {link.label}
                             </Link>
                         ))}
+                        <Collapsible open={isLegalOpen} onOpenChange={setIsLegalOpen}>
+                            <CollapsibleTrigger className="w-full">
+                                <div className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center">
+                                    <Landmark className="mr-2 h-4 w-4" />
+                                    <span>Legal</span>
+                                    <ChevronRight className={cn("ml-auto h-4 w-4 transition-transform", isLegalOpen && "rotate-90")} />
+                                </div>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <div className="flex flex-col space-y-2 ml-8 mt-2">
+                                {legalItems.map(item => (
+                                    <Link key={item.href} href={item.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center text-sm" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <span>{item.label}</span>
+                                    </Link>
+                                ))}
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
                         <DropdownMenuSeparator />
                          {user && !isAdmin && userNavLinks.map(link => (
                             <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground/80 text-foreground/60 p-2 rounded-md hover:bg-accent flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
@@ -216,5 +243,3 @@ const Header = () => {
 };
 
 export default Header;
-
-    

@@ -20,7 +20,9 @@ import { Loader } from "./ui/loader";
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required."}),
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." })
+  password: z.string()
+    .min(8, { message: "Password must be 8-16 characters long." })
+    .max(16, { message: "Password must be 8-16 characters long." })
     .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
     .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
     .regex(/[0-9]/, { message: "Password must contain at least one number." })
@@ -46,7 +48,8 @@ const GoogleIcon = () => (
         />
         <path
             fill="#FBBC05"
-            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1
+ 12s.43 3.45 1.18 4.93l3.66-2.84z"
         />
         <path
             fill="#EA4335"
@@ -236,7 +239,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                         <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
                         <FormDescription>
-                            Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+                            Password must be 8-16 characters and include an uppercase letter, a lowercase letter, a number, and a special character.
                         </FormDescription>
                         <FormMessage />
                     </FormItem>

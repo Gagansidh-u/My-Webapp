@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,11 @@ import { Loader } from "./ui/loader";
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required."}),
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters." })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
+    .regex(/[0-9]/, { message: "Password must contain at least one number." })
+    .regex(/[^a-zA-Z0-9]/, { message: "Password must contain at least one special character." }),
   mobile: z.string().min(10, { message: "Mobile number must be at least 10 digits."}),
 });
 
@@ -231,6 +235,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                         <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
+                        <FormDescription>
+                            Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+                        </FormDescription>
                         <FormMessage />
                     </FormItem>
                     )}

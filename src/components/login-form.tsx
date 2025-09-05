@@ -14,6 +14,7 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Loader } from "./ui/loader";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -135,7 +136,12 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 name="password"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
+                    <div className="flex justify-between items-center">
+                        <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
+                        <Link href="/forgot-password" passHref>
+                           <span className="text-sm text-muted-foreground hover:text-primary underline cursor-pointer">Forgot password?</span>
+                        </Link>
+                    </div>
                     <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>

@@ -2,8 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
+import { collection, onSnapshot, orderBy, query, Timestamp, doc, updateDoc, deleteDoc, arrayUnion } from "firebase/firestore";
 import { Mail, Trash2, User, Calendar as CalendarIcon, MessageCircle, BadgeCheck, Search, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -31,9 +31,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
+import { Textarea } from "@/components/ui/textarea";
 
+type InquiryStatus = 'Unread' | 'Read' | 'Resolved' | 'User Reply' | 'Admin Replied';
 
-type InquiryStatus = 'Read' | 'Unread' | 'Resolved';
+type InquiryMessage = {
+    text: string;
+    senderId: string;
+    senderName: string;
+    createdAt: Timestamp;
+}
 
 type Inquiry = {
     id: string;
@@ -41,7 +48,7 @@ type Inquiry = {
     name: string;
     email: string;
     subject: string;
-    message: string;
+    messages: InquiryMessage[];
     status: InquiryStatus;
     createdAt: Timestamp;
 };
@@ -50,7 +57,11 @@ const statusColors: Record<InquiryStatus, string> = {
     "Read": "bg-blue-500/20 text-blue-700 border-blue-500/30",
     "Unread": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30",
     "Resolved": "bg-green-500/20 text-green-700 border-green-500/30",
+    "User Reply": "bg-orange-500/20 text-orange-700 border-orange-500/30",
+    "Admin Replied": "bg-purple-500/20 text-purple-700 border-purple-500/30",
 }
+
+const statusOptions: InquiryStatus[] = ['Unread', 'Read', 'User Reply', 'Admin Replied', 'Resolved'];
 
 
 export default function AdminInquiriesPage() {
@@ -61,6 +72,8 @@ export default function AdminInquiriesPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState<InquiryStatus | "All">("All");
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+    const [replyMessage, setReplyMessage] = useState("");
+    const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
     useEffect(() => {
         const inquiriesQuery = query(collection(db, `contacts`), orderBy("createdAt", "desc"));
@@ -84,6 +97,12 @@ export default function AdminInquiriesPage() {
             toast({ title: "Error", description: "Could not update status.", variant: "destructive" });
         }
     };
+    
+    const handleViewMessage = (inquiry: Inquiry) => {
+        if (inquiry.status === 'Unread' || inquiry.status === 'User Reply') {
+            handleStatusChange(inquiry.id, 'Read');
+        }
+    }
 
     const handleDelete = async (id: string) => {
         setDeletingId(id);
@@ -98,6 +117,35 @@ export default function AdminInquiriesPage() {
             setDeletingId(null);
         }
     };
+    
+     const handleReplySubmit = async (inquiryId: string) => {
+        const currentUser = auth.currentUser;
+        if (!currentUser || !replyMessage.trim()) return;
+
+        setReplyingTo(inquiryId);
+        const inquiryRef = doc(db, `contacts`, inquiryId);
+
+        const newMessage: InquiryMessage = {
+            text: replyMessage,
+            senderId: currentUser.uid,
+            senderName: "Admin",
+            createdAt: Timestamp.now(),
+        };
+
+        try {
+            await updateDoc(inquiryRef, {
+                messages: arrayUnion(newMessage),
+                status: "Admin Replied",
+            });
+            setReplyMessage(""); // Clear the textarea after sending
+            toast({title: "Success", description: "Reply sent."})
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to send reply.", variant: "destructive" });
+        } finally {
+            setReplyingTo(null);
+        }
+    };
+
     
      const filteredInquiries = inquiries.filter(inquiry => {
         const matchesSearch = searchTerm === "" ||
@@ -176,10 +224,12 @@ export default function AdminInquiriesPage() {
                         </Popover>
                     </div>
                      <Tabs value={statusFilter} onValueChange={(value) => setStatusFilter(value as InquiryStatus | "All")}>
-                        <TabsList>
+                        <TabsList className="h-auto flex-wrap justify-start">
                             <TabsTrigger value="All">All</TabsTrigger>
                             <TabsTrigger value="Unread">Unread</TabsTrigger>
-                            <TabsTrigger value="Read">Read</TabsTrigger>
+                             <TabsTrigger value="User Reply">User Reply</TabsTrigger>
+                             <TabsTrigger value="Read">Read</TabsTrigger>
+                             <TabsTrigger value="Admin Replied">Admin Replied</TabsTrigger>
                              <TabsTrigger value="Resolved">Resolved</TabsTrigger>
                         </TabsList>
                     </Tabs>
@@ -205,13 +255,13 @@ export default function AdminInquiriesPage() {
                                     <TableCell>{inquiry.subject}</TableCell>
                                     <TableCell>
                                         <Select value={inquiry.status} onValueChange={(value) => handleStatusChange(inquiry.id, value as InquiryStatus)}>
-                                            <SelectTrigger className="w-[120px] text-xs h-8">
+                                            <SelectTrigger className="w-auto min-w-[140px] text-xs h-8">
                                                 <SelectValue>
                                                     <Badge variant="outline" className={`${statusColors[inquiry.status]} hover:bg-transparent`}>{inquiry.status}</Badge>
                                                 </SelectValue>
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {(["Unread", "Read", "Resolved"] as InquiryStatus[]).map(status => (
+                                                {statusOptions.map(status => (
                                                     <SelectItem key={status} value={status}>{status}</SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -219,25 +269,40 @@ export default function AdminInquiriesPage() {
                                     </TableCell>
                                     <TableCell>{inquiry.createdAt.toDate().toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
-                                        <Dialog onOpenChange={(open) => { if(open && inquiry.status === 'Unread') handleStatusChange(inquiry.id, 'Read')}}>
+                                        <Dialog onOpenChange={(open) => { if(open) handleViewMessage(inquiry)}}>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline">View Message</Button>
+                                                <Button variant="outline">View Thread</Button>
                                             </DialogTrigger>
-                                            <DialogContent>
+                                            <DialogContent className="max-w-2xl">
                                                 <DialogHeader>
                                                     <DialogTitle>{inquiry.subject}</DialogTitle>
                                                     <DialogDescription>From: {inquiry.name} ({inquiry.email})</DialogDescription>
                                                 </DialogHeader>
-                                                <div className="py-4">
-                                                    <p className="text-sm text-foreground">{inquiry.message}</p>
+                                                <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+                                                    {inquiry.messages?.map((msg, index) => (
+                                                        <div key={index} className={`flex flex-col ${msg.senderId === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
+                                                            <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === auth.currentUser?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                                                                <p className="text-sm font-bold">{msg.senderName}</p>
+                                                                <p className="text-sm">{msg.text}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{msg.createdAt.toDate().toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
+                                                {inquiry.status !== 'Resolved' && (
+                                                    <div className="flex gap-2 pt-4 border-t">
+                                                        <Textarea 
+                                                            placeholder="Type your reply..."
+                                                            value={replyMessage}
+                                                            onChange={(e) => setReplyMessage(e.target.value)}
+                                                        />
+                                                        <Button onClick={() => handleReplySubmit(inquiry.id)} disabled={replyingTo === inquiry.id}>
+                                                            {replyingTo === inquiry.id ? <Loader size={16} /> : <Send className="h-4 w-4" />}
+                                                        </Button>
+                                                    </div>
+                                                )}
                                             </DialogContent>
                                         </Dialog>
-                                         <Button variant="secondary" asChild>
-                                            <a href={`mailto:${inquiry.email}?subject=Re: ${inquiry.subject}`}>
-                                                <Send className="mr-2 h-4 w-4" /> Reply
-                                            </a>
-                                        </Button>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <Button variant="destructive" size="icon" disabled={deletingId === inquiry.id}>
@@ -249,7 +314,7 @@ export default function AdminInquiriesPage() {
                                                 <AlertDialogHeader>
                                                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    This action cannot be undone. This will permanently delete this message.
+                                                    This action cannot be undone. This will permanently delete this message thread.
                                                 </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
@@ -276,18 +341,38 @@ export default function AdminInquiriesPage() {
                                         <p className="text-sm text-muted-foreground truncate max-w-[200px]">{inquiry.email}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Dialog onOpenChange={(open) => { if(open && inquiry.status === 'Unread') handleStatusChange(inquiry.id, 'Read')}}>
+                                        <Dialog onOpenChange={(open) => { if(open) handleViewMessage(inquiry)}}>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline" size="sm">View</Button>
                                             </DialogTrigger>
-                                            <DialogContent>
+                                            <DialogContent className="max-w-2xl">
                                                 <DialogHeader>
                                                     <DialogTitle>{inquiry.subject}</DialogTitle>
                                                     <DialogDescription>From: {inquiry.name} ({inquiry.email})</DialogDescription>
                                                 </DialogHeader>
-                                                <div className="py-4">
-                                                    <p className="text-sm text-foreground">{inquiry.message}</p>
+                                                <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+                                                    {inquiry.messages?.map((msg, index) => (
+                                                        <div key={index} className={`flex flex-col ${msg.senderId === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
+                                                            <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === auth.currentUser?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                                                                <p className="text-sm font-bold">{msg.senderName}</p>
+                                                                <p className="text-sm">{msg.text}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{msg.createdAt.toDate().toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
+                                                {inquiry.status !== 'Resolved' && (
+                                                    <div className="flex gap-2 pt-4 border-t">
+                                                        <Textarea 
+                                                            placeholder="Type your reply..."
+                                                            value={replyMessage}
+                                                            onChange={(e) => setReplyMessage(e.target.value)}
+                                                        />
+                                                        <Button onClick={() => handleReplySubmit(inquiry.id)} disabled={replyingTo === inquiry.id}>
+                                                            {replyingTo === inquiry.id ? <Loader size={16} /> : <Send className="h-4 w-4" />}
+                                                        </Button>
+                                                    </div>
+                                                )}
                                             </DialogContent>
                                         </Dialog>
                                          <AlertDialog>
@@ -323,24 +408,17 @@ export default function AdminInquiriesPage() {
                                 <div className="flex items-center justify-between text-sm">
                                     <p className="text-muted-foreground flex items-center gap-2"><BadgeCheck /> Status</p>
                                      <Select value={inquiry.status} onValueChange={(value) => handleStatusChange(inquiry.id, value as InquiryStatus)}>
-                                        <SelectTrigger className="w-[120px] text-xs h-8">
+                                        <SelectTrigger className="w-auto min-w-[140px] text-xs h-8">
                                             <SelectValue>
                                                 <Badge variant="outline" className={`${statusColors[inquiry.status]} hover:bg-transparent`}>{inquiry.status}</Badge>
                                             </SelectValue>
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {(["Unread", "Read", "Resolved"] as InquiryStatus[]).map(status => (
+                                            {statusOptions.map(status => (
                                                 <SelectItem key={status} value={status}>{status}</SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                </div>
-                                <div className="pt-2">
-                                     <Button variant="secondary" asChild className="w-full">
-                                        <a href={`mailto:${inquiry.email}?subject=Re: ${inquiry.subject}`}>
-                                            <Send className="mr-2 h-4 w-4" /> Reply
-                                        </a>
-                                    </Button>
                                 </div>
                             </CardContent>
                          </Card>

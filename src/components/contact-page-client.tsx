@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { useAuth } from "@/components/auth-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
@@ -69,7 +69,12 @@ export default function ContactPageClient() {
                 name: formData.name,
                 email: formData.email,
                 subject: formData.subject,
-                message: formData.message,
+                messages: [{
+                    text: formData.message,
+                    senderId: user.uid,
+                    senderName: formData.name,
+                    createdAt: Timestamp.now()
+                }],
                 status: 'Unread',
                 createdAt: serverTimestamp(),
             });

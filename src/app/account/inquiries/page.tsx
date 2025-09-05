@@ -4,8 +4,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query, Timestamp, where, doc, deleteDoc } from "firebase/firestore";
-import { Mail, Trash2 } from "lucide-react";
+import { collection, onSnapshot, orderBy, query, Timestamp, where, doc, deleteDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { Mail, Trash2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -23,18 +23,31 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
+import { Textarea } from "@/components/ui/textarea";
+
+type InquiryMessage = {
+    text: string;
+    senderId: string;
+    senderName: string;
+    createdAt: Timestamp;
+}
 
 type Inquiry = {
     id: string;
     subject: string;
-    status: 'Read' | 'Unread';
+    status: 'Unread' | 'Read' | 'Resolved' | 'User Reply' | 'Admin Replied';
+    messages: InquiryMessage[];
     createdAt: Timestamp;
 };
 
 const statusColors: Record<Inquiry['status'], string> = {
-    "Read": "bg-green-500/20 text-green-700 border-green-500/30",
-    "Unread": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30"
+    "Read": "bg-blue-500/20 text-blue-700 border-blue-500/30",
+    "Unread": "bg-yellow-500/20 text-yellow-700 border-yellow-500/30",
+    "Resolved": "bg-green-500/20 text-green-700 border-green-500/30",
+    "User Reply": "bg-orange-500/20 text-orange-700 border-orange-500/30",
+    "Admin Replied": "bg-purple-500/20 text-purple-700 border-purple-500/30",
 }
 
 
@@ -45,6 +58,8 @@ export default function MyInquiriesPage() {
     const [inquiries, setInquiries] = useState<Inquiry[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [replyMessage, setReplyMessage] = useState("");
+    const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
     useEffect(() => {
         if (authLoading) return;
@@ -87,6 +102,33 @@ export default function MyInquiriesPage() {
             setDeletingId(null);
         }
     };
+    
+    const handleReplySubmit = async (inquiryId: string) => {
+        if (!user || !replyMessage.trim()) return;
+
+        setReplyingTo(inquiryId);
+        const inquiryRef = doc(db, `contacts`, inquiryId);
+        
+        const newMessage: InquiryMessage = {
+            text: replyMessage,
+            senderId: user.uid,
+            senderName: user.displayName || "You",
+            createdAt: Timestamp.now()
+        };
+
+        try {
+            await updateDoc(inquiryRef, {
+                messages: arrayUnion(newMessage),
+                status: "User Reply"
+            });
+            setReplyMessage("");
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to send reply.", variant: "destructive" });
+        } finally {
+            setReplyingTo(null);
+        }
+    }
+
 
     if (loading || authLoading) {
         return (
@@ -119,7 +161,41 @@ export default function MyInquiriesPage() {
                                     <TableCell className="font-medium">{inquiry.subject}</TableCell>
                                     <TableCell><Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge></TableCell>
                                     <TableCell>{inquiry.createdAt.toDate().toLocaleDateString()}</TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell className="text-right space-x-2">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline">View</Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="max-w-2xl">
+                                                <DialogHeader>
+                                                    <DialogTitle>{inquiry.subject}</DialogTitle>
+                                                </DialogHeader>
+                                                <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+                                                    {inquiry.messages?.map((msg, index) => (
+                                                        <div key={index} className={`flex flex-col ${msg.senderId === user?.uid ? 'items-end' : 'items-start'}`}>
+                                                            <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === user?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                                                                <p className="text-sm font-bold">{msg.senderName}</p>
+                                                                <p className="text-sm">{msg.text}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{msg.createdAt.toDate().toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                {inquiry.status !== 'Resolved' && (
+                                                    <div className="flex gap-2 pt-4 border-t">
+                                                        <Textarea 
+                                                            placeholder="Type your reply..." 
+                                                            value={replyMessage}
+                                                            onChange={(e) => setReplyMessage(e.target.value)}
+                                                        />
+                                                        <Button onClick={() => handleReplySubmit(inquiry.id)} disabled={replyingTo === inquiry.id}>
+                                                            {replyingTo === inquiry.id ? <Loader size={16} /> : <Send className="h-4 w-4" />}
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </DialogContent>
+                                        </Dialog>
+
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <Button variant="destructive" size="icon" disabled={deletingId === inquiry.id}>
@@ -131,7 +207,7 @@ export default function MyInquiriesPage() {
                                                 <AlertDialogHeader>
                                                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    This action cannot be undone. This will permanently delete your message.
+                                                    This action cannot be undone. This will permanently delete your message thread.
                                                 </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>

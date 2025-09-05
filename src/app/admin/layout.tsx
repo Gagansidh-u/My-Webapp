@@ -57,6 +57,7 @@ export default function AdminLayout({
     { href: '/terms-and-conditions', label: 'Terms' },
     { href: '/privacy-policy', label: 'Privacy' },
     { href: '/refund-policy', label: 'Refunds' },
+    { href: '/security', label: 'Security' },
   ]
 
   return (

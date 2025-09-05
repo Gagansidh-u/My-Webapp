@@ -55,6 +55,7 @@ const Header = () => {
     { href: '/terms-and-conditions', label: 'Terms' },
     { href: '/privacy-policy', label: 'Privacy' },
     { href: '/refund-policy', label: 'Refunds' },
+    { href: '/security', label: 'Security' },
   ]
 
   const getUserInitials = (email: string | null | undefined) => {

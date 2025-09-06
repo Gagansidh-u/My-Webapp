@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { AuthForm } from "@/components/auth-form";
 import { useAuth } from "@/components/auth-provider";
 import { Card } from "@/components/ui/card";
@@ -41,6 +41,7 @@ export default function SignupPage() {
   return (
     <Dialog open={isSignupOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
+        <DialogTitle className="sr-only">Authentication</DialogTitle>
         <Card className="w-full shadow-2xl bg-transparent border-none">
              <AuthForm onAuthSuccess={handleSuccess} initialForm="signup" />
         </Card>

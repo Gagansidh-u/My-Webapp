@@ -13,7 +13,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Dialog, DialogContent } from './ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { AuthForm } from './auth-form';
 import { motion } from 'framer-motion';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
@@ -160,6 +160,7 @@ const Header = () => {
                          <Button onClick={() => setIsAuthOpen(true)}>Sign Up</Button>
                     </motion.div>
                     <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
+                        <DialogTitle className="sr-only">Authentication</DialogTitle>
                         <Card className="w-full shadow-2xl bg-transparent border-none">
                             <AuthForm onAuthSuccess={handleAuthSuccess} />
                         </Card>

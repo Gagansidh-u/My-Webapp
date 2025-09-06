@@ -451,7 +451,9 @@ function CheckoutPage() {
             <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
                 <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
                     <DialogTitle className="sr-only">Authentication</DialogTitle>
-                    <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
+                    <Card className="w-full shadow-2xl bg-transparent border-none">
+                        <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
+                    </Card>
                 </DialogContent>
             </Dialog>
 

@@ -4,30 +4,30 @@
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
 import dynamic from 'next/dynamic';
-import { Suspense, useRef, useState, useEffect } from "react";
+import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { Loader } from "@/components/ui/loader";
+import React from "react";
 
 const FeaturesSection = dynamic(() => import('@/components/features-section'), { 
-    loading: () => <Skeleton className="h-[400px] w-full" />,
+    loading: () => <Skeleton className="h-[400px] w-full rounded-none" />,
     ssr: false 
 });
 const TestimonialsSection = dynamic(() => import('@/components/testimonials-section'), {
-    loading: () => <Skeleton className="h-[400px] w-full" />,
+    loading: () => <Skeleton className="h-[400px] w-full rounded-none" />,
     ssr: false 
 });
 const CallToActionSection = dynamic(() => import('@/components/cta-section'), {
-    loading: () => <Skeleton className="h-[300px] w-full" />,
+    loading: () => <Skeleton className="h-[300px] w-full rounded-none" />,
     ssr: false 
 });
 const ECommerceSection = dynamic(() => import('@/components/e-commerce-section'), {
-    loading: () => <Skeleton className="h-[400px] w-full" />,
+    loading: () => <Skeleton className="h-[400px] w-full rounded-none" />,
     ssr: false
 });
 
 export default function HomePageClient() {
-  const targetRef = useRef<HTMLDivElement>(null);
+  const targetRef = React.useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end start"],
@@ -37,7 +37,7 @@ export default function HomePageClient() {
   const scale = useTransform(scrollYProgress, [0, 0.6], [1, 0.9]);
 
   return (
-    <div ref={targetRef} className="relative">
+    <div ref={targetRef}>
       <motion.section 
         style={{ opacity, scale }}
         className="w-full bg-background py-20 md:py-32 sticky top-0 h-screen flex items-center"

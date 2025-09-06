@@ -3,9 +3,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { SignupForm } from "@/components/signup-form";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { AuthForm } from "@/components/auth-form";
 import { useAuth } from "@/components/auth-provider";
+import { Card } from "@/components/ui/card";
 
 export default function SignupPage() {
   const [isSignupOpen, setIsSignupOpen] = useState(false);
@@ -39,12 +40,10 @@ export default function SignupPage() {
 
   return (
     <Dialog open={isSignupOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md" onEscapeKeyDown={(e) => e.preventDefault()} onPointerDownOutside={(e) => e.preventDefault()}>
-        <DialogHeader className="text-center">
-          <DialogTitle className="text-3xl font-headline">Create an Account</DialogTitle>
-          <DialogDescription>Get started with our services</DialogDescription>
-        </DialogHeader>
-        <SignupForm onSignup={handleSuccess} onSwitchToLogin={() => router.push('/login')} />
+      <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
+        <Card className="w-full shadow-2xl bg-transparent border-none">
+             <AuthForm onAuthSuccess={handleSuccess} initialForm="signup" />
+        </Card>
       </DialogContent>
     </Dialog>
   );

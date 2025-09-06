@@ -15,7 +15,7 @@ import { useAuth } from "@/components/auth-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AuthForm } from "@/components/auth-form";
 
 export default function ContactPageClient() {
@@ -199,8 +199,9 @@ export default function ContactPageClient() {
 
             <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
                 <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
-                    <DialogTitle className="sr-only">Authentication</DialogTitle>
-                    <AuthForm onAuthSuccess={handleAuthSuccess} />
+                    <Card className="w-full shadow-2xl bg-transparent border-none">
+                        <AuthForm onAuthSuccess={handleAuthSuccess} />
+                    </Card>
                 </DialogContent>
             </Dialog>
         </>

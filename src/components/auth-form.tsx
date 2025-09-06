@@ -10,10 +10,11 @@ import { Card } from './ui/card';
 
 interface AuthFormProps {
   onAuthSuccess?: () => void;
+  initialForm?: 'login' | 'signup';
 }
 
-export function AuthForm({ onAuthSuccess }: AuthFormProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+export function AuthForm({ onAuthSuccess, initialForm = 'login' }: AuthFormProps) {
+  const [isFlipped, setIsFlipped] = useState(initialForm === 'signup');
   const [height, setHeight] = useState<number | 'auto'>('auto');
   const loginRef = useRef<HTMLDivElement>(null);
   const signupRef = useRef<HTMLDivElement>(null);
@@ -27,9 +28,12 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
 
   useEffect(() => {
     calculateHeight();
-    // Recalculate on window resize
+    const timer = setTimeout(calculateHeight, 700); // Recalculate after animation
     window.addEventListener('resize', calculateHeight);
-    return () => window.removeEventListener('resize', calculateHeight);
+    return () => {
+        window.removeEventListener('resize', calculateHeight);
+        clearTimeout(timer);
+    }
   }, [isFlipped]);
 
   const handleSwitchToSignup = () => setIsFlipped(true);
@@ -42,7 +46,7 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
   }
 
   return (
-    <div className="perspective-1000">
+    <div className="relative perspective-1000">
       <motion.div
         className="relative w-full"
         animate={{ height }}
@@ -54,7 +58,7 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
             animate={{ rotateY: isFlipped ? -180 : 0 }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
         >
-            <Card className="w-full shadow-2xl bg-card/30 dark:bg-card/20 backdrop-blur-xl">
+            <Card className="w-full shadow-2xl">
                  <div ref={loginRef}>
                     <LoginForm onLogin={handleAuthSuccess} onSwitchToSignup={handleSwitchToSignup} />
                 </div>
@@ -66,7 +70,7 @@ export function AuthForm({ onAuthSuccess }: AuthFormProps) {
             animate={{ rotateY: isFlipped ? 0 : 180 }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
         >
-            <Card className="w-full shadow-2xl bg-card/30 dark:bg-card/20 backdrop-blur-xl">
+            <Card className="w-full shadow-2xl">
                 <div ref={signupRef}>
                     <SignupForm onSignup={handleAuthSuccess} onSwitchToLogin={handleSwitchToLogin} />
                 </div>
@@ -99,5 +103,3 @@ if (typeof window !== 'undefined') {
   styleSheet.innerText = globalStyles;
   document.head.appendChild(styleSheet);
 }
-
-    

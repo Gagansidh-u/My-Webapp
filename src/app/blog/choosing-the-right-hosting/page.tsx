@@ -21,7 +21,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                  <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_000000001824622f88d4cc3b949e7cd2.png"
                     data-ai-hint="futuristic technology"
                     alt="A futuristic image comparing NVMe and SSD technologies, showing data streams"
                     width={1200}

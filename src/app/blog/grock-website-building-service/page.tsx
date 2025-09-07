@@ -20,7 +20,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_000000000a1461f5ab08efc1ccd5e353.png"
                     data-ai-hint="website blueprint construction"
                     alt="An illustration showing a digital blueprint of a website being constructed by expert hands"
                     width={1200}

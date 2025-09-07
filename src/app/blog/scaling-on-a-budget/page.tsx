@@ -20,7 +20,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/1757210692326.jpg"
                     data-ai-hint="plant growing"
                     alt="An illustration of a small plant growing into a large tree, symbolizing business growth"
                     width={1200}

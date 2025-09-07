@@ -20,7 +20,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_0000000068ac622f8fcd0887df30a6ea.png"
                     data-ai-hint="digital security shield"
                     alt="A glowing digital shield protecting a website from cyber threats"
                     width={1200}

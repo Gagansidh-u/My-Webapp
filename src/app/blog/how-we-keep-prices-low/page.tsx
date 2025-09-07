@@ -20,7 +20,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_00000000151861fbb1e257043f2c3b51.png"
                     data-ai-hint="technology savings"
                     alt="An abstract image representing technology and savings, with circuitry and coins"
                     width={1200}

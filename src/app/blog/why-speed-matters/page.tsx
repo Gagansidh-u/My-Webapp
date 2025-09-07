@@ -20,7 +20,7 @@ export default function BlogPost() {
             
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_00000000dfcc622f8328edf626a260df.png"
                     data-ai-hint="rocket launching"
                     alt="A rocket launching, symbolizing extreme speed and performance"
                     width={1200}

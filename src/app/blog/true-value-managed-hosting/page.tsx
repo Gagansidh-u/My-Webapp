@@ -20,7 +20,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                  <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_00000000bbbc622f80f16be7e6ef57bf.png"
                     data-ai-hint="value scale"
                     alt="An image showing a price tag being outweighed by features like 'time' and 'security' on a scale"
                     width={1200}

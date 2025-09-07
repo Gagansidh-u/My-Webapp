@@ -20,7 +20,7 @@ export default function BlogPost() {
             
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_000000009428622faab22ab096468802.png"
                     data-ai-hint="WordPress logo gears"
                     alt="An illustration showing the WordPress logo surrounded by gears and shields, representing management and security"
                     width={1200}

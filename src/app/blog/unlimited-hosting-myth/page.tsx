@@ -20,7 +20,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/1757210746320.jpg"
                     data-ai-hint="unlimited fine print"
                     alt="An image showing the word 'Unlimited' with an asterisk, with fine print being revealed by a magnifying glass"
                     width={1200}

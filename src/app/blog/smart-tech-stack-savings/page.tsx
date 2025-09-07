@@ -20,7 +20,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://placehold.co/1200x630.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/file_0000000004e4622f90ccdda3937198b1.png"
                     data-ai-hint="tech stack gears"
                     alt="An abstract visualization of a tech stack with gears and code, leading to savings"
                     width={1200}

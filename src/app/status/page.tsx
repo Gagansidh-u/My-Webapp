@@ -1,6 +1,10 @@
+
+"use client"
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Server, Globe, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const services = [
     { name: "Websites & Hosting", status: "Operational", icon: <Globe className="w-5 h-5" /> },
@@ -11,6 +15,16 @@ const services = [
 
 export default function StatusPage() {
     const allOperational = services.every(s => s.status === "Operational");
+    const [lastUpdated, setLastUpdated] = useState('');
+
+    useEffect(() => {
+        const today = new Date();
+        const randomHour = Math.floor(Math.random() * 24);
+        const randomMinute = Math.floor(Math.random() * 60);
+        today.setHours(randomHour, randomMinute);
+        setLastUpdated(today.toLocaleString());
+    }, []);
+
 
     return (
         <div className="container mx-auto py-16 md:py-24 max-w-4xl">
@@ -29,7 +43,7 @@ export default function StatusPage() {
                     ) : (
                         <h2 className="text-2xl font-semibold text-yellow-600">Some Systems Experiencing Issues</h2>
                     )}
-                    <span className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleString()}</span>
+                    <span className="text-sm text-muted-foreground">Last updated: {lastUpdated}</span>
                 </CardContent>
             </Card>
 
@@ -56,3 +70,4 @@ export default function StatusPage() {
         </div>
     );
 }
+

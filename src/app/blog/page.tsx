@@ -13,6 +13,15 @@ export const metadata: Metadata = {
 
 const blogPosts = [
   {
+    slug: 'grock-website-building-service',
+    title: 'Introducing the Grock Website Building Service: Your Vision, Our Expertise',
+    description: 'Learn about our all-in-one service to design and develop a professional, high-performance website for you. We handle the tech, so you can focus on your business. Your vision, our expertise.',
+    image: 'https://placehold.co/1200x630.png',
+    imageHint: 'website blueprint construction',
+    author: 'Grock Technologies',
+    date: 'November 12, 2023',
+  },
+  {
     slug: 'why-speed-matters',
     title: 'Why Website Speed is the Most Important Metric You\'re Ignoring',
     description: 'In today\'s digital landscape, a slow website is a silent business killer. Discover why site speed isn\'t just a technical detail but a critical factor for user experience, conversion rates, and SEO ranking. We break down how our NVMe storage and LiteSpeed servers give you the competitive edge.',

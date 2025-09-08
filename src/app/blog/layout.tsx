@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,11 +7,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const popularPosts = [
+    { href: '/blog/web-app-development-process', title: 'From Concept to Launch: Our Web App Development Process' },
     { href: '/blog/why-speed-matters', title: 'Why Website Speed is the Most Important Metric You\'re Ignoring' },
     { href: '/blog/how-we-keep-prices-low', title: 'How We Keep Our Hosting Prices Low Without Sacrificing Quality' },
     { href: '/blog/choosing-the-right-hosting', title: 'NVMe vs. SSD: Choosing the Right Hosting for Your Business' },
     { href: '/blog/demystifying-managed-wordpress', title: 'Demystifying Managed WordPress: A Beginner\'s Guide' },
-    { href: '/blog/unlimited-hosting-myth', title: 'Is \'Unlimited\' Hosting a Myth? Our Transparent Approach' },
 ];
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {

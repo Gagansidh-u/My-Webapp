@@ -1,3 +1,4 @@
+
 import { MetadataRoute } from 'next'
  
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -16,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { slug: 'unlimited-hosting-myth', lastModified: new Date() },
     { slug: 'small-business-big-impact', lastModified: new Date() },
     { slug: 'grock-website-building-service', lastModified: new Date() },
+    { slug: 'web-app-development-process', lastModified: new Date() },
   ];
 
   const blogPostUrls = blogPosts.map(post => ({

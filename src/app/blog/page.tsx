@@ -17,7 +17,7 @@ const blogPosts = [
     slug: 'web-app-development-process',
     title: 'From Concept to Launch: Our Web App Development Process',
     description: 'Ever wondered what it takes to build a web application from scratch? We pull back the curtain on our development process, from initial discovery and planning to design, development, testing, and deployment.',
-    image: 'https://raw.githubusercontent.com/Gagansidh-u/Images/main/app-development-process.png',
+    image: 'https://raw.githubusercontent.com/Gagansidh-u/Images/main/1757295183934.jpg',
     imageHint: 'web app blueprint',
     author: 'Grock Technologies',
     date: 'November 14, 2023',

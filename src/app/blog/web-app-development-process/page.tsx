@@ -21,7 +21,7 @@ export default function BlogPost() {
 
             <div className="overflow-hidden rounded-lg shadow-lg mb-8">
                 <Image
-                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/app-development-process.png"
+                    src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/1757295183934.jpg"
                     data-ai-hint="web app blueprint"
                     alt="An illustration showing the stages of web app development, from a blueprint to a finished product"
                     width={1200}

@@ -14,7 +14,6 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import React from "react";
 import { Loader } from "@/components/ui/loader";
 import Link from "next/link";
-import type { Metadata } from 'next';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -44,7 +43,7 @@ export default function ForgotPasswordPage() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: "Could not send reset email. Please check if the email address is correct.",
         variant: "destructive",
       });
     } finally {
@@ -59,7 +58,7 @@ export default function ForgotPasswordPage() {
                 <CardTitle className="text-3xl font-headline">Forgot Password</CardTitle>
                 <CardDescription>
                     {emailSent 
-                        ? "You can now close this page." 
+                        ? "A reset link has been sent to your email." 
                         : "Enter your email to receive a password reset link."
                     }
                 </CardDescription>

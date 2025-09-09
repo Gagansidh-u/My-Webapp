@@ -125,6 +125,8 @@ const blogPosts = [
 
 export default function BlogIndexPage() {
     const sortedPosts = blogPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const featuredPost = sortedPosts[0];
+    const otherPosts = sortedPosts.slice(1);
 
     return (
         <div>
@@ -132,8 +134,36 @@ export default function BlogIndexPage() {
                 <h1 className="text-4xl md:text-5xl font-headline font-bold">Grock Insights</h1>
                 <p className="text-lg text-muted-foreground mt-2">Your source for web hosting news, tips, and tutorials.</p>
             </div>
+
+            {/* Featured Post */}
+            <article className="group mb-12">
+                <Link href={`/blog/${featuredPost.slug}`} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div className="overflow-hidden rounded-lg">
+                        <Image 
+                            src={featuredPost.image}
+                            alt={featuredPost.title}
+                            data-ai-hint={featuredPost.imageHint}
+                            width={1200}
+                            height={630}
+                            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                        />
+                    </div>
+                    <div className="flex flex-col">
+                        <p className="text-sm text-muted-foreground mb-2">{featuredPost.date}</p>
+                        <h2 className="font-headline text-3xl font-semibold group-hover:text-primary transition-colors">
+                           {featuredPost.title}
+                        </h2>
+                        <p className="text-muted-foreground mt-4 text-lg">{featuredPost.description}</p>
+                        <div className="font-bold text-primary mt-4 self-start flex items-center">
+                            Read More <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        </div>
+                    </div>
+                </Link>
+            </article>
+
+            {/* Other Posts */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
-                {sortedPosts.map((post) => (
+                {otherPosts.map((post) => (
                     <article key={post.slug} className="group flex flex-col">
                         <div className="overflow-hidden rounded-lg mb-4">
                            <Link href={`/blog/${post.slug}`}>

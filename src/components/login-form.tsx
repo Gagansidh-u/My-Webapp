@@ -109,6 +109,10 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
     }
   };
 
+  const handleForgotPasswordClick = () => {
+      if(onLogin) onLogin(); // Close current dialog
+  }
+
   return (
     <>
         <CardHeader className="text-center">
@@ -142,7 +146,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                     </FormControl>
                     <div className="text-right pt-1">
                         <Link href="/forgot-password" passHref>
-                           <span className="text-sm text-white/80 hover:text-white underline cursor-pointer">Forgot password?</span>
+                           <span onClick={handleForgotPasswordClick} className="text-sm text-white/80 hover:text-white underline cursor-pointer">Forgot password?</span>
                         </Link>
                     </div>
                     <FormMessage />

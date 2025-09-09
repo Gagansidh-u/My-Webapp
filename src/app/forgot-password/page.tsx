@@ -1,6 +1,8 @@
 
 "use client";
 
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,18 +13,17 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { auth } from "@/lib/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
-import React from "react";
 import { Loader } from "@/components/ui/loader";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
 });
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordForm({ onSuccess }: { onSuccess: () => void }) {
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(false);
-  const [emailSent, setEmailSent] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,7 +40,7 @@ export default function ForgotPasswordPage() {
         title: "Password Reset Email Sent",
         description: "Please check your inbox (and spam folder) for the reset link.",
       });
-      setEmailSent(true);
+      onSuccess();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -52,11 +53,64 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="container mx-auto flex min-h-[calc(100vh-12rem)] items-center justify-center py-12">
-        <Card className="w-full max-w-md shadow-2xl">
+    <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel className="text-white/90">Email</FormLabel>
+                <FormControl>
+                    <Input placeholder="name@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <Button type="submit" className="w-full font-bold" disabled={loading}>
+            {loading && <Loader size={20} className="mr-2" />}
+            Send Reset Link
+            </Button>
+        </form>
+    </Form>
+  )
+}
+
+
+export default function ForgotPasswordPage() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsDialogOpen(true);
+  }, []);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      router.back();
+    }
+    setIsDialogOpen(open);
+  }
+
+  const handleSuccess = () => {
+    setEmailSent(true);
+  }
+  
+  const handleBackToLogin = () => {
+      setIsDialogOpen(false);
+      // Let the onOpenChange handler navigate back
+  }
+
+  return (
+    <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
+         <DialogTitle className="sr-only">Forgot Password</DialogTitle>
+         <Card className="w-full shadow-2xl bg-transparent border-none">
             <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-headline">Forgot Password</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-3xl font-headline text-white">Forgot Password</CardTitle>
+                <CardDescription className="text-white/90">
                     {emailSent 
                         ? "A reset link has been sent to your email." 
                         : "Enter your email to receive a password reset link."
@@ -66,36 +120,15 @@ export default function ForgotPasswordPage() {
             <CardContent>
                 {emailSent ? (
                      <div className="text-center">
-                        <p className="text-muted-foreground mb-4">If you don't receive an email within a few minutes, please check your spam folder or try again.</p>
-                        <Button asChild>
-                            <Link href="/login">Back to Login</Link>
-                        </Button>
+                        <p className="text-muted-foreground mb-4 text-white/80">If you don't receive an email within a few minutes, please check your spam folder or try again.</p>
+                        <Button onClick={handleBackToLogin}>Back to Login</Button>
                     </div>
                 ) : (
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="name@example.com" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            <Button type="submit" className="w-full font-bold" disabled={loading}>
-                            {loading && <Loader size={20} className="mr-2" />}
-                            Send Reset Link
-                            </Button>
-                        </form>
-                    </Form>
+                    <ForgotPasswordForm onSuccess={handleSuccess} />
                 )}
             </CardContent>
-        </Card>
-    </div>
+         </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

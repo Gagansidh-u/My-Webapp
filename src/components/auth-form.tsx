@@ -58,7 +58,7 @@ export function AuthForm({ onAuthSuccess, initialForm = 'login' }: AuthFormProps
             animate={{ rotateY: isFlipped ? -180 : 0 }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
         >
-            <Card className="w-full shadow-2xl">
+            <Card className="w-full shadow-2xl bg-white/10 border-white/20">
                  <div ref={loginRef}>
                     <LoginForm onLogin={handleAuthSuccess} onSwitchToSignup={handleSwitchToSignup} />
                 </div>
@@ -70,7 +70,7 @@ export function AuthForm({ onAuthSuccess, initialForm = 'login' }: AuthFormProps
             animate={{ rotateY: isFlipped ? 0 : 180 }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
         >
-            <Card className="w-full shadow-2xl">
+            <Card className="w-full shadow-2xl bg-white/10 border-white/20">
                 <div ref={signupRef}>
                     <SignupForm onSignup={handleAuthSuccess} onSwitchToLogin={handleSwitchToLogin} />
                 </div>

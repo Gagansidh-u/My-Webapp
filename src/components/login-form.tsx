@@ -112,8 +112,8 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
   return (
     <>
         <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Welcome Back</CardTitle>
-            <CardDescription className="text-muted-foreground dark:text-white/90">Sign in to access your account</CardDescription>
+            <CardTitle className="text-3xl font-headline text-white">Welcome Back</CardTitle>
+            <CardDescription className="text-white/90">Sign in to access your account</CardDescription>
         </CardHeader>
         <CardContent>
             <Form {...form}>
@@ -123,7 +123,7 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 name="email"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel className="text-foreground dark:text-white/90">Email</FormLabel>
+                    <FormLabel className="text-white/90">Email</FormLabel>
                     <FormControl>
                         <Input placeholder="name@example.com" {...field} />
                     </FormControl>
@@ -136,13 +136,13 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
                 name="password"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
+                    <FormLabel className="text-white/90">Password</FormLabel>
                     <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
                     <div className="text-right pt-1">
                         <Link href="/forgot-password" passHref>
-                           <span className="text-sm text-muted-foreground hover:text-primary underline cursor-pointer">Forgot password?</span>
+                           <span className="text-sm text-white/80 hover:text-white underline cursor-pointer">Forgot password?</span>
                         </Link>
                     </div>
                     <FormMessage />
@@ -157,9 +157,9 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
             </Form>
 
             <div className="my-6 flex items-center gap-4">
-                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
-                <span className="text-xs text-muted-foreground dark:text-white whitespace-nowrap">OR CONTINUE WITH</span>
-                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
+                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/30 to-white/30"></div>
+                <span className="text-xs text-white whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-white/30 to-white/30"></div>
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
@@ -168,9 +168,9 @@ export function LoginForm({ onLogin, onSwitchToSignup }: LoginFormProps) {
             </Button>
         </CardContent>
         <CardFooter className="justify-center">
-             <p className="text-center text-sm text-muted-foreground dark:text-white/90">
+             <p className="text-center text-sm text-white/90">
                 Don&apos;t have an account?{' '}
-                <button type="button" onClick={onSwitchToSignup} className="underline font-bold text-foreground dark:text-white">
+                <button type="button" onClick={onSwitchToSignup} className="underline font-bold text-white">
                     Sign up
                 </button>
              </p>

@@ -184,8 +184,8 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
   return (
     <>
         <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-headline text-foreground dark:text-white">Create an Account</CardTitle>
-            <CardDescription className="text-muted-foreground dark:text-white/90">Get started with our services</CardDescription>
+            <CardTitle className="text-3xl font-headline text-white">Create an Account</CardTitle>
+            <CardDescription className="text-white/90">Get started with our services</CardDescription>
         </CardHeader>
         <CardContent>
             <Form {...form}>
@@ -195,7 +195,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="name"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-foreground dark:text-white/90">Name</FormLabel>
+                        <FormLabel className="text-white/90">Name</FormLabel>
                         <FormControl>
                         <Input placeholder="John Doe" {...field} />
                         </FormControl>
@@ -208,7 +208,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-foreground dark:text-white/90">Email</FormLabel>
+                        <FormLabel className="text-white/90">Email</FormLabel>
                         <FormControl>
                         <Input placeholder="name@example.com" {...field} />
                         </FormControl>
@@ -221,7 +221,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="mobile"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-foreground dark:text-white/90">Mobile Number</FormLabel>
+                        <FormLabel className="text-white/90">Mobile Number</FormLabel>
                         <FormControl>
                         <Input type="tel" placeholder="9876543210" {...field} />
                         </FormControl>
@@ -234,11 +234,11 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-foreground dark:text-white/90">Password</FormLabel>
+                        <FormLabel className="text-white/90">Password</FormLabel>
                         <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-white/70">
                             Password must be 8-16 characters and include an uppercase letter, a lowercase letter, a number, and a special character.
                         </FormDescription>
                         <FormMessage />
@@ -253,9 +253,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             </Form>
 
             <div className="my-6 flex items-center gap-4">
-                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
-                <span className="text-xs text-muted-foreground dark:text-white whitespace-nowrap">OR CONTINUE WITH</span>
-                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-foreground/30 to-foreground/30 dark:via-white/30 dark:to-white/30"></div>
+                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/30 to-white/30"></div>
+                <span className="text-xs text-white whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-white/30 to-white/30"></div>
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
@@ -264,9 +264,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             </Button>
         </CardContent>
         <CardFooter className="justify-center">
-            <p className="text-center text-sm text-muted-foreground dark:text-white/90">
+            <p className="text-center text-sm text-white/90">
                 Already have an account?{' '}
-                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-foreground dark:text-white">
+                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-white">
                     Log in
                 </button>
             </p>

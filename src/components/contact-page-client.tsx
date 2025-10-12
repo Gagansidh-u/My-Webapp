@@ -18,6 +18,7 @@ import { Loader } from "@/components/ui/loader";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { AuthForm } from "@/components/auth-form";
 import { sendEmail } from "@/app/actions/email";
+import { NewInquiryEmail } from "@/components/email/new-inquiry-email";
 
 export default function ContactPageClient() {
     const { toast } = useToast();
@@ -93,14 +94,13 @@ export default function ContactPageClient() {
             await sendEmail({
                 to: 'helpdesk.grock@outlook.com',
                 subject: `New Inquiry: ${formData.subject}`,
-                html: `
-                    <h1>New Inquiry</h1>
-                    <p><strong>From:</strong> ${formData.name} (${formData.email})</p>
-                    <p><strong>User ID:</strong> ${user.uid}</p>
-                    <p><strong>Subject:</strong> ${formData.subject}</p>
-                    <h2>Message:</h2>
-                    <p>${formData.message}</p>
-                `,
+                react: <NewInquiryEmail 
+                            name={formData.name}
+                            email={formData.email}
+                            subject={formData.subject}
+                            message={formData.message}
+                            userId={user.uid}
+                        />,
             });
 
 

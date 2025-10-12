@@ -14,7 +14,6 @@ import * as z from "zod";
 import { auth } from "@/lib/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Loader } from "@/components/ui/loader";
-import Link from "next/link";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const formSchema = z.object({
@@ -60,7 +59,7 @@ function ForgotPasswordForm({ onSuccess }: { onSuccess: () => void }) {
             name="email"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel className="text-white/90">Email</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                     <Input placeholder="name@example.com" {...field} />
                 </FormControl>
@@ -105,12 +104,12 @@ export default function ForgotPasswordPage() {
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
+      <DialogContent className="sm:max-w-md">
          <DialogTitle className="sr-only">Forgot Password</DialogTitle>
-         <Card className="w-full shadow-2xl bg-transparent border-none">
+         <Card className="w-full shadow-none border-none">
             <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-headline text-white">Forgot Password</CardTitle>
-                <CardDescription className="text-white/90">
+                <CardTitle className="text-3xl font-headline">Forgot Password</CardTitle>
+                <CardDescription>
                     {emailSent 
                         ? "A reset link has been sent to your email." 
                         : "Enter your email to receive a password reset link."
@@ -120,7 +119,7 @@ export default function ForgotPasswordPage() {
             <CardContent>
                 {emailSent ? (
                      <div className="text-center">
-                        <p className="text-muted-foreground mb-4 text-white/80">If you don't receive an email within a few minutes, please check your spam folder or try again.</p>
+                        <p className="text-muted-foreground mb-4">If you don't receive an email within a few minutes, please check your spam folder or try again.</p>
                         <Button onClick={handleBackToLogin}>Back to Login</Button>
                     </div>
                 ) : (

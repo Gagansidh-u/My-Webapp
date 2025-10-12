@@ -89,7 +89,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
       defaultValues: { name: "", mobile: "" },
   });
 
-  const createUserDocument = async (user: User, name?: string, mobile?: string, authProvider?: string) => {
+  const createUserDocument = async (user: User, name?: string | null, mobile?: string, authProvider?: string) => {
     const userRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(userRef);
     if (!docSnap.exists()) {
@@ -101,7 +101,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             authProvider: authProvider,
             createdAt: serverTimestamp(),
         };
-        setDoc(userRef, userData)
+        await setDoc(userRef, userData)
           .catch(async (serverError) => {
               const permissionError = new FirestorePermissionError({
                 path: userRef.path,
@@ -109,6 +109,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                 requestResourceData: userData,
               });
               errorEmitter.emit('permission-error', permissionError);
+              throw serverError; // Re-throw to be caught by the calling function
           });
     }
   }
@@ -186,7 +187,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
           setShowDetailsPopup(false);
           handleSuccess();
       } catch (error: any) {
-          toast({ title: "Error", description: "Failed to save details.", variant: "destructive" });
+          toast({ title: "Error", description: "Failed to save details. You may need to login again.", variant: "destructive" });
       } finally {
           setLoading(false);
       }
@@ -195,8 +196,8 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
   return (
     <>
         <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-headline text-white">Create an Account</CardTitle>
-            <CardDescription className="text-white/90">Get started with our services</CardDescription>
+            <CardTitle className="text-3xl font-headline">Create an Account</CardTitle>
+            <CardDescription>Get started with our services</CardDescription>
         </CardHeader>
         <CardContent>
             <Form {...form}>
@@ -206,7 +207,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="name"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/90">Name</FormLabel>
+                        <FormLabel>Name</FormLabel>
                         <FormControl>
                         <Input placeholder="John Doe" {...field} />
                         </FormControl>
@@ -219,7 +220,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/90">Email</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
                         <Input placeholder="name@example.com" {...field} />
                         </FormControl>
@@ -232,7 +233,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="mobile"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/90">Mobile Number</FormLabel>
+                        <FormLabel>Mobile Number</FormLabel>
                         <FormControl>
                         <Input type="tel" placeholder="9876543210" {...field} />
                         </FormControl>
@@ -245,11 +246,11 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-white/90">Password</FormLabel>
+                        <FormLabel>Password</FormLabel>
                         <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                         </FormControl>
-                        <FormDescription className="text-white/70">
+                        <FormDescription>
                             Password must be 8-16 characters and include an uppercase letter, a lowercase letter, a number, and a special character.
                         </FormDescription>
                         <FormMessage />
@@ -264,9 +265,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             </Form>
 
             <div className="my-6 flex items-center gap-4">
-                <div className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/30 to-white/30"></div>
-                <span className="text-xs text-white whitespace-nowrap">OR CONTINUE WITH</span>
-                <div className="h-px w-full rounded-full bg-gradient-to-l from-transparent via-white/30 to-white/30"></div>
+                <div className="h-px w-full bg-border"></div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">OR CONTINUE WITH</span>
+                <div className="h-px w-full bg-border"></div>
             </div>
             
             <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
@@ -275,9 +276,9 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             </Button>
         </CardContent>
         <CardFooter className="justify-center">
-            <p className="text-center text-sm text-white/90">
+            <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
-                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-white">
+                <button type="button" onClick={onSwitchToLogin} className="underline font-bold text-primary">
                     Log in
                 </button>
             </p>

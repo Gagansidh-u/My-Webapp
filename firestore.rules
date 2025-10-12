@@ -1,3 +1,4 @@
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -18,10 +19,10 @@ service cloud.firestore {
       allow read, write: if isAdmin();
       // Users can create orders for themselves
       allow create: if request.auth.uid == request.resource.data.userId;
-      // Users can read their own orders
-      allow read: if request.auth.uid == resource.data.userId;
-      // User can request refund
-      allow update: if request.auth.uid == resource.data.userId && request.resource.data.status == 'Refund Requested';
+      // Users can read their own orders and admins can read all orders
+      allow read: if request.auth.uid == resource.data.userId || isAdmin();
+      // Users can update their order status for refund requests
+      allow update: if request.auth.uid == resource.data.userId && request.resource.data.status == "Refund Requested";
     }
 
     // Rules for the 'contacts' (inquiries) collection
@@ -30,8 +31,17 @@ service cloud.firestore {
         allow read, update, delete: if isAdmin();
         // Users can create inquiries for themselves
         allow create: if request.auth.uid == request.resource.data.userId;
-        // Users can read, update (for new messages) and delete their own inquiries
-        allow read, update, delete: if request.auth.uid == resource.data.userId;
+        // Users can read and delete their own inquiries
+        allow read, delete: if request.auth.uid == resource.data.userId;
+        
+        // Rules for the 'messages' subcollection
+        match /messages/{messageId} {
+            // A user can create a message if they are the sender.
+            allow create: if request.auth.uid == request.resource.data.senderId;
+            // An admin can read any message.
+            // A user can read messages in an inquiry thread they started.
+            allow read: if isAdmin() || request.auth.uid == get(/databases/$(database)/documents/contacts/$(contactId)).data.userId;
+        }
     }
     
     // Rules for the 'users' collection

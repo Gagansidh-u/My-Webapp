@@ -2,15 +2,15 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { AuthForm } from "@/components/auth-form";
+import { AuthForm } from "@/app/auth-form";
 
 export default function LoginPage() {
 
   return (
     <div className="container mx-auto flex min-h-[calc(100vh-12rem)] items-center justify-center py-12">
-      <Card className="w-full max-w-md shadow-2xl bg-transparent border-none">
+      <div className="w-full max-w-md">
         <AuthForm />
-      </Card>
+      </div>
     </div>
   );
 }

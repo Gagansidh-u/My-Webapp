@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, writeBatch, doc } from "firebase/firestore";
 import { useAuth } from "@/components/auth-provider";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
@@ -67,6 +67,10 @@ export default function ContactPageClient() {
 
         setLoading(true);
         try {
+            const batch = writeBatch(db);
+
+            // 1. Create a new inquiry document reference
+            const inquiryRef = doc(collection(db, "contacts"));
             const inquiryData = {
                 userId: user.uid,
                 name: formData.name,
@@ -75,53 +79,53 @@ export default function ContactPageClient() {
                 status: 'Unread',
                 createdAt: serverTimestamp(),
             };
+            batch.set(inquiryRef, inquiryData);
 
-            const contactsCollectionRef = collection(db, "contacts");
-            addDoc(contactsCollectionRef, inquiryData)
-                .then(async (docRef) => {
-                    const messagesCollectionRef = collection(db, "contacts", docRef.id, "messages");
-                    await addDoc(messagesCollectionRef, {
-                        text: formData.message,
-                        senderId: user.uid,
-                        senderName: formData.name,
-                        createdAt: serverTimestamp()
-                    });
+            // 2. Create the first message in the subcollection
+            const messageRef = doc(collection(inquiryRef, "messages"));
+            const messageData = {
+                text: formData.message,
+                senderId: user.uid,
+                senderName: formData.name,
+                createdAt: serverTimestamp()
+            };
+            batch.set(messageRef, messageData);
 
-                    await sendEmail({
-                        to: 'helpdesk.grock@outlook.com',
-                        subject: `New Inquiry: ${formData.subject}`,
-                        html: `
-                            <h1>New Inquiry</h1>
-                            <p><strong>From:</strong> ${formData.name} (${formData.email})</p>
-                            <p><strong>User ID:</strong> ${user.uid}</p>
-                            <p><strong>Subject:</strong> ${formData.subject}</p>
-                            <hr />
-                            <p>${formData.message}</p>
-                        `
-                    });
+            // 3. Commit the batch
+            await batch.commit();
 
-                    toast({
-                        title: "Success",
-                        description: "Your message has been sent successfully."
-                    });
-                    // Reset form but keep user details
-                    setFormData({ 
-                        name: user?.displayName || '', 
-                        email: user?.email || '', 
-                        subject: '', 
-                        message: '' 
-                    });
-                })
-                .catch(async (serverError) => {
-                    const permissionError = new FirestorePermissionError({
-                      path: contactsCollectionRef.path,
-                      operation: 'create',
-                      requestResourceData: inquiryData,
-                    });
-                    errorEmitter.emit('permission-error', permissionError);
-                });
+            await sendEmail({
+                to: 'helpdesk.grock@outlook.com',
+                subject: `New Inquiry: ${formData.subject}`,
+                html: `
+                    <h1>New Inquiry</h1>
+                    <p><strong>From:</strong> ${formData.name} (${formData.email})</p>
+                    <p><strong>User ID:</strong> ${user.uid}</p>
+                    <p><strong>Subject:</strong> ${formData.subject}</p>
+                    <hr />
+                    <p>${formData.message}</p>
+                `
+            });
+
+            toast({
+                title: "Success",
+                description: "Your message has been sent successfully."
+            });
+            // Reset form but keep user details
+            setFormData({ 
+                name: user?.displayName || '', 
+                email: user?.email || '', 
+                subject: '', 
+                message: '' 
+            });
 
         } catch (error) {
+             const permissionError = new FirestorePermissionError({
+                path: "contacts and contacts/{id}/messages",
+                operation: 'create',
+                requestResourceData: { inquiry: formData },
+             });
+             errorEmitter.emit('permission-error', permissionError);
              toast({
                 title: "Error",
                 description: "Failed to send message. Please try again later.",

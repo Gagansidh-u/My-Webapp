@@ -147,6 +147,10 @@ function CheckoutPage() {
     }
     
     const getTotalPrice = () => {
+        if (planId === 'trying') {
+            return monthlyPrice;
+        }
+
         const durationValue = parseInt(selectedDuration.value);
         let hostingPrice = monthlyPrice * durationValue;
 
@@ -155,10 +159,6 @@ function CheckoutPage() {
              hostingPrice = monthlyPrice * 2;
         }
         
-        if (planId === 'trying') {
-            return 0;
-        }
-
         return hostingPrice + buildingCharge;
     }
 
@@ -236,38 +236,6 @@ function CheckoutPage() {
 
         setLoading(true);
         const totalPrice = getTotalPrice();
-        const orderKey = `order_${new Date().getTime()}`;
-
-        const commonOrderDetails = {
-            userId: user.uid,
-            userEmail: user.email,
-            userName: user.displayName,
-            userMobile: userMobile,
-            plan: plan,
-            duration: parseInt(selectedDuration.value),
-            websiteDetails: websiteDetails,
-            status: "Paid",
-            createdAt: serverTimestamp(),
-            price: totalPrice,
-            orderId: orderKey,
-        };
-
-        if (totalPrice === 0) {
-            try {
-                await set(ref(db, 'orders/' + orderKey), commonOrderDetails);
-                await handleSuccessfulOrder(commonOrderDetails);
-            } catch (error) {
-                 console.error("Error writing document: ", error);
-                 toast({
-                     title: "Order Error",
-                     description: "We failed to save your order details. Please contact support.",
-                     variant: "destructive",
-                 });
-            } finally {
-                setLoading(false);
-            }
-            return;
-        }
 
         const result = await createOrder({ amount: totalPrice });
 
@@ -284,19 +252,32 @@ function CheckoutPage() {
         const order = result.order;
         const razorpayOrderId = order.id;
 
+        const commonOrderDetails = {
+            userId: user.uid,
+            userEmail: user.email,
+            userName: user.displayName,
+            userMobile: userMobile,
+            plan: plan,
+            duration: planId === 'trying' ? 1 : parseInt(selectedDuration.value),
+            websiteDetails: websiteDetails,
+            status: "Paid",
+            createdAt: serverTimestamp(),
+            price: totalPrice,
+        };
+
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             amount: order.amount,
             currency: order.currency,
             name: "Grock Technologies",
-            description: `Payment for ${plan} Plan (${selectedDuration.label})`,
+            description: `Payment for ${plan} Plan (${planId === 'trying' ? 'Trial' : selectedDuration.label})`,
             order_id: razorpayOrderId,
             handler: async function (response: any) {
                 try {
                      const finalOrderDetails = {
                        ...commonOrderDetails,
-                        razorpayPaymentId: response.razorpay_payment_id,
                         orderId: razorpayOrderId,
+                        razorpayPaymentId: response.razorpay_payment_id,
                     };
                     await set(ref(db, 'orders/' + razorpayOrderId), finalOrderDetails);
                     await handleSuccessfulOrder(finalOrderDetails);
@@ -318,7 +299,7 @@ function CheckoutPage() {
             notes: {
                 plan: plan,
                 userId: user.uid,
-                duration: `${selectedDuration.value} months`,
+                duration: planId === 'trying' ? '1 month (Trial)' : `${selectedDuration.value} months`,
                 description: websiteDetails.description.substring(0, 50),
             },
             theme: {
@@ -386,7 +367,7 @@ function CheckoutPage() {
                                     <span className="text-muted-foreground">Plan:</span>
                                     <span className="font-semibold text-lg">{plan}</span>
                                 </div>
-                                {planId !== 'trying' && (
+                                {planId !== 'trying' ? (
                                      <div className="flex justify-between items-center">
                                         <Label htmlFor="duration-select" className="text-muted-foreground">Billing Cycle:</Label>
                                         <Select value={selectedDuration.value} onValueChange={handleDurationChange}>
@@ -400,13 +381,23 @@ function CheckoutPage() {
                                             </SelectContent>
                                         </Select>
                                     </div>
+                                ) : (
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-muted-foreground">Billing Cycle:</span>
+                                        <span className="font-semibold">1 Month (Trial)</span>
+                                    </div>
                                 )}
                                 <Separator />
                                 <div className="space-y-2">
-                                    {planId !== 'trying' && (
+                                    {planId !== 'trying' ? (
                                         <div className="flex justify-between">
                                             <span className="text-muted-foreground">Hosting ({selectedDuration.label})</span>
                                             <span>₹{(monthlyPrice * (parseInt(selectedDuration.value) === 1 ? 2 : parseInt(selectedDuration.value))).toFixed(2)}</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex justify-between">
+                                            <span className="text-muted-foreground">Trial Price</span>
+                                            <span>₹{monthlyPrice.toFixed(2)}</span>
                                         </div>
                                     )}
                                     {buildingCharge > 0 && (
@@ -443,7 +434,7 @@ function CheckoutPage() {
                             <CardFooter>
                                 <Button className="w-full font-bold" size="lg" onClick={handleCheckoutAction} disabled={loading || authLoading}>
                                     {loading && <Loader size={20} className="mr-2" />}
-                                    {user ? (planId === 'trying' ? 'Submit Request' : 'Proceed to Payment') : 'Login to Continue'}
+                                    {user ? 'Proceed to Payment' : 'Login to Continue'}
                                 </Button>
                             </CardFooter>
                         </Card>

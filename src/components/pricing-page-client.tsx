@@ -15,7 +15,7 @@ import { Loader } from "@/components/ui/loader";
 const plans = [
   {
     title: 'Trying',
-    monthlyPrice: 0,
+    monthlyPrice: 1.00,
     buildingCharge: 0,
     description: 'For trying out our services',
     features: [

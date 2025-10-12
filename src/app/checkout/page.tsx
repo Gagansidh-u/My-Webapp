@@ -27,7 +27,6 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AuthForm } from "@/components/auth-form";
 import { sendEmail } from "@/app/actions/email";
-import { NewOrderEmail } from "@/components/email/new-order-email";
 
 
 declare global {
@@ -195,7 +194,18 @@ function CheckoutPage() {
         await sendEmail({
             to: 'helpdesk.grock@outlook.com',
             subject: `New Order Received: ${orderDetails.orderId}`,
-            react: <NewOrderEmail {...orderDetails} />,
+            html: `
+                <h1>New Order Received</h1>
+                <p><strong>Order ID:</strong> ${orderDetails.orderId}</p>
+                <p><strong>Plan:</strong> ${orderDetails.plan}</p>
+                <p><strong>Price:</strong> ${orderDetails.price}</p>
+                <p><strong>Duration:</strong> ${orderDetails.duration} months</p>
+                <p><strong>User:</strong> ${orderDetails.userEmail} (${orderDetails.userId})</p>
+                <h2>Website Details</h2>
+                <p><strong>Description:</strong> ${orderDetails.websiteDetails.description}</p>
+                <p><strong>Colors:</strong> ${orderDetails.websiteDetails.colors}</p>
+                <p><strong>Style:</strong> ${orderDetails.websiteDetails.style}</p>
+            `,
         });
 
         // Set invoice details for the dialog

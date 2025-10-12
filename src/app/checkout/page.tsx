@@ -427,9 +427,9 @@ function CheckoutPage() {
                                     <span>Total</span>
                                     <span>₹{totalPrice.toFixed(2)}</span>
                                 </div>
-                                 <p className="text-xs text-muted-foreground text-center">
+                                 {planId !== 'trying' && <p className="text-xs text-muted-foreground text-center">
                                     + Taxes
-                                </p>
+                                </p>}
                                 {!user && !authLoading && (
                                      <Alert variant="destructive">
                                         <Info className="h-4 w-4" />
@@ -453,7 +453,6 @@ function CheckoutPage() {
 
             <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
                 <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
-                    <DialogTitle className="sr-only">Authentication</DialogTitle>
                     <Card className="w-full shadow-2xl bg-transparent border-none">
                         <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
                     </Card>

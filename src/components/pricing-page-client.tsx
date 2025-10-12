@@ -14,6 +14,19 @@ import { Loader } from "@/components/ui/loader";
 
 const plans = [
   {
+    title: 'Trying',
+    monthlyPrice: 0,
+    buildingCharge: 0,
+    description: 'For trying out our services',
+    features: [
+        '1 Website',
+        '1 GB NVMe Storage',
+        'Weekly Backups',
+        'Free Email',
+    ],
+    planId: 'trying',
+  },
+  {
     title: 'Single Website',
     monthlyPrice: 149.00,
     buildingCharge: 999.00,
@@ -131,7 +144,7 @@ export default function PricingPageClient() {
         <p className="text-lg text-muted-foreground mt-2">Choose the perfect plan for your needs. Simple, transparent, and powerful.</p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start md:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start md:grid-cols-2">
         {plans.map((plan, index) => {
           const isPlanActive = activePlans.includes(plan.title);
           
@@ -162,9 +175,11 @@ export default function PricingPageClient() {
                             + ₹{plan.buildingCharge.toFixed(2)} One-Time Building Fee
                         </p>
                      )}
-                     <p className="text-xs text-muted-foreground">
-                        + Taxes
-                     </p>
+                     {plan.planId !== 'trying' &&
+                        <p className="text-xs text-muted-foreground">
+                            + Taxes
+                        </p>
+                     }
                   </div>
                   <ul className="space-y-3">
                     {plan.features.map((feature, fIndex) => (

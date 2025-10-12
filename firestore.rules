@@ -1,43 +1,28 @@
-rules_version = '2';
-
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Helper function to check if a user is the admin
-    function isAdmin() {
-      return request.auth.token.email == 'helpdesk.grock@outlook.com';
-    }
-
-    // Default rule: Deny all reads and writes
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // Rules for the 'orders' collection
-    match /orders/{orderId} {
-      // Admin can perform any action
-      allow read, write: if isAdmin();
-      // Users can create orders for themselves
-      allow create: if request.auth.uid == request.resource.data.userId;
-      // Users can read their own orders
-      allow read: if request.auth.uid == resource.data.userId;
-    }
-
-    // Rules for the 'contacts' (inquiries) collection
-    match /contacts/{contactId} {
-        // Admin can read, update, and delete any inquiry
-        allow read, update, delete: if isAdmin();
-        // Users can create inquiries for themselves
-        allow create: if request.auth.uid == request.resource.data.userId;
-        // Users can read and delete their own inquiries
-        allow read, delete: if request.auth.uid == resource.data.userId;
-    }
-    
-    // Rules for the 'users' collection
-    match /users/{userId} {
-        // Admin can read any user document
-        allow read: if isAdmin();
-        // Users can create and read their own document
-        allow create, read: if request.auth.uid == userId;
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "contacts": {
+      ".indexOn": ["userId"],
+      "$inquiryId": {
+        ".read": "auth != null && (data.child('userId').val() === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true)",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['userId', 'name', 'email', 'subject', 'messages', 'status', 'createdAt'])"
+      }
+    },
+    "orders": {
+      ".indexOn": ["userId"],
+      "$orderId": {
+        ".read": "auth != null && (data.child('userId').val() === auth.uid || root.child('users').child(auth.uid).child('isAdmin').val() === true)",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['userId', 'userEmail', 'plan', 'price', 'status', 'createdAt'])"
+      }
     }
   }
 }

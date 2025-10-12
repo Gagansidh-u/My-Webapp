@@ -68,7 +68,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased")}>
         <ThemeProvider
@@ -89,6 +88,7 @@ export default function RootLayout({
             </FirebaseClientProvider>
           </AuthProvider>
         </ThemeProvider>
+        <Script id="razorpay-checkout" src="https://checkout.razorpay.com/v1/checkout.js" />
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-1QNEL9F4Z9"></Script>
         <Script id="google-analytics">
           {`

@@ -101,7 +101,7 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
             authProvider: authProvider,
             createdAt: serverTimestamp(),
         };
-        await setDoc(userRef, userData)
+        setDoc(userRef, userData)
           .catch(async (serverError) => {
               const permissionError = new FirestorePermissionError({
                 path: userRef.path,

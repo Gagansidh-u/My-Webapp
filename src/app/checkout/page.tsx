@@ -285,38 +285,29 @@ function CheckoutPage() {
             description: `Payment for ${plan} Plan (${planId === 'trying' ? 'Trial' : selectedDuration.label})`,
             order_id: razorpayOrderId,
             handler: async function (response: any) {
-                try {
-                     const finalOrderDetails = {
-                       ...commonOrderDetails,
-                        orderId: razorpayOrderId,
-                        razorpayPaymentId: response.razorpay_payment_id,
-                    };
-                    const orderRef = doc(db, 'orders', razorpayOrderId);
-                    setDoc(orderRef, finalOrderDetails)
-                        .then(async () => {
-                            await handleSuccessfulOrder(finalOrderDetails);
-                        })
-                        .catch(async (serverError) => {
-                             const permissionError = new FirestorePermissionError({
-                                path: orderRef.path,
-                                operation: 'create',
-                                requestResourceData: finalOrderDetails,
-                             });
-                             errorEmitter.emit('permission-error', permissionError);
-                             toast({
-                                title: "Order Error",
-                                description: "Your payment was successful, but we failed to save your order details. Please contact support.",
-                                variant: "destructive",
-                             });
-                        });
-                } catch (error) {
-                    console.error("Error writing document: ", error);
-                    toast({
-                        title: "Order Error",
-                        description: "Your payment was successful, but we failed to save your order details. Please contact support.",
-                        variant: "destructive",
+                 const finalOrderDetails = {
+                   ...commonOrderDetails,
+                    orderId: razorpayOrderId,
+                    razorpayPaymentId: response.razorpay_payment_id,
+                };
+                const orderRef = doc(db, 'orders', razorpayOrderId);
+                setDoc(orderRef, finalOrderDetails)
+                    .then(async () => {
+                        await handleSuccessfulOrder(finalOrderDetails);
+                    })
+                    .catch(async (serverError) => {
+                         const permissionError = new FirestorePermissionError({
+                            path: orderRef.path,
+                            operation: 'create',
+                            requestResourceData: finalOrderDetails,
+                         });
+                         errorEmitter.emit('permission-error', permissionError);
+                         toast({
+                            title: "Order Error",
+                            description: "Your payment was successful, but we failed to save your order details. Please contact support.",
+                            variant: "destructive",
+                         });
                     });
-                }
             },
             prefill: {
                 name: user.displayName || "Customer",
@@ -470,7 +461,7 @@ function CheckoutPage() {
             </div>
 
             <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
-                <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none">
+                <DialogContent className="sm:max-w-md p-0 bg-transparent border-none">
                     <Card className="w-full shadow-2xl bg-transparent border-none">
                         <AuthForm onAuthSuccess={() => setIsAuthOpen(false)} />
                     </Card>

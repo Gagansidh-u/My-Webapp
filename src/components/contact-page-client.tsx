@@ -17,6 +17,7 @@ import { Info } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { AuthForm } from "@/components/auth-form";
+import { sendEmail } from "@/app/actions/email";
 
 export default function ContactPageClient() {
     const { toast } = useToast();
@@ -76,8 +77,8 @@ export default function ContactPageClient() {
             const initialMessages: { [key: string]: typeof initialMessage } = {};
             const messageKey = push(ref(db, `contacts/${newContactRef.key}/messages`)).key;
             initialMessages[messageKey!] = initialMessage;
-
-            await set(newContactRef, {
+            
+            const inquiryData = {
                 userId: user.uid,
                 name: formData.name,
                 email: formData.email,
@@ -85,7 +86,23 @@ export default function ContactPageClient() {
                 messages: initialMessages,
                 status: 'Unread',
                 createdAt: serverTimestamp(),
+            };
+
+            await set(newContactRef, inquiryData);
+            
+            await sendEmail({
+                to: 'helpdesk.grock@outlook.com',
+                subject: `New Inquiry: ${formData.subject}`,
+                html: `
+                    <h1>New Inquiry</h1>
+                    <p><strong>From:</strong> ${formData.name} (${formData.email})</p>
+                    <p><strong>User ID:</strong> ${user.uid}</p>
+                    <p><strong>Subject:</strong> ${formData.subject}</p>
+                    <h2>Message:</h2>
+                    <p>${formData.message}</p>
+                `,
             });
+
 
             toast({
                 title: "Success",

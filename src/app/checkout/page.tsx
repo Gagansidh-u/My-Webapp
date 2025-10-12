@@ -26,6 +26,7 @@ import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AuthForm } from "@/components/auth-form";
+import { sendEmail } from "@/app/actions/email";
 
 
 declare global {
@@ -188,6 +189,42 @@ function CheckoutPage() {
         handlePayment();
     }
 
+    const handleSuccessfulOrder = async (orderDetails: any) => {
+        // Send email notification
+        await sendEmail({
+            to: 'helpdesk.grock@outlook.com',
+            subject: 'New Order Received',
+            html: `
+                <h1>New Order</h1>
+                <p><strong>Order ID:</strong> ${orderDetails.orderId}</p>
+                <p><strong>User:</strong> ${orderDetails.userEmail} (${orderDetails.userId})</p>
+                <p><strong>Plan:</strong> ${orderDetails.plan}</p>
+                <p><strong>Duration:</strong> ${orderDetails.duration} months</p>
+                <p><strong>Price:</strong> ₹${orderDetails.price.toFixed(2)}</p>
+                <h2>Website Details:</h2>
+                <p><strong>Description:</strong> ${orderDetails.websiteDetails.description}</p>
+                <p><strong>Colors:</strong> ${orderDetails.websiteDetails.colors}</p>
+                <p><strong>Style:</strong> ${orderDetails.websiteDetails.style}</p>
+            `,
+        });
+
+        // Set invoice details for the dialog
+        setInvoiceDetails({
+            orderId: orderDetails.orderId,
+            plan: orderDetails.plan,
+            price: orderDetails.price,
+            duration: orderDetails.duration,
+            userEmail: user?.email || null,
+            userName: user?.displayName || null,
+            userMobile: userMobile,
+            buildingCharge: buildingCharge,
+            monthlyPrice: monthlyPrice,
+        });
+
+        // Show the success dialog
+        setShowSuccessDialog(true);
+    };
+
     const handlePayment = async () => {
         if (!user) {
             toast({
@@ -227,20 +264,7 @@ function CheckoutPage() {
         if (totalPrice === 0) {
             try {
                 await set(ref(db, 'orders/' + orderKey), commonOrderDetails);
-                
-                setInvoiceDetails({
-                    orderId: orderKey,
-                    plan: plan,
-                    price: totalPrice,
-                    duration: parseInt(selectedDuration.value),
-                    userEmail: user.email,
-                    userName: user.displayName,
-                    userMobile: userMobile,
-                    buildingCharge: buildingCharge,
-                    monthlyPrice: monthlyPrice
-                });
-
-                setShowSuccessDialog(true);
+                await handleSuccessfulOrder(commonOrderDetails);
             } catch (error) {
                  console.error("Error writing document: ", error);
                  toast({
@@ -284,20 +308,8 @@ function CheckoutPage() {
                         orderId: razorpayOrderId,
                     };
                     await set(ref(db, 'orders/' + razorpayOrderId), finalOrderDetails);
+                    await handleSuccessfulOrder(finalOrderDetails);
 
-                    setInvoiceDetails({
-                        orderId: razorpayOrderId,
-                        plan: plan,
-                        price: totalPrice,
-                        duration: parseInt(selectedDuration.value),
-                        userEmail: user.email,
-                        userName: user.displayName,
-                        userMobile: userMobile,
-                        buildingCharge: buildingCharge,
-                        monthlyPrice: monthlyPrice
-                    });
-
-                    setShowSuccessDialog(true);
                 } catch (error) {
                     console.error("Error writing document: ", error);
                     toast({

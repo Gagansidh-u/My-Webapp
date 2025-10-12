@@ -11,7 +11,10 @@ const firebaseConfig = {
   storageBucket: "grock-fun-63159.firebasestorage.app",
   messagingSenderId: "513451391473",
   appId: "1:513451391473:web:8d75c1ffab5aa2962a6c50",
-  measurementId: "G-Q9FD6NHF7G"
+  measurementId: "G-Q9FD6NHF7G",
+  databaseAuthVariableOverride: {
+    uid: "grock-admin"
+  }
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();

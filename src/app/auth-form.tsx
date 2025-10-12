@@ -3,10 +3,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { LoginForm } from './login-form';
-import { SignupForm } from './signup-form';
+import { LoginForm } from '@/components/login-form';
+import { SignupForm } from '@/components/signup-form';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from './ui/card';
+import { Card } from '@/components/ui/card';
 
 interface AuthFormProps {
   onAuthSuccess?: () => void;

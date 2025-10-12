@@ -20,7 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
-
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered" | "Refund Requested" | "Refunded";
 
@@ -77,13 +78,20 @@ export default function AdminOrdersPage() {
 
     const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
         const orderRef = doc(db, "orders", orderId);
-        try {
-            await updateDoc(orderRef, { status: newStatus });
-            toast({ title: "Success", description: "Order status updated." });
-        } catch (error) {
-            console.error("Failed to update status:", error);
-            toast({ title: "Error", description: "Could not update order status.", variant: "destructive" });
-        }
+        const statusUpdate = { status: newStatus };
+        updateDoc(orderRef, statusUpdate)
+            .then(() => {
+                toast({ title: "Success", description: "Order status updated." });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                  path: orderRef.path,
+                  operation: 'update',
+                  requestResourceData: statusUpdate,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                toast({ title: "Error", description: "Could not update order status.", variant: "destructive" });
+            });
     };
     
     const getDurationText = (duration: number) => {

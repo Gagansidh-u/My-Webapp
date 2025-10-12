@@ -32,6 +32,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 type InquiryStatus = 'Unread' | 'Read' | 'Resolved' | 'User Reply' | 'Admin Replied';
 
@@ -105,11 +107,17 @@ export default function AdminInquiriesPage() {
 
     const handleStatusChange = async (id: string, status: InquiryStatus) => {
         const inquiryRef = doc(db, "contacts", id);
-        try {
-            await updateDoc(inquiryRef, { status: status });
-        } catch (error) {
-            toast({ title: "Error", description: "Could not update status.", variant: "destructive" });
-        }
+        const statusUpdate = { status };
+        updateDoc(inquiryRef, statusUpdate)
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                  path: inquiryRef.path,
+                  operation: 'update',
+                  requestResourceData: statusUpdate,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                toast({ title: "Error", description: "Could not update status.", variant: "destructive" });
+            });
     };
     
     const handleViewMessage = (inquiry: Inquiry) => {
@@ -121,15 +129,21 @@ export default function AdminInquiriesPage() {
     const handleDelete = async (id: string) => {
         setDeletingId(id);
         const inquiryRef = doc(db, "contacts", id);
-        try {
-            await deleteDoc(inquiryRef);
-            toast({ title: "Success", description: "Inquiry has been deleted." });
-        } catch (error) {
-            console.error("Failed to delete inquiry:", error);
-            toast({ title: "Error", description: "Could not delete the inquiry.", variant: "destructive" });
-        } finally {
-            setDeletingId(null);
-        }
+        deleteDoc(inquiryRef)
+            .then(() => {
+                toast({ title: "Success", description: "Inquiry has been deleted." });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                  path: inquiryRef.path,
+                  operation: 'delete',
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                toast({ title: "Error", description: "Could not delete the inquiry.", variant: "destructive" });
+            })
+            .finally(() => {
+                setDeletingId(null);
+            });
     };
     
      const handleReplySubmit = async (inquiryId: string) => {
@@ -147,18 +161,28 @@ export default function AdminInquiriesPage() {
             createdAt: serverTimestamp(),
         };
 
-        try {
-            await addDoc(messagesRef, newMessage);
-            await updateDoc(inquiryRef, {
-                status: "Admin Replied",
+        const statusUpdate = { status: "Admin Replied" };
+
+        addDoc(messagesRef, newMessage)
+            .then(() => {
+                return updateDoc(inquiryRef, statusUpdate);
+            })
+            .then(() => {
+                setReplyMessage(""); // Clear the textarea after sending
+                toast({title: "Success", description: "Reply sent."})
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                  path: messagesRef.path,
+                  operation: 'create',
+                  requestResourceData: newMessage,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                toast({ title: "Error", description: "Failed to send reply.", variant: "destructive" });
+            })
+            .finally(() => {
+                setReplyingTo(null);
             });
-            setReplyMessage(""); // Clear the textarea after sending
-            toast({title: "Success", description: "Reply sent."})
-        } catch (error) {
-            toast({ title: "Error", description: "Failed to send reply.", variant: "destructive" });
-        } finally {
-            setReplyingTo(null);
-        }
     };
 
     const toJSDate = (timestamp: { seconds: number; nanoseconds: number; }) => {

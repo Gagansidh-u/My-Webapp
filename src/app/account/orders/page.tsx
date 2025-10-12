@@ -26,6 +26,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/hooks/use-toast";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 type OrderStatus = "Paid" | "Pending" | "In-Progress" | "Delivered" | "Refund Requested" | "Refunded";
 
@@ -92,22 +94,30 @@ export default function MyOrdersPage() {
     const handleRefundRequest = async (orderId: string) => {
         setUpdatingId(orderId);
         const orderRef = doc(db, "orders", orderId);
-        try {
-            await updateDoc(orderRef, { status: "Refund Requested" });
-            toast({
-                title: "Refund Requested",
-                description: "Your refund request has been submitted.",
+        const statusUpdate = { status: "Refund Requested" };
+        updateDoc(orderRef, statusUpdate)
+            .then(() => {
+                toast({
+                    title: "Refund Requested",
+                    description: "Your refund request has been submitted.",
+                });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                  path: orderRef.path,
+                  operation: 'update',
+                  requestResourceData: statusUpdate,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                 toast({
+                    title: "Error",
+                    description: "Could not submit your refund request. Please contact support.",
+                    variant: "destructive"
+                });
+            })
+            .finally(() => {
+                setUpdatingId(null);
             });
-        } catch (error) {
-            toast({
-                title: "Error",
-                description: "Could not submit your refund request. Please contact support.",
-                variant: "destructive"
-            });
-            console.error("Error requesting refund:", error);
-        } finally {
-            setUpdatingId(null);
-        }
     }
 
     const toJSDate = (timestamp: { seconds: number; nanoseconds: number; }) => {

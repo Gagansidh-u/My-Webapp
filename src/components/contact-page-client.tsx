@@ -18,6 +18,8 @@ import { Loader } from "@/components/ui/loader";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { AuthForm } from "@/components/auth-form";
 import { sendEmail } from "@/app/actions/email";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export default function ContactPageClient() {
     const { toast } = useToast();
@@ -74,39 +76,51 @@ export default function ContactPageClient() {
                 createdAt: serverTimestamp(),
             };
 
-            const docRef = await addDoc(collection(db, "contacts"), inquiryData);
-            const messagesCollectionRef = collection(db, "contacts", docRef.id, "messages");
-            await addDoc(messagesCollectionRef, {
-                text: formData.message,
-                senderId: user.uid,
-                senderName: formData.name,
-                createdAt: serverTimestamp()
-            });
-            
-            await sendEmail({
-                to: 'helpdesk.grock@outlook.com',
-                subject: `New Inquiry: ${formData.subject}`,
-                html: `
-                    <h1>New Inquiry</h1>
-                    <p><strong>From:</strong> ${formData.name} (${formData.email})</p>
-                    <p><strong>User ID:</strong> ${user.uid}</p>
-                    <p><strong>Subject:</strong> ${formData.subject}</p>
-                    <hr />
-                    <p>${formData.message}</p>
-                `
-            });
+            const contactsCollectionRef = collection(db, "contacts");
+            addDoc(contactsCollectionRef, inquiryData)
+                .then(async (docRef) => {
+                    const messagesCollectionRef = collection(db, "contacts", docRef.id, "messages");
+                    await addDoc(messagesCollectionRef, {
+                        text: formData.message,
+                        senderId: user.uid,
+                        senderName: formData.name,
+                        createdAt: serverTimestamp()
+                    });
 
-            toast({
-                title: "Success",
-                description: "Your message has been sent successfully."
-            });
-            // Reset form but keep user details
-            setFormData({ 
-                name: user?.displayName || '', 
-                email: user?.email || '', 
-                subject: '', 
-                message: '' 
-            });
+                    await sendEmail({
+                        to: 'helpdesk.grock@outlook.com',
+                        subject: `New Inquiry: ${formData.subject}`,
+                        html: `
+                            <h1>New Inquiry</h1>
+                            <p><strong>From:</strong> ${formData.name} (${formData.email})</p>
+                            <p><strong>User ID:</strong> ${user.uid}</p>
+                            <p><strong>Subject:</strong> ${formData.subject}</p>
+                            <hr />
+                            <p>${formData.message}</p>
+                        `
+                    });
+
+                    toast({
+                        title: "Success",
+                        description: "Your message has been sent successfully."
+                    });
+                    // Reset form but keep user details
+                    setFormData({ 
+                        name: user?.displayName || '', 
+                        email: user?.email || '', 
+                        subject: '', 
+                        message: '' 
+                    });
+                })
+                .catch(async (serverError) => {
+                    const permissionError = new FirestorePermissionError({
+                      path: contactsCollectionRef.path,
+                      operation: 'create',
+                      requestResourceData: inquiryData,
+                    });
+                    errorEmitter.emit('permission-error', permissionError);
+                });
+
         } catch (error) {
              toast({
                 title: "Error",

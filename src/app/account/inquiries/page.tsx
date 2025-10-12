@@ -26,6 +26,8 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/loader";
 import { Textarea } from "@/components/ui/textarea";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 type InquiryMessage = {
     id: string;
@@ -111,15 +113,21 @@ export default function MyInquiriesPage() {
         if (!user) return;
         setDeletingId(id);
         const inquiryRef = doc(db, `contacts`, id);
-        try {
-            await deleteDoc(inquiryRef);
-            toast({ title: "Success", description: "Your inquiry has been deleted." });
-        } catch (error) {
-            console.error("Failed to delete inquiry:", error);
-            toast({ title: "Error", description: "Could not delete the inquiry.", variant: "destructive" });
-        } finally {
-            setDeletingId(null);
-        }
+        deleteDoc(inquiryRef)
+            .then(() => {
+                toast({ title: "Success", description: "Your inquiry has been deleted." });
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                  path: inquiryRef.path,
+                  operation: 'delete',
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                toast({ title: "Error", description: "Could not delete the inquiry.", variant: "destructive" });
+            })
+            .finally(() => {
+                setDeletingId(null);
+            });
     };
     
     const handleReplySubmit = async (inquiryId: string) => {
@@ -136,17 +144,27 @@ export default function MyInquiriesPage() {
             createdAt: serverTimestamp()
         };
 
-        try {
-            await addDoc(messagesRef, newMessage);
-            await updateDoc(inquiryRef, {
-                status: "User Reply",
+        const statusUpdate = { status: "User Reply" };
+
+        addDoc(messagesRef, newMessage)
+            .then(() => {
+                return updateDoc(inquiryRef, statusUpdate);
+            })
+            .then(() => {
+                setReplyMessage("");
+            })
+            .catch(async (serverError) => {
+                 const permissionError = new FirestorePermissionError({
+                  path: messagesRef.path,
+                  operation: 'create',
+                  requestResourceData: newMessage,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+                toast({ title: "Error", description: "Failed to send reply.", variant: "destructive" });
+            })
+            .finally(() => {
+                setReplyingTo(null);
             });
-            setReplyMessage("");
-        } catch (error) {
-            toast({ title: "Error", description: "Failed to send reply.", variant: "destructive" });
-        } finally {
-            setReplyingTo(null);
-        }
     }
 
 

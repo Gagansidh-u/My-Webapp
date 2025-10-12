@@ -27,6 +27,8 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AuthForm } from "@/components/auth-form";
 import { sendEmail } from "@/app/actions/email";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 
 declare global {
@@ -289,9 +291,24 @@ function CheckoutPage() {
                         orderId: razorpayOrderId,
                         razorpayPaymentId: response.razorpay_payment_id,
                     };
-                    await setDoc(doc(db, 'orders', razorpayOrderId), finalOrderDetails);
-                    await handleSuccessfulOrder(finalOrderDetails);
-
+                    const orderRef = doc(db, 'orders', razorpayOrderId);
+                    setDoc(orderRef, finalOrderDetails)
+                        .then(async () => {
+                            await handleSuccessfulOrder(finalOrderDetails);
+                        })
+                        .catch(async (serverError) => {
+                             const permissionError = new FirestorePermissionError({
+                                path: orderRef.path,
+                                operation: 'create',
+                                requestResourceData: finalOrderDetails,
+                             });
+                             errorEmitter.emit('permission-error', permissionError);
+                             toast({
+                                title: "Order Error",
+                                description: "Your payment was successful, but we failed to save your order details. Please contact support.",
+                                variant: "destructive",
+                             });
+                        });
                 } catch (error) {
                     console.error("Error writing document: ", error);
                     toast({

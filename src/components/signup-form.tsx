@@ -16,6 +16,8 @@ import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Loader } from "./ui/loader";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required."}),
@@ -91,14 +93,23 @@ export function SignupForm({ onSignup, onSwitchToLogin }: SignupFormProps) {
     const userRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(userRef);
     if (!docSnap.exists()) {
-        await setDoc(userRef, {
+        const userData = {
             uid: user.uid,
             email: user.email,
             displayName: name || user.displayName || 'Anonymous',
             mobile: mobile,
             authProvider: authProvider,
             createdAt: serverTimestamp(),
-        });
+        };
+        setDoc(userRef, userData)
+          .catch(async (serverError) => {
+              const permissionError = new FirestorePermissionError({
+                path: userRef.path,
+                operation: 'create',
+                requestResourceData: userData,
+              });
+              errorEmitter.emit('permission-error', permissionError);
+          });
     }
   }
 

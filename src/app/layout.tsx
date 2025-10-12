@@ -9,6 +9,7 @@ import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from '@/components/theme-provider';
 import Script from 'next/script';
 import PageTransitionLoader from '@/components/page-transition-loader';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://grock.fun'),
@@ -77,13 +78,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
-            <PageTransitionLoader />
+            <FirebaseClientProvider>
+              <div className="relative flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+              <PageTransitionLoader />
+            </FirebaseClientProvider>
           </AuthProvider>
         </ThemeProvider>
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-1QNEL9F4Z9"></Script>

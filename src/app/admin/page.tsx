@@ -3,14 +3,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, MessageSquare, Users, IndianRupee } from "lucide-react";
-import { ref, onValue } from "firebase/database";
+import { collection, onSnapshot, getCountFromServer, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { Loader } from "@/components/ui/loader";
 
 type Order = {
     price: number;
-    createdAt: number;
+    createdAt: Timestamp;
 }
 
 export default function AdminDashboardPage() {
@@ -35,8 +35,8 @@ export default function AdminDashboardPage() {
             }
         };
 
-        const ordersRef = ref(db, "orders");
-        const ordersUnsub = onValue(ordersRef, (snapshot) => {
+        const ordersCol = collection(db, "orders");
+        const ordersUnsub = onSnapshot(ordersCol, (snapshot) => {
             const now = new Date();
             const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -44,22 +44,19 @@ export default function AdminDashboardPage() {
 
             let currentMonthRevenue = 0;
             let previousMonthRevenue = 0;
-            let orderCount = 0;
+            let orderCount = snapshot.size;
 
-            if (snapshot.exists()){
-                orderCount = snapshot.size;
-                snapshot.forEach(doc => {
-                    const order = doc.val() as Order;
-                    if (order.createdAt) {
-                        const createdAtDate = new Date(order.createdAt);
-                        if (createdAtDate >= startOfCurrentMonth) {
-                            currentMonthRevenue += order.price;
-                        } else if (createdAtDate >= startOfPreviousMonth && createdAtDate <= endOfPreviousMonth) {
-                            previousMonthRevenue += order.price;
-                        }
+            snapshot.forEach(doc => {
+                const order = doc.data() as Order;
+                if (order.createdAt) {
+                    const createdAtDate = order.createdAt.toDate();
+                    if (createdAtDate >= startOfCurrentMonth) {
+                        currentMonthRevenue += order.price;
+                    } else if (createdAtDate >= startOfPreviousMonth && createdAtDate <= endOfPreviousMonth) {
+                        previousMonthRevenue += order.price;
                     }
-                });
-            }
+                }
+            });
 
             setStats(prev => ({ 
                 ...prev, 
@@ -74,9 +71,9 @@ export default function AdminDashboardPage() {
         });
         unsubscribes.push(ordersUnsub);
 
-        const inquiriesRef = ref(db, "contacts");
-        const inquiriesUnsub = onValue(inquiriesRef, (snapshot) => {
-            setStats(prev => ({ ...prev, inquiries: snapshot.exists() ? snapshot.size : 0 }));
+        const inquiriesCol = collection(db, "contacts");
+        const inquiriesUnsub = onSnapshot(inquiriesCol, (snapshot) => {
+            setStats(prev => ({ ...prev, inquiries: snapshot.size }));
             if(loading && loadedStats < requiredLoads) handleLoad();
         }, (error) => {
             console.error("Error fetching inquiries:", error);
@@ -84,9 +81,9 @@ export default function AdminDashboardPage() {
         });
         unsubscribes.push(inquiriesUnsub);
 
-        const usersRef = ref(db, "users");
-        const usersUnsub = onValue(usersRef, (snapshot) => {
-            setStats(prev => ({ ...prev, users: snapshot.exists() ? snapshot.size : 0 }));
+        const usersCol = collection(db, "users");
+        const usersUnsub = onSnapshot(usersCol, (snapshot) => {
+            setStats(prev => ({ ...prev, users: snapshot.size }));
             if(loading && loadedStats < requiredLoads) handleLoad();
         }, (error) => {
             console.error("Error fetching users:", error);

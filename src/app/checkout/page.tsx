@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { db } from "@/lib/firebase";
-import { ref, set, serverTimestamp, get } from "firebase/database";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Invoice } from "@/components/invoice";
 import html2canvas from 'html2canvas';
@@ -107,10 +107,10 @@ function CheckoutPage() {
 
         const fetchUserData = async () => {
             if (user) {
-                const userRef = ref(db, `users/${user.uid}`);
-                const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    setUserMobile(snapshot.val().mobile || null);
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
+                if (docSnap.exists()) {
+                    setUserMobile(docSnap.data().mobile || null);
                 }
             }
         };
@@ -289,7 +289,7 @@ function CheckoutPage() {
                         orderId: razorpayOrderId,
                         razorpayPaymentId: response.razorpay_payment_id,
                     };
-                    await set(ref(db, 'orders/' + razorpayOrderId), finalOrderDetails);
+                    await setDoc(doc(db, 'orders', razorpayOrderId), finalOrderDetails);
                     await handleSuccessfulOrder(finalOrderDetails);
 
                 } catch (error) {

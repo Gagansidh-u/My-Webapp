@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { ref, onValue, query, orderByChild, equalTo, update } from "firebase/database";
+import { collection, query, where, onSnapshot, orderBy, doc, updateDoc } from "firebase/firestore";
 import { FileText, ShoppingCart, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +37,7 @@ type Order = {
     price: number;
     duration: number;
     status: OrderStatus;
-    createdAt: number;
+    createdAt: { seconds: number; nanoseconds: number; };
     websiteDetails: {
         description: string;
         colors: string;
@@ -71,18 +71,14 @@ export default function MyOrdersPage() {
             return;
         }
         
-        const ordersRef = ref(db, 'orders');
-        const ordersQuery = query(ordersRef, orderByChild('userId'), equalTo(user.uid));
+        const ordersColRef = collection(db, 'orders');
+        const q = query(ordersColRef, where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
         
-        const unsubscribe = onValue(ordersQuery, (snapshot) => {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
             const userOrders: Order[] = [];
-            if (snapshot.exists()) {
-                 snapshot.forEach(childSnapshot => {
-                    userOrders.push({ id: childSnapshot.key!, ...childSnapshot.val() });
-                });
-            }
-            // Sort by createdAt descending
-            userOrders.sort((a, b) => b.createdAt - a.createdAt);
+            snapshot.forEach(doc => {
+                userOrders.push({ id: doc.id, ...doc.data() } as Order);
+            });
             setOrders(userOrders);
             setLoading(false);
         }, (error) => {
@@ -95,9 +91,9 @@ export default function MyOrdersPage() {
 
     const handleRefundRequest = async (orderId: string) => {
         setUpdatingId(orderId);
-        const orderRef = ref(db, `orders/${orderId}`);
+        const orderRef = doc(db, "orders", orderId);
         try {
-            await update(orderRef, { status: "Refund Requested" });
+            await updateDoc(orderRef, { status: "Refund Requested" });
             toast({
                 title: "Refund Requested",
                 description: "Your refund request has been submitted.",
@@ -114,10 +110,15 @@ export default function MyOrdersPage() {
         }
     }
 
+    const toJSDate = (timestamp: { seconds: number; nanoseconds: number; }) => {
+        if (!timestamp) return new Date();
+        return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+    }
+    
     const isRefundable = (order: Order) => {
         if (order.status !== 'Paid') return false;
         const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
-        return (Date.now() - order.createdAt) < sevenDaysInMs;
+        return (Date.now() - toJSDate(order.createdAt).getTime()) < sevenDaysInMs;
     };
 
 
@@ -163,7 +164,7 @@ export default function MyOrdersPage() {
                                         <TableCell>{getDurationText(order.duration)}</TableCell>
                                         <TableCell>₹{order.price.toFixed(2)}</TableCell>
                                         <TableCell><Badge variant='outline' className={orderStatusColors[order.status] || ''}>{order.status}</Badge></TableCell>
-                                        <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                                        <TableCell>{toJSDate(order.createdAt).toLocaleDateString()}</TableCell>
                                         <TableCell className="text-right space-x-2">
                                             <Dialog>
                                                 <DialogTrigger asChild>

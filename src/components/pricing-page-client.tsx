@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/auth-provider";
 import { useEffect, useState } from "react";
-import { ref, query, orderByChild, equalTo, onValue } from "firebase/database";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Loader } from "@/components/ui/loader";
 
@@ -86,7 +86,7 @@ type Order = {
     userId: string;
     plan: string;
     duration: number; // in months
-    createdAt: number;
+    createdAt: { seconds: number, nanoseconds: number };
 };
 
 export default function PricingPageClient() {
@@ -102,21 +102,19 @@ export default function PricingPageClient() {
         return;
     }
 
-    const fetchUserOrders = async () => {
+    const fetchUserOrders = () => {
         try {
-            const ordersRef = ref(db, "orders");
-            const ordersQuery = query(ordersRef, orderByChild("userId"), equalTo(user.uid));
+            const ordersColRef = collection(db, "orders");
+            const q = query(ordersColRef, where("userId", "==", user.uid));
             
-            onValue(ordersQuery, (snapshot) => {
+            const unsubscribe = onSnapshot(q, (snapshot) => {
                 const userOrders: Order[] = [];
-                if (snapshot.exists()) {
-                    snapshot.forEach(childSnapshot => {
-                        userOrders.push(childSnapshot.val());
-                    });
-                }
+                snapshot.forEach(doc => {
+                    userOrders.push(doc.data() as Order);
+                });
                 
                 const currentlyActivePlans = userOrders.filter(order => {
-                    const expirationDate = new Date(order.createdAt);
+                    const expirationDate = new Date(order.createdAt.seconds * 1000);
                     expirationDate.setMonth(expirationDate.getMonth() + order.duration);
                     return expirationDate > new Date();
                 }).map(order => order.plan);
@@ -124,6 +122,7 @@ export default function PricingPageClient() {
                 setActivePlans(currentlyActivePlans);
                 setLoadingPlans(false);
             });
+            return unsubscribe;
 
         } catch (error) {
             console.error("Failed to fetch user orders:", error);
@@ -131,7 +130,8 @@ export default function PricingPageClient() {
         }
     };
 
-    fetchUserOrders();
+    const unsubscribe = fetchUserOrders();
+    return () => unsubscribe && unsubscribe();
   }, [user, authLoading]);
 
 

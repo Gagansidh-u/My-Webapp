@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { db, auth } from "@/lib/firebase";
-import { ref, onValue, query, orderByChild, update, remove, push, serverTimestamp } from "firebase/database";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
 import { Mail, Trash2, User, Calendar as CalendarIcon, MessageCircle, BadgeCheck, Search, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -36,10 +36,11 @@ import { Textarea } from "@/components/ui/textarea";
 type InquiryStatus = 'Unread' | 'Read' | 'Resolved' | 'User Reply' | 'Admin Replied';
 
 type InquiryMessage = {
+    id: string;
     text: string;
     senderId: string;
     senderName: string;
-    createdAt: number;
+    createdAt: { seconds: number; nanoseconds: number; };
 }
 
 type Inquiry = {
@@ -48,9 +49,9 @@ type Inquiry = {
     name: string;
     email: string;
     subject: string;
-    messages: Record<string, InquiryMessage>;
+    messages: InquiryMessage[];
     status: InquiryStatus;
-    createdAt: number;
+    createdAt: { seconds: number; nanoseconds: number; };
 };
 
 const statusColors: Record<InquiryStatus, string> = {
@@ -76,15 +77,23 @@ export default function AdminInquiriesPage() {
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
     useEffect(() => {
-        const inquiriesRef = query(ref(db, `contacts`), orderByChild("createdAt"));
-        const unsubscribe = onValue(inquiriesRef, (snapshot) => {
-            const inquiriesData: Inquiry[] = [];
-            if(snapshot.exists()) {
-                snapshot.forEach(childSnapshot => {
-                    inquiriesData.push({ id: childSnapshot.key!, ...childSnapshot.val() });
-                });
-            }
-            setInquiries(inquiriesData.reverse()); // Show newest first
+        const inquiriesColRef = collection(db, 'contacts');
+        const q = query(inquiriesColRef, orderBy("createdAt", "desc"));
+        const unsubscribe = onSnapshot(q, async (snapshot) => {
+            const inquiriesData: Omit<Inquiry, "messages">[] = [];
+            snapshot.forEach(doc => {
+                inquiriesData.push({ id: doc.id, ...doc.data() } as Omit<Inquiry, "messages">);
+            });
+
+            const inquiriesWithMessages = await Promise.all(inquiriesData.map(async (inquiry) => {
+                 const messagesColRef = collection(db, 'contacts', inquiry.id, 'messages');
+                 const messagesQuery = query(messagesColRef, orderBy('createdAt', 'asc'));
+                 const messagesSnapshot = await getDocs(messagesQuery);
+                 const messages = messagesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as InquiryMessage));
+                 return { ...inquiry, messages };
+            }));
+
+            setInquiries(inquiriesWithMessages);
             setLoading(false);
         }, (error) => {
             console.error("Failed to fetch inquiries:", error);
@@ -95,9 +104,9 @@ export default function AdminInquiriesPage() {
     }, []);
 
     const handleStatusChange = async (id: string, status: InquiryStatus) => {
-        const inquiryRef = ref(db, `contacts/${id}`);
+        const inquiryRef = doc(db, "contacts", id);
         try {
-            await update(inquiryRef, { status: status });
+            await updateDoc(inquiryRef, { status: status });
         } catch (error) {
             toast({ title: "Error", description: "Could not update status.", variant: "destructive" });
         }
@@ -111,9 +120,9 @@ export default function AdminInquiriesPage() {
 
     const handleDelete = async (id: string) => {
         setDeletingId(id);
-        const inquiryRef = ref(db, `contacts/${id}`);
+        const inquiryRef = doc(db, "contacts", id);
         try {
-            await remove(inquiryRef);
+            await deleteDoc(inquiryRef);
             toast({ title: "Success", description: "Inquiry has been deleted." });
         } catch (error) {
             console.error("Failed to delete inquiry:", error);
@@ -128,8 +137,8 @@ export default function AdminInquiriesPage() {
         if (!currentUser || !replyMessage.trim()) return;
 
         setReplyingTo(inquiryId);
-        const inquiryRef = ref(db, `contacts/${inquiryId}`);
-        const messagesRef = ref(db, `contacts/${inquiryId}/messages`);
+        const inquiryRef = doc(db, "contacts", inquiryId);
+        const messagesRef = collection(db, "contacts", inquiryId, "messages");
 
         const newMessage = {
             text: replyMessage,
@@ -139,10 +148,9 @@ export default function AdminInquiriesPage() {
         };
 
         try {
-            const newMessageRef = push(messagesRef);
-            await update(inquiryRef, {
+            await addDoc(messagesRef, newMessage);
+            await updateDoc(inquiryRef, {
                 status: "Admin Replied",
-                [`messages/${newMessageRef.key}`]: newMessage
             });
             setReplyMessage(""); // Clear the textarea after sending
             toast({title: "Success", description: "Reply sent."})
@@ -153,14 +161,18 @@ export default function AdminInquiriesPage() {
         }
     };
 
-    
-     const filteredInquiries = inquiries.filter(inquiry => {
+    const toJSDate = (timestamp: { seconds: number; nanoseconds: number; }) => {
+        if (!timestamp) return new Date();
+        return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+    }
+
+    const filteredInquiries = inquiries.filter(inquiry => {
         const matchesSearch = searchTerm === "" ||
                               inquiry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               inquiry.email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === "All" || inquiry.status === statusFilter;
         
-        const inquiryDate = new Date(inquiry.createdAt);
+        const inquiryDate = toJSDate(inquiry.createdAt);
         const matchesDate = !dateRange || 
                             (!dateRange.from || inquiryDate >= dateRange.from) && 
                             (!dateRange.to || inquiryDate <= dateRange.to);
@@ -168,9 +180,9 @@ export default function AdminInquiriesPage() {
         return matchesSearch && matchesStatus && matchesDate;
     });
 
-    const getSortedMessages = (messages: Record<string, InquiryMessage> | undefined) => {
+    const getSortedMessages = (messages: InquiryMessage[] | undefined) => {
         if (!messages) return [];
-        return Object.values(messages).sort((a, b) => a.createdAt - b.createdAt);
+        return messages.sort((a, b) => a.createdAt.seconds - b.createdAt.seconds);
     }
 
 
@@ -279,7 +291,7 @@ export default function AdminInquiriesPage() {
                                             </SelectContent>
                                         </Select>
                                     </TableCell>
-                                    <TableCell>{new Date(inquiry.createdAt).toLocaleDateString()}</TableCell>
+                                    <TableCell>{toJSDate(inquiry.createdAt).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Dialog onOpenChange={(open) => { if(open) handleViewMessage(inquiry)}}>
                                             <DialogTrigger asChild>
@@ -296,7 +308,7 @@ export default function AdminInquiriesPage() {
                                                             <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === auth.currentUser?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                                                                 <p className="text-sm font-bold">{msg.senderName}</p>
                                                                 <p className="text-sm">{msg.text}</p>
-                                                                <p className="text-xs opacity-70 mt-1">{new Date(msg.createdAt).toLocaleString()}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{toJSDate(msg.createdAt).toLocaleString()}</p>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -368,7 +380,7 @@ export default function AdminInquiriesPage() {
                                                             <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === auth.currentUser?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                                                                 <p className="text-sm font-bold">{msg.senderName}</p>
                                                                 <p className="text-sm">{msg.text}</p>
-                                                                <p className="text-xs opacity-70 mt-1">{new Date(msg.createdAt).toLocaleString()}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{toJSDate(msg.createdAt).toLocaleString()}</p>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -415,7 +427,7 @@ export default function AdminInquiriesPage() {
                                 </div>
                                  <div className="flex items-center justify-between text-sm">
                                     <p className="text-muted-foreground flex items-center gap-2"><CalendarIcon /> Date</p>
-                                    <p className="font-medium">{new Date(inquiry.createdAt).toLocaleDateString()}</p>
+                                    <p className="font-medium">{toJSDate(inquiry.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
                                     <p className="text-muted-foreground flex items-center gap-2"><BadgeCheck /> Status</p>

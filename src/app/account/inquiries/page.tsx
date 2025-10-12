@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { ref, onValue, orderByChild, query, equalTo, push, update, serverTimestamp, remove } from "firebase/database";
+import { collection, query, where, onSnapshot, orderBy, addDoc, updateDoc, doc, serverTimestamp, deleteDoc, getDocs } from "firebase/firestore";
 import { Mail, Trash2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,18 +28,19 @@ import { Loader } from "@/components/ui/loader";
 import { Textarea } from "@/components/ui/textarea";
 
 type InquiryMessage = {
+    id: string;
     text: string;
     senderId: string;
     senderName: string;
-    createdAt: number;
+    createdAt: { seconds: number; nanoseconds: number; };
 }
 
 type Inquiry = {
     id: string;
     subject: string;
     status: 'Unread' | 'Read' | 'Resolved' | 'User Reply' | 'Admin Replied';
-    messages: Record<string, InquiryMessage>;
-    createdAt: number;
+    messages: InquiryMessage[];
+    createdAt: { seconds: number; nanoseconds: number; };
     userId: string;
 };
 
@@ -70,22 +71,33 @@ export default function MyInquiriesPage() {
             return;
         }
 
-        const inquiriesRef = ref(db, 'contacts');
-        const inquiriesQuery = query(inquiriesRef, orderByChild('userId'), equalTo(user.uid));
+        const inquiriesColRef = collection(db, 'contacts');
+        const q = query(inquiriesColRef, where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
         
-        const unsubscribe = onValue(inquiriesQuery, (snapshot) => {
-            if (snapshot.exists()) {
-                const inquiriesData: Inquiry[] = [];
-                snapshot.forEach(childSnapshot => {
-                    inquiriesData.push({ id: childSnapshot.key, ...childSnapshot.val() });
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const inquiriesData: Inquiry[] = [];
+            const messagePromises: Promise<any>[] = [];
+
+            querySnapshot.forEach(docSnap => {
+                const inquiry = { id: docSnap.id, ...docSnap.data() } as Omit<Inquiry, 'messages'> & { messages: undefined };
+                const messagesColRef = collection(db, 'contacts', docSnap.id, 'messages');
+                const messagesQuery = query(messagesColRef, orderBy('createdAt', 'asc'));
+
+                const promise = getDocs(messagesQuery).then(messagesSnapshot => {
+                    const messagesData: InquiryMessage[] = [];
+                    messagesSnapshot.forEach(msgDoc => {
+                        messagesData.push({ id: msgDoc.id, ...msgDoc.data() } as InquiryMessage);
+                    });
+                    inquiriesData.push({ ...inquiry, messages: messagesData } as Inquiry);
                 });
-                // Sort inquiries by creation date descending
-                inquiriesData.sort((a, b) => b.createdAt - a.createdAt);
+                messagePromises.push(promise);
+            });
+            
+            Promise.all(messagePromises).then(() => {
+                inquiriesData.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
                 setInquiries(inquiriesData);
-            } else {
-                setInquiries([]);
-            }
-            setLoading(false);
+                setLoading(false);
+            });
         }, (error) => {
             console.error("Failed to fetch inquiries:", error);
             toast({ title: "Error", description: "Could not load your inquiries.", variant: "destructive"})
@@ -98,9 +110,9 @@ export default function MyInquiriesPage() {
     const handleDelete = async (id: string) => {
         if (!user) return;
         setDeletingId(id);
-        const inquiryRef = ref(db, `contacts/${id}`);
+        const inquiryRef = doc(db, `contacts`, id);
         try {
-            await remove(inquiryRef);
+            await deleteDoc(inquiryRef);
             toast({ title: "Success", description: "Your inquiry has been deleted." });
         } catch (error) {
             console.error("Failed to delete inquiry:", error);
@@ -114,8 +126,8 @@ export default function MyInquiriesPage() {
         if (!user || !replyMessage.trim()) return;
 
         setReplyingTo(inquiryId);
-        const inquiryRef = ref(db, `contacts/${inquiryId}`);
-        const messagesRef = ref(db, `contacts/${inquiryId}/messages`);
+        const inquiryRef = doc(db, `contacts`, inquiryId);
+        const messagesRef = collection(db, `contacts`, inquiryId, "messages");
         
         const newMessage = {
             text: replyMessage,
@@ -125,10 +137,9 @@ export default function MyInquiriesPage() {
         };
 
         try {
-            const newMessageRef = push(messagesRef);
-            await update(inquiryRef, {
+            await addDoc(messagesRef, newMessage);
+            await updateDoc(inquiryRef, {
                 status: "User Reply",
-                [`messages/${newMessageRef.key}`]: newMessage
             });
             setReplyMessage("");
         } catch (error) {
@@ -147,9 +158,14 @@ export default function MyInquiriesPage() {
         );
     }
     
-    const getSortedMessages = (messages: Record<string, InquiryMessage> | undefined) => {
+    const getSortedMessages = (messages: InquiryMessage[] | undefined) => {
         if (!messages) return [];
-        return Object.values(messages).sort((a, b) => a.createdAt - b.createdAt);
+        return messages.sort((a, b) => a.createdAt.seconds - b.createdAt.seconds);
+    }
+
+    const toJSDate = (timestamp: { seconds: number; nanoseconds: number; }) => {
+        if(!timestamp) return new Date();
+        return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
     }
 
     return (
@@ -174,7 +190,7 @@ export default function MyInquiriesPage() {
                                 <TableRow key={inquiry.id}>
                                     <TableCell className="font-medium">{inquiry.subject}</TableCell>
                                     <TableCell><Badge variant='outline' className={statusColors[inquiry.status] || ''}>{inquiry.status}</Badge></TableCell>
-                                    <TableCell>{new Date(inquiry.createdAt).toLocaleDateString()}</TableCell>
+                                    <TableCell>{toJSDate(inquiry.createdAt).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Dialog>
                                             <DialogTrigger asChild>
@@ -190,7 +206,7 @@ export default function MyInquiriesPage() {
                                                             <div className={`rounded-lg p-3 max-w-[80%] ${msg.senderId === user?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                                                                 <p className="text-sm font-bold">{msg.senderName}</p>
                                                                 <p className="text-sm">{msg.text}</p>
-                                                                <p className="text-xs opacity-70 mt-1">{new Date(msg.createdAt).toLocaleString()}</p>
+                                                                <p className="text-xs opacity-70 mt-1">{toJSDate(msg.createdAt).toLocaleString()}</p>
                                                             </div>
                                                         </div>
                                                     ))}

@@ -116,9 +116,9 @@ export default function TestimonialsSection() {
                 <h2 className="text-3xl md:text-4xl font-headline font-bold text-center mb-12">
                     Trusted by Businesses and Developers
                 </h2>
-                <Marquee baseVelocity={-2}>
+                <Marquee baseVelocity={-1}>
                     {testimonials.map((testimonial, index) => (
-                      <div key={index} className="px-4 w-[450px] max-w-[90vw]">
+                      <div key={index} className="px-4" style={{ flex: '0 0 auto', width: '400px', maxWidth: '90vw' }}>
                         <Card className="h-full flex flex-col justify-between p-6 bg-card shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
                             <CardContent className="p-0">
                                 <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>

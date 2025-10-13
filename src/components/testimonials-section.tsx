@@ -3,7 +3,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User } from "lucide-react";
+import { User, Quote } from "lucide-react";
 import {
   motion,
   useScroll,
@@ -11,9 +11,9 @@ import {
   useTransform,
   useMotionValue,
   useVelocity,
-  useAnimationFrame,
-  wrap
+  useAnimationFrame
 } from "framer-motion";
+import { wrap } from "framer-motion";
 import React, { useRef } from "react";
 
 const testimonials = [
@@ -119,10 +119,11 @@ export default function TestimonialsSection() {
                 <Marquee baseVelocity={-1}>
                     {testimonials.map((testimonial, index) => (
                       <div key={index} className="px-4" style={{ flex: '0 0 auto', width: '400px', maxWidth: '90vw' }}>
-                        <Card className="h-full flex flex-col justify-between p-6 bg-card shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                            <CardContent className="p-0">
-                                <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>
-                                <div className="flex items-center gap-4">
+                        <Card className="h-full flex flex-col justify-between bg-card shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border-l-4 border-primary/20 bg-accent/20 rounded-xl overflow-hidden">
+                            <CardContent className="p-6 flex flex-col flex-grow">
+                                <Quote className="w-10 h-10 text-primary/20 mb-4" />
+                                <p className="text-muted-foreground italic mb-6 flex-grow">"{testimonial.text}"</p>
+                                <div className="flex items-center gap-4 pt-4 border-t border-primary/10">
                                 <Avatar>
                                     <AvatarFallback>
                                         <User className="h-5 w-5" />

@@ -25,7 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AuthForm } from "@/components/auth-form";
+import { AuthForm } from "@/app/auth-form";
 import { sendEmail } from "@/app/actions/email";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -324,6 +324,16 @@ function CheckoutPage() {
                 color: "#673AB7",
             },
         };
+
+        if (!window.Razorpay) {
+            toast({
+                title: "Payment Error",
+                description: "Payment gateway is not loaded. Please refresh the page and try again.",
+                variant: "destructive",
+            });
+            setLoading(false);
+            return;
+        }
 
         const rzp = new window.Razorpay(options);
         rzp.on("payment.failed", function (response: any) {

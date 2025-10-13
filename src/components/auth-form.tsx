@@ -46,60 +46,44 @@ export function AuthForm({ onAuthSuccess, initialForm = 'login' }: AuthFormProps
   }
 
   return (
-    <div className="relative perspective-1000">
-      <motion.div
-        className="relative w-full"
-        animate={{ height }}
-        transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
-        style={{ transformStyle: "preserve-3d" }}
-      >
+    <div className="relative w-full">
         <motion.div
-            className="absolute w-full h-full backface-hidden"
-            animate={{ rotateY: isFlipped ? -180 : 0 }}
+            className="relative w-full"
+            animate={{ height }}
             transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
         >
-            <Card className="w-full shadow-2xl bg-white/10 border-white/20">
-                 <div ref={loginRef}>
-                    <LoginForm onLogin={handleAuthSuccess} onSwitchToSignup={handleSwitchToSignup} />
-                </div>
-            </Card>
+            <AnimatePresence initial={false}>
+            {!isFlipped ? (
+                <motion.div
+                    key="login"
+                    ref={loginRef}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full"
+                >
+                    <Card className="w-full shadow-2xl">
+                        <LoginForm onLogin={handleAuthSuccess} onSwitchToSignup={handleSwitchToSignup} />
+                    </Card>
+                </motion.div>
+            ) : (
+                <motion.div
+                    key="signup"
+                    ref={signupRef}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full"
+                >
+                    <Card className="w-full shadow-2xl">
+                        <SignupForm onSignup={handleAuthSuccess} onSwitchToLogin={handleSwitchToLogin} />
+                    </Card>
+                </motion.div>
+            )}
+            </AnimatePresence>
         </motion.div>
-        <motion.div
-            className="absolute w-full h-full backface-hidden"
-            style={{ rotateY: 180 }}
-            animate={{ rotateY: isFlipped ? 0 : 180 }}
-            transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
-        >
-            <Card className="w-full shadow-2xl bg-white/10 border-white/20">
-                <div ref={signupRef}>
-                    <SignupForm onSignup={handleAuthSuccess} onSwitchToLogin={handleSwitchToLogin} />
-                </div>
-            </Card>
-        </motion.div>
-      </motion.div>
     </div>
   );
-}
-
-// You might need to add these utility classes to your global CSS or a style tag
-// if they are not already in your tailwind config.
-const globalStyles = `
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-  .transform-style-3d {
-    transform-style: preserve-3d;
-  }
-  .backface-hidden {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-`;
-
-// Inject styles into the head
-if (typeof window !== 'undefined') {
-  const styleSheet = document.createElement("style");
-  styleSheet.type = "text/css";
-  styleSheet.innerText = globalStyles;
-  document.head.appendChild(styleSheet);
 }

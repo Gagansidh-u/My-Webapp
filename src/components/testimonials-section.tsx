@@ -4,7 +4,17 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValue,
+  useVelocity,
+  useAnimationFrame,
+  wrap
+} from "framer-motion";
+import React, { useRef } from "react";
 
 const testimonials = [
   {
@@ -52,7 +62,52 @@ const testimonials = [
     title: "Agency Owner",
     text: "Managing multiple client sites is easy with Grock. The 'Web Starter' plan gives us the resources we need, and the performance keeps our clients happy. It's a reliable partner for our agency's growth."
   }
-]
+];
+
+interface MarqueeProps {
+  children: React.ReactNode;
+  baseVelocity: number;
+}
+
+function Marquee({ children, baseVelocity = 100 }: MarqueeProps) {
+  const baseX = useMotionValue(0);
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(scrollVelocity, {
+    damping: 50,
+    stiffness: 400
+  });
+  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], {
+    clamp: false
+  });
+  const x = useTransform(baseX, (v) => `${wrap(-20, -45, v)}%`);
+
+  const directionFactor = useRef<number>(1);
+  useAnimationFrame((t, delta) => {
+    let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
+
+    if (velocityFactor.get() < 0) {
+      directionFactor.current = -1;
+    } else if (velocityFactor.get() > 0) {
+      directionFactor.current = 1;
+    }
+
+    moveBy += directionFactor.current * moveBy * velocityFactor.get();
+
+    baseX.set(baseX.get() + moveBy);
+  });
+
+  return (
+    <div className="overflow-hidden whitespace-nowrap flex">
+      <motion.div className="flex flex-nowrap" style={{ x }}>
+        <span className="flex">{children}</span>
+        <span className="flex">{children}</span>
+        <span className="flex">{children}</span>
+        <span className="flex">{children}</span>
+      </motion.div>
+    </div>
+  );
+}
 
 export default function TestimonialsSection() {
     return (
@@ -61,40 +116,28 @@ export default function TestimonialsSection() {
                 <h2 className="text-3xl md:text-4xl font-headline font-bold text-center mb-12">
                     Trusted by Businesses and Developers
                 </h2>
-                 <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                  className="w-full"
-                >
-                  <CarouselContent>
+                <Marquee baseVelocity={-2}>
                     {testimonials.map((testimonial, index) => (
-                      <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                        <div className="p-1 h-full">
-                           <Card className="h-full flex flex-col justify-between p-6 bg-card shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-                                <CardContent className="p-0">
-                                    <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>
-                                    <div className="flex items-center gap-4">
-                                    <Avatar>
-                                        <AvatarFallback>
-                                            <User className="h-5 w-5" />
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-bold font-headline">{testimonial.name}</p>
-                                        <p className="text-sm text-muted-foreground">{testimonial.title}</p>
-                                    </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                      </CarouselItem>
+                      <div key={index} className="px-4 w-[450px] max-w-[90vw]">
+                        <Card className="h-full flex flex-col justify-between p-6 bg-card shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                            <CardContent className="p-0">
+                                <p className="text-muted-foreground italic mb-6">"{testimonial.text}"</p>
+                                <div className="flex items-center gap-4">
+                                <Avatar>
+                                    <AvatarFallback>
+                                        <User className="h-5 w-5" />
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-bold font-headline">{testimonial.name}</p>
+                                    <p className="text-sm text-muted-foreground">{testimonial.title}</p>
+                                </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                      </div>
                     ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden sm:flex" />
-                  <CarouselNext className="hidden sm:flex" />
-                </Carousel>
+                </Marquee>
             </div>
       </section>
     )

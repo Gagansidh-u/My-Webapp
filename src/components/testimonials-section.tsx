@@ -11,9 +11,9 @@ import {
   useTransform,
   useMotionValue,
   useVelocity,
-  useAnimationFrame
+  useAnimationFrame,
+  wrap
 } from "framer-motion";
-import { wrap } from "framer-motion";
 import React, { useRef } from "react";
 
 const testimonials = [
@@ -118,7 +118,7 @@ export default function TestimonialsSection() {
                 </h2>
                 <Marquee baseVelocity={-1}>
                     {testimonials.map((testimonial, index) => (
-                      <div key={index} className="px-4 w-[350px] max-w-[90vw]">
+                      <div key={index} className="px-4 max-w-[90vw] whitespace-normal" style={{width: "350px"}}>
                         <Card className="h-full flex flex-col justify-between bg-card shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border-l-4 border-primary/20 bg-accent/20 rounded-xl overflow-hidden">
                             <CardContent className="p-6 flex flex-col flex-grow">
                                 <Quote className="w-10 h-10 text-primary/20 mb-4" />

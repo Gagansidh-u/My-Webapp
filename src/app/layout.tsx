@@ -10,6 +10,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import Script from 'next/script';
 import PageTransitionLoader from '@/components/page-transition-loader';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { CursorGlow } from '@/components/ui/cursor-glow';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://grock.fun'),
@@ -78,6 +79,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <FirebaseClientProvider>
+              <CursorGlow />
               <div className="relative flex min-h-screen flex-col">
                 <Header />
                 <main className="flex-1">{children}</main>

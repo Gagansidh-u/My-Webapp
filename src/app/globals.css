@@ -73,3 +73,11 @@
     border-width: 0;
   }
 }
+
+.cursor-glow {
+    background: radial-gradient(
+      600px at var(--mouse-x) var(--mouse-y),
+      hsl(var(--primary) / 0.15),
+      transparent 80%
+    );
+}

@@ -26,9 +26,9 @@ const nextConfig: NextConfig = {
     ],
   },
   env: {
-    RAZORPAY_KEY_ID: 'rzp_live_RSm2UNwErs0ra1',
-    RAZORPAY_KEY_SECRET: 'f5UotViWVuO4KuNIHT02j6v4',
-    NEXT_PUBLIC_RAZORPAY_KEY_ID: 'rzp_live_RSm2UNwErs0ra1',
+    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+    NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
   },
 };
 
